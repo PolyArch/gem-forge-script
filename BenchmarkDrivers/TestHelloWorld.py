@@ -1,5 +1,5 @@
 
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 import Util
 import Constants as C
 

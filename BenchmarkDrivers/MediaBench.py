@@ -1,6 +1,6 @@
 import Util
 import Constants as C
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 from Utils import TraceFlagEnum
 
@@ -174,7 +174,7 @@ class MediaBenchmark(Benchmark):
 
         # Create the result directory out side of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'mb', self.benchmark_name)
+            C.GEM_FORGE_RESULT_PATH, 'mb', self.benchmark_name)
         Util.mkdir_chain(self.work_path)
 
         self.source_bc_dir = os.path.join(self.work_path, 'obj')
@@ -301,7 +301,6 @@ class MediaBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 
@@ -323,7 +322,6 @@ class MediaBenchmark(Benchmark):
 
     def build_validation(self, transform_config, trace, output_tdg):
         # Build the validation binary.
-        print "Validation"
         output_dir = os.path.dirname(output_tdg)
         binary = os.path.join(output_dir, self.get_valid_bin())
         build_cmd = [

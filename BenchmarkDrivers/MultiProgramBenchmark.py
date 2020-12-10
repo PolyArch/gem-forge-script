@@ -1,6 +1,6 @@
 import Util
 import Constants as C
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 from pprint import pprint
 import os
@@ -40,7 +40,7 @@ class MultiProgramBenchmark(Benchmark):
         self.benchmarks = benchmarks
         self.name = '.'.join([b.get_name() for b in self.benchmarks])
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'multi', self.name)
+            C.GEM_FORGE_RESULT_PATH, 'multi', self.name)
         Util.mkdir_chain(self.work_path)
 
         self.transform_config_to_tdgs = dict()
@@ -108,7 +108,7 @@ class MultiProgramBenchmark(Benchmark):
         assert(not self.traces)
         total_multi_program_traces = min(
             [len(b.get_traces()) for b in self.benchmarks])
-        for trace_id in xrange(total_multi_program_traces):
+        for trace_id in range(total_multi_program_traces):
             single_program_traces = [
                 (b, b.get_traces()[trace_id])
                 for b in self.benchmarks]

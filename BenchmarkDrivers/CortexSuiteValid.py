@@ -3,7 +3,7 @@ import Constants as C
 
 from Utils import TraceFlagEnum
 
-from CortexSuite import CortexBenchmark
+from BenchmarkDrivers.CortexSuite import CortexBenchmark
 
 import os
 
@@ -26,7 +26,6 @@ class CortexValidBenchmark(CortexBenchmark):
         # For validation, trace the whole work.
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

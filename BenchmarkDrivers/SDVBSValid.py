@@ -1,12 +1,12 @@
 import Util
 import Constants as C
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 from Utils import TraceFlagEnum
 
 import os
 
-from SDVBS import SDVBSBenchmark
+from BenchmarkDrivers.SDVBS import SDVBSBenchmark
 
 
 class SDVBSValidBenchmark(SDVBSBenchmark):
@@ -49,7 +49,6 @@ class SDVBSValidBenchmark(SDVBSBenchmark):
         # For validation, trace the whole work.
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

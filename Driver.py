@@ -22,15 +22,8 @@ import Util
 import JobScheduler
 import Constants as C
 
-from Utils import BenchmarkResult
 from Utils import Gem5ConfigureManager
 from Utils import TransformManager
-
-from ProcessingScripts import ADFAExperiments
-from ProcessingScripts import StreamExperiments
-from ProcessingScripts import ValidExperiments
-from ProcessingScripts import LibraryInstExperiments
-from ProcessingScripts import SpeedupExperiments
 
 import os
 import random
@@ -304,7 +297,7 @@ class Driver:
             assert(transform_id not in self.transform_jobs[name])
             self.transform_jobs[name][transform_id] = dict()
 
-            for i in xrange(len(traces)):
+            for i in range(len(traces)):
                 trace = traces[i]
                 trace_id = trace.get_trace_id()
                 deps = list()
@@ -412,6 +405,7 @@ class Driver:
                     )
 
     def load_simulation_results(self):
+        from Utils import BenchmarkResult
         self.simulation_results = list()
         for gem_forge_system_config in self.simulation_manager.get_all_gem_forge_system_configs():
             transform_config = gem_forge_system_config.transform_config
@@ -449,14 +443,19 @@ def main(options):
     if options.analyze != '':
         driver.load_simulation_results()
         if options.analyze == 'fractal':
+            from ProcessingScripts import ADFAExperiments
             ADFAExperiments.analyze(driver)
         if options.analyze == 'stream':
+            from ProcessingScripts import StreamExperiments
             StreamExperiments.analyze(driver)
         if options.analyze == 'valid':
+            from ProcessingScripts import ValidExperiments
             ValidExperiments.analyze(driver)
         if options.analyze == 'library':
+            from ProcessingScripts import LibraryInstExperiments
             LibraryInstExperiments.analyze(driver)
         if options.analyze == 'speedup':
+            from ProcessingScripts import SpeedupExperiments
             SpeedupExperiments.analyze(driver)
     if options.clean != '':
         driver.clean()
@@ -478,7 +477,7 @@ def parse_stream_plot(option, opt, value, parser):
 def parse_transform_configurations(option, opt, value, parser):
     vs = value.split(',')
     full_paths = [os.path.join(
-        C.LLVM_TDG_DRIVER_DIR, 'Configurations', v + '.json') for v in vs]
+        C.GEM_FORGE_DRIVER_PATH, 'Configurations', v + '.json') for v in vs]
     for full_path in full_paths:
         if not os.path.isfile(full_path):
             print('Transform configuration does not exist: {path}.'.format(
@@ -491,9 +490,8 @@ def parse_simulate_configurations(option, opt, value, parser):
     vs = value.split(',')
     full_paths = list()
     for v in vs:
-        s = os.path.join(C.LLVM_TDG_DRIVER_DIR,
+        s = os.path.join(C.GEM_FORGE_DRIVER_PATH,
                          'Configurations/Simulation', v + '.json')
-        print s
         ss = glob.glob(s)
         for full_path in ss:
             full_paths.append(full_path)

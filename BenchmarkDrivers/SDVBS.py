@@ -1,6 +1,6 @@
 import Util
 import Constants as C
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 from Utils import TraceFlagEnum
 
@@ -259,7 +259,7 @@ class SDVBSBenchmark(Benchmark):
 
         # Create the result directory outside of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, self.suite, self.benchmark_name)
+            C.GEM_FORGE_RESULT_PATH, self.suite, self.benchmark_name)
         Util.mkdir_chain(self.work_path)
 
         self.source_bc_dir = os.path.join(self.work_path, 'obj')
@@ -413,7 +413,6 @@ class SDVBSBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

@@ -1,6 +1,6 @@
 
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TransformManager
 from Utils import Gem5ConfigureManager
@@ -86,7 +86,7 @@ class ParsecBenchmark(Benchmark):
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'parsec', self.benchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'parsec', self.benchmark_name
         )
         Util.mkdir_chain(self.work_path)
 
@@ -243,7 +243,6 @@ class ParsecBenchmark(Benchmark):
         ])
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

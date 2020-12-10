@@ -1,5 +1,6 @@
 
 import multiprocessing
+import multiprocessing.dummy
 import logging
 import unittest
 import tempfile
@@ -145,8 +146,9 @@ class JobScheduler:
         except multiprocessing.TimeoutError:
             # This is a timeout error.
             new_status = JobScheduler.STATE_TIMEOUTED
-        except Exception:
+        except Exception as e:
             # Normal failed job.
+            print(e)
             new_status = JobScheduler.STATE_FAILED
         else:
             print("Should reraise an exception for unsuccessful job.")
@@ -242,9 +244,9 @@ class JobScheduler:
     def run(self):
         assert(self.state == JobScheduler.STATE_INIT)
         self.log_f = tempfile.NamedTemporaryFile(
-            prefix='job_scheduler.{n}.'.format(n=self.name), delete=False)
+            mode='wt', prefix='job_scheduler.{n}.'.format(n=self.name), delete=False)
         self.log_failed_f = tempfile.NamedTemporaryFile(
-            prefix='job_scheduler.{n}.fail.'.format(n=self.name), delete=False)
+            mode='wt', prefix='job_scheduler.{n}.fail.'.format(n=self.name), delete=False)
         print(self.log_f.name)
         seconds = 0
         
@@ -338,7 +340,7 @@ class TestJobScheduler(unittest.TestCase):
     def test_linear(self):
         scheduler = JobScheduler('test', 4, 1)
         deps = []
-        for i in xrange(8):
+        for i in range(8):
             new_job_id = scheduler.add_job('test_job', test_job, (i,), deps)
             deps = list()
             deps.append(new_job_id)
@@ -350,7 +352,7 @@ class TestJobScheduler(unittest.TestCase):
     def test_linear_fail(self):
         scheduler = JobScheduler('test', 4, 1)
         deps = []
-        for i in xrange(8):
+        for i in range(8):
             new_job_id = scheduler.add_job(
                 'test_job_fail', test_job_fail, (i,), deps)
             deps = list()
@@ -365,7 +367,7 @@ class TestJobScheduler(unittest.TestCase):
         deps = []
         job_ids = list()
         failed_id = 0
-        for i in xrange(8):
+        for i in range(8):
             if i == 4:
                 new_job_id = scheduler.add_job(
                     'test_job_fail_bash', test_job_fail_bash, (i,), deps)
@@ -394,28 +396,28 @@ class TestJobScheduler(unittest.TestCase):
 
     def test_thread_not_quit(self):
         scheduler = JobScheduler('test', 4, 1)
-        for i in xrange(8):
+        for i in range(8):
             scheduler.add_job(
                 'test_job_fail_bash', test_job_fail_bash, (i,), list())
-        for i in xrange(8, 16):
+        for i in range(8, 16):
             scheduler.add_job(
                 'test_job', test_job, (i,), list())
         scheduler.run()
         # Job id starts from 1.
-        for i in xrange(1, 9):
+        for i in range(1, 9):
             self.assert_job_status(scheduler, JobScheduler.STATE_FAILED, i)
-        for i in xrange(9, 17):
+        for i in range(9, 17):
             self.assert_job_status(scheduler, JobScheduler.STATE_FINISHED, i)
 
     def test_massive_jobs(self):
         scheduler = JobScheduler('test', 4, 1)
         n_jobs = 1000
         # The first 4 jobs are 30 second timeout
-        for i in xrange(4):
+        for i in range(4):
             scheduler.add_job(
                 'test_job_timeout', test_job_timeout, (i, 30), list())
         # Push in the rest jobs.
-        for i in xrange(5, n_jobs):
+        for i in range(5, n_jobs):
             scheduler.add_job(
                 'test_job', test_job, (i,), list())
         scheduler.run()

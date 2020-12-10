@@ -147,7 +147,7 @@ class ADFAExperiments(object):
                     benchmark, trace)
 
             baseline_idx = -1
-            for i in xrange(len(self.simulation_configs)):
+            for i in range(len(self.simulation_configs)):
                 simulation_config = self.simulation_configs[i]
                 if simulation_config.get_simulation_id() == 'o8':
                     baseline_idx = i
@@ -269,7 +269,7 @@ class ADFAExperiments(object):
 
             # Pick up the smart time.
             smart_time = None
-            for i in xrange(len(region_times)):
+            for i in range(len(region_times)):
                 if self.simulation_configs[i].get_simulation_id() == 'adfa.idea':
                     continue
                 if smart_time is None:

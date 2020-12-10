@@ -70,7 +70,7 @@ class PlotStreamControl(object):
         bar_color = np.ones(3) * 0.2
         bottom = [0] * len(self.benchmark_names)
         ps = list()
-        for i in xrange(len(self.values)):
+        for i in range(len(self.values)):
             l = self.values[i]
             ps.append(plt.bar(ind, l, width, bottom=bottom, label=self.labels[i],
                               color=bar_color, edgecolor='k', linewidth=0.1))

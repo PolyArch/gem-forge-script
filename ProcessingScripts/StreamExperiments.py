@@ -473,7 +473,7 @@ class StaticStreamAnalyzer(object):
         self.mismatches = list()
         for trace in self.benchmark.get_traces():
             self.traces.append(StaticStreamAnalyzer.TraceAnalyzer(self, trace))
-        for level in xrange(3):
+        for level in range(3):
             total_mismatch_mem_accesses = 0.0
             for trace in self.traces:
                 trace_mismatch_mem_accesses = trace.analyze_mismatch_at_level(

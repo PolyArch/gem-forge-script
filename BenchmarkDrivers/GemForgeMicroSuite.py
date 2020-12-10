@@ -1,6 +1,6 @@
 
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TransformManager
 from Utils import Gem5ConfigureManager
@@ -29,7 +29,7 @@ class GemForgeMicroBenchmark(Benchmark):
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'gfm', self.benchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'gfm', self.benchmark_name
         )
         Util.mkdir_chain(self.work_path)
 
@@ -177,9 +177,9 @@ class GemForgeMicroBenchmark(Benchmark):
         return list()
 
     def trace(self):
+        print('what?')
         os.chdir(self.work_path)
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
         # For this benchmark, we only trace the target function.
@@ -272,7 +272,7 @@ class GemForgeMicroSuite:
 
     def __init__(self, benchmark_args):
         suite_folder = os.path.join(
-            C.LLVM_TDG_BENCHMARK_DIR, 'GemForgeMicroSuite')
+            C.GEM_FORGE_BENCHMARK_PATH, 'GemForgeMicroSuite')
         self.benchmarks = list()
         self.searchBenchmarks(benchmark_args, suite_folder)
 

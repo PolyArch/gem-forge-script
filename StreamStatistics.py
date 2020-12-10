@@ -8,12 +8,12 @@ import os
 
 def max_two_array(a, b):
     assert(len(a) == len(b))
-    return [max(a[i], b[i]) for i in xrange(len(a))]
+    return [max(a[i], b[i]) for i in range(len(a))]
 
 
 def add_two_array(a, b):
     assert(len(a) == len(b))
-    return [a[i] + b[i] for i in xrange(len(a))]
+    return [a[i] + b[i] for i in range(len(a))]
 
 
 class Access:
@@ -466,7 +466,7 @@ class StreamStatistics:
 
     def print_stream_addr(self):
         max_length = 16
-        title = [str(i) for i in xrange(1, max_length)]
+        title = [str(i) for i in range(1, max_length)]
         title.append('other')
         table = prettytable.PrettyTable(title)
         table.float_format = '.4'
@@ -481,7 +481,7 @@ class StreamStatistics:
                 summed_accesses[max_length - 1] += accesses
         print summed_accesses
         total_accesses = sum(summed_accesses)
-        for i in xrange(1, max_length):
+        for i in range(1, max_length):
             summed_accesses[i] += summed_accesses[i - 1]
         if total_accesses != 0:
             table.add_row([x / total_accesses for x in summed_accesses])
@@ -504,9 +504,9 @@ class StreamStatistics:
 
     def print_stream_qualified(self):
         title = list()
-        for i in xrange(3):
+        for i in range(3):
             title.append('L{i}'.format(i=i))
-        row = [self._collect_stream_qualified(level) for level in xrange(3)]
+        row = [self._collect_stream_qualified(level) for level in range(3)]
         table = prettytable.PrettyTable(title)
         table.float_format = '.4'
         total_accesses = self.calculate_total_mem_accesses()
@@ -556,21 +556,21 @@ class StreamStatistics:
         result = [0] * max_level
         for inst in self.inst_to_loop_level:
             streams = self.inst_to_loop_level[inst]
-            for i in xrange(min(max_level, len(streams))):
+            for i in range(min(max_level, len(streams))):
                 stream = streams[i]
                 if stream.chosen:
                     result[i] += stream.accesses
                     break
         if self.next is not None:
             next_result = self.next._collect_chosen_level()
-            for i in xrange(max_level):
+            for i in range(max_level):
                 result += next_result[i]
         return result
 
     def print_chosen_level(self):
         result = self._collect_chosen_level()
         title = list()
-        for i in xrange(len(result)):
+        for i in range(len(result)):
             title.append('L{i}'.format(i=i))
         total_accesses = self.calculate_total_mem_accesses()
         table = prettytable.PrettyTable(title)
@@ -580,7 +580,7 @@ class StreamStatistics:
         result = list()
         for inst in self.inst_to_loop_level:
             streams = self.inst_to_loop_level[inst]
-            for i in xrange(len(streams)):
+            for i in range(len(streams)):
                 stream = streams[i]
                 if stream.chosen:
                     result.append(stream)
@@ -605,7 +605,7 @@ class StreamStatistics:
                 result[stream.loop_paths - 1] += stream.accesses
         if self.next is not None:
             next_result = self.next._collect_stream_loop_paths(max_paths)
-            for i in xrange(len(result)):
+            for i in range(len(result)):
                 result[i] += next_result[i]
         return result
 
@@ -716,7 +716,7 @@ class StreamStatistics:
             'Benchmark'
         ]
         max_paths = 5
-        for i in xrange(1, max_paths):
+        for i in range(1, max_paths):
             title.append('{i}'.format(i=i))
         title.append('>={max_paths}'.format(max_paths=max_paths))
         table = prettytable.PrettyTable(title)
@@ -800,14 +800,14 @@ class StreamStatistics:
             '>32',
         ]
         table = SimpleTable.SimpleTable('Benchmark', columns)
-        sep = xrange(0, 33, 8)
+        sep = range(0, 33, 8)
         for benchmark in benchmark_statistic_map:
             row = [0] * len(columns)
             stats = benchmark_statistic_map[benchmark]
             result = stats.get_chosen_stream_alive_streams_dict()
             for k in result:
                 found = False
-                for i in xrange(len(sep) - 1):
+                for i in range(len(sep) - 1):
                     lhs = sep[i] + 1
                     rhs = sep[i + 1]
                     if k >= lhs and k <= rhs:
@@ -902,7 +902,7 @@ class StreamStatistics:
     def print_benchmark_chosen_stream_loop_path(benchmark_statistic_map):
         title = list()
         max_paths = 5
-        for i in xrange(1, max_paths):
+        for i in range(1, max_paths):
             title.append('{i}'.format(i=i))
         title.append('>={max_paths}'.format(max_paths=max_paths))
         table = SimpleTable.SimpleTable('Benchmark', title)
@@ -931,7 +931,7 @@ class StreamStatistics:
             'Benchmark'
         ]
         max_level = 3
-        for i in xrange(0, max_level - 1):
+        for i in range(0, max_level - 1):
             title.append('{i}'.format(i=i))
         title.append('>={max_level}'.format(max_level=max_level - 1))
         table = prettytable.PrettyTable(title)

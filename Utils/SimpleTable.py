@@ -25,7 +25,7 @@ class SimpleTable:
     def add_geomean_row(self):
         self.headers.append('geomean')
         geomean_row = list()
-        for c in xrange(len(self.datas[0])):
+        for c in range(len(self.datas[0])):
             geomean_row.append(self.compute_geomean(
                 [row[c] for row in self.datas]))
         self.datas.append(geomean_row)
@@ -52,7 +52,7 @@ class SimpleTable:
                     compressed_column=compressed_column, column=self.columns[i])
             columns = compressed_columns
         table = prettytable.PrettyTable([self.header] + columns)
-        for i in xrange(len(self.headers)):
+        for i in range(len(self.headers)):
             table.add_row([self.headers[i]] + self.datas[i])
         table.float_format = '.2e'
         return column_legend + table.get_string()

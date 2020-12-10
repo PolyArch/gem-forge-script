@@ -1,5 +1,5 @@
 
-import Gem5Stats
+import Utils.Gem5Stats as Gem5Stats
 
 import Constants as C
 
@@ -26,11 +26,11 @@ class StreamEngineEnergy:
     def __init__(self, stats):
         # Get the cacti results.
         self.se_fifo = CactiCacheEnergy(os.path.join(
-            C.LLVM_TDG_DRIVER_DIR, 'Utils', 'se-fifo.cfg.out'))
+            C.GEM_FORGE_DRIVER_PATH, 'Utils', 'se-fifo.cfg.out'))
         self.se_table = CactiCacheEnergy(os.path.join(
-            C.LLVM_TDG_DRIVER_DIR, 'Utils', 'se-table.cfg.out'))
+            C.GEM_FORGE_DRIVER_PATH, 'Utils', 'se-table.cfg.out'))
         self.se_unit = CactiCacheEnergy(os.path.join(
-            C.LLVM_TDG_DRIVER_DIR, 'Utils', 'se-unit.cfg.out'))
+            C.GEM_FORGE_DRIVER_PATH, 'Utils', 'se-unit.cfg.out'))
 
         seconds = stats.get_sim_seconds()
         self.se_fifo_leak_J = self.se_fifo.leakMW * seconds / 1000

@@ -34,7 +34,7 @@ class Gem5ReplayConfig(object):
     def get_result(self, tdg):
         _, basename = os.path.split(tdg)
         return os.path.join(
-            C.LLVM_TDG_RESULT_DIR,
+            C.GEM_FORGE_RESULT_PATH,
             '{config}.txt'.format(
                 config=self.get_config(basename),
             ))
@@ -105,7 +105,7 @@ class Gem5ReplayConfigureManager(object):
         self.gem_forge_system_configs = list()
         self.field_re = re.compile('\{[^\{\}]+\}')
         self.simulation_folder_root = os.path.join(
-            C.LLVM_TDG_DRIVER_DIR, 'Configurations/Simulation')
+            C.GEM_FORGE_DRIVER_PATH, 'Configurations/Simulation')
 
         # Allocate a list for every transform configuration.
         for t in self.transform_manager.get_all_transform_ids():
@@ -188,7 +188,7 @@ class Gem5ReplayConfigureManager(object):
         design_space = json['design_space']
         configs = list()
         self.generate_config_for_design_space_recursive(
-            json, design_space.keys(), 0, dict(), configs
+            json, list(design_space.keys()), 0, dict(), configs
         )
         return configs
 

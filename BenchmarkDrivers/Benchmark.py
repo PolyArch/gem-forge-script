@@ -122,10 +122,10 @@ class Benchmark(object):
         self.standalone = standalone
 
         self.pass_so = os.path.join(
-            C.LLVM_TDG_BUILD_DIR, 'src', 'libLLVMTDGPass.so')
+            C.GEM_FORGE_TRANSFORM_BUILD_PATH, 'src', 'libLLVMTDGPass.so')
 
         self.trace_lib = os.path.join(
-            C.LLVM_TDG_BUILD_DIR, 'src', 'trace/libTracerProtobuf.a'
+            C.GEM_FORGE_TRANSFORM_BUILD_PATH, 'src', 'trace/libTracerProtobuf.a'
         )
         self.trace_format = 'protobuf'
 
@@ -381,18 +381,12 @@ class Benchmark(object):
         # print(trace_fns)
         # Sort them.
 
-        def sort_by(a, b):
+        def sort_by(a):
             a_fields = os.path.basename(a).split('.')
-            b_fields = os.path.basename(b).split('.')
             a_thread_id = int(a_fields[-3])
-            b_thread_id = int(b_fields[-3])
             a_trace_id = int(a_fields[-2])
-            b_trace_id = int(b_fields[-2])
-            if a_thread_id == b_thread_id:
-                return a_trace_id - b_trace_id
-            else:
-                return a_thread_id - b_thread_id
-        trace_fns.sort(cmp=sort_by)
+            return (a_thread_id, a_trace_id)
+        trace_fns.sort(key=sort_by)
         for trace_id in range(len(trace_fns)):
             trace_fn = trace_fns[trace_id]
             self.traces.append(
@@ -488,7 +482,7 @@ class Benchmark(object):
         link_cmd = [
             C.LLVM_LINK,
             raw_bc,
-            os.path.join(C.LLVM_TDG_BUILD_DIR,
+            os.path.join(C.GEM_FORGE_TRANSFORM_BUILD_PATH,
                          'src/stream/execution/StreamMemIntrinsic.ll'),
             '-o',
             raw_bc,
@@ -583,7 +577,7 @@ class Benchmark(object):
     Construct the profiled binary.
     """
 
-    def build_profile(self, link_stdlib=False, trace_reachable_only=False):
+    def build_profile(self, trace_reachable_only=False):
         # Notice that profile does not generate inst uid.
         bc = self.get_profile_bc()
         trace_cmd = [
@@ -604,27 +598,13 @@ class Benchmark(object):
         trace_cmd = self.add_transform_debug(trace_cmd)
         print('# Instrumenting profiler...')
         Util.call_helper(trace_cmd)
-        if link_stdlib:
-            link_cmd = C.get_native_cxx_compiler(C.CXX)
-            link_cmd += [
-                '-O3',
-                '-nostdlib',
-                '-static',
-                bc,
-                self.trace_lib,
-                C.MUSL_LIBC_STATIC_LIB,
-                '-lc++',
-                '-o',
-                self.get_profile_bin(),
-            ]
-        else:
-            link_cmd = C.get_native_cxx_compiler(C.CXX)
-            link_cmd += [
-                bc,
-                self.trace_lib,
-                '-o',
-                self.get_profile_bin(),
-            ]
+        link_cmd = C.get_native_cxx_compiler(C.CXX)
+        link_cmd += [
+            bc,
+            self.trace_lib,
+            '-o',
+            self.get_profile_bin(),
+        ]
         trace_links = self.get_links() + [
             '-I{gem5_include}'.format(gem5_include=C.GEM5_INCLUDE_DIR),
             C.GEM5_M5OPS_EMPTY,
@@ -721,7 +701,7 @@ class Benchmark(object):
     Construct the traced binary.
     """
 
-    def build_trace(self, link_stdlib=False, trace_reachable_only=False, debugs=[]):
+    def build_trace(self, trace_reachable_only=False, debugs=[]):
         # Remeber to clear the trace folder.
         trace_folder = self.get_trace_folder_abs()
         Util.mkdir_f(trace_folder)
@@ -742,27 +722,13 @@ class Benchmark(object):
         trace_cmd = self.add_transform_debug(trace_cmd)
         print('# Instrumenting tracer...')
         Util.call_helper(trace_cmd)
-        if link_stdlib:
-            link_cmd = C.get_native_cxx_compiler(C.CXX)
-            link_cmd += [
-                '-O3',
-                '-nostdlib',
-                '-static',
-                self.get_trace_bc(),
-                self.trace_lib,
-                C.MUSL_LIBC_STATIC_LIB,
-                '-lc++',
-                '-o',
-                self.get_trace_bin(),
-            ]
-        else:
-            link_cmd = C.get_native_cxx_compiler(C.CXX)
-            link_cmd += [
-                self.get_trace_bc(),
-                self.trace_lib,
-                '-o',
-                self.get_trace_bin(),
-            ]
+        link_cmd = C.get_native_cxx_compiler(C.CXX)
+        link_cmd += [
+            self.get_trace_bc(),
+            self.trace_lib,
+            '-o',
+            self.get_trace_bin(),
+        ]
         trace_links = self.get_links() + [
             '-I{gem5_include}'.format(gem5_include=C.GEM5_INCLUDE_DIR),
             C.GEM5_M5OPS_EMPTY,

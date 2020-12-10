@@ -1,5 +1,5 @@
 
-import Gem5Stats
+import Utils.Gem5Stats as Gem5Stats
 
 
 class Gem5RegionStats:

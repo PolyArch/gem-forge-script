@@ -307,7 +307,7 @@ def collectEnergy(result, stats_fn):
     result['system_static_power'] = mcpat_parsed.get_system_static_power()
 
 def collect(suite, benchmark, transform_name, simulation, tdg_folder, weight):
-    result_path = os.path.join(C.LLVM_TDG_RESULT_DIR, suite, benchmark, transform_name, simulation, tdg_folder)
+    result_path = os.path.join(C.GEM_FORGE_RESULT_PATH, suite, benchmark, transform_name, simulation, tdg_folder)
     stats_fn = os.path.join(result_path, 'stats.txt')
     result = None
     try:
@@ -378,7 +378,7 @@ def generate_tdg_weights(config):
         if 'input' in config:
             profile += '.' + config['input']
         simpoint_fn = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, suite, benchmark, profile, 'region.simpoints.new.txt')
+            C.GEM_FORGE_RESULT_PATH, suite, benchmark, profile, 'region.simpoints.new.txt')
         simpoints = SimPoint.parse_simpoint_from_file(simpoint_fn)
         filtered_simpoints, total_weight = Util.filter_tail(
             simpoints, Benchmark.Benchmark.TRACE_WEIGHT_SUM_THRESHOLD)

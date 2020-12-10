@@ -222,7 +222,7 @@ class SimPointBuilder:
         self.BICs = list()
         self.ys = list()
         self.centers = list()
-        for n_cluster in xrange(1, max_k):
+        for n_cluster in range(1, max_k):
             kmeans = cluster.KMeans(n_clusters=n_cluster)
             kmeans.fit(self.X_projected, sample_weight=self.weights)
             BIC = self._computeBIC(
@@ -241,8 +241,8 @@ class SimPointBuilder:
         for y in self.ys:
             n = y.shape[0]
             y_sim = numpy.ones([n, n])
-            for i in xrange(n):
-                for j in xrange(n):
+            for i in range(n):
+                for j in range(n):
                     if y[i] == y[j]:
                         y_sim[i, j] = y[i] + 1  # Make the label starts from 1.
             plt.matshow(y_sim[0:100, 0:100])
@@ -253,7 +253,7 @@ class SimPointBuilder:
         print('findSimPoints')
         threshold = min(self.BICs) + 0.8 * (max(self.BICs) - min(self.BICs))
         self.chosen_k = 0
-        for k in xrange(len(self.BICs)):
+        for k in range(len(self.BICs)):
             if self.BICs[k] > threshold:
                 self.chosen_k = k
                 break

@@ -1,5 +1,5 @@
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TransformManager
 from Utils import Gem5ConfigureManager
@@ -22,7 +22,7 @@ class VerticalBenchmark(Benchmark):
         # Create the result dir out of the source tree.
         self.cwd = os.getcwd()
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'vert', self.benchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'vert', self.benchmark_name
         )
         Util.mkdir_chain(self.work_path)
 
@@ -74,7 +74,6 @@ class VerticalBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.work_path)
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
         # For this benchmark, we only trace the target function.
@@ -133,7 +132,7 @@ class VerticalBenchmark(Benchmark):
 
 class VerticalSuite:
     def __init__(self, benchmark_args):
-        suite_folder = os.path.join(C.LLVM_TDG_BENCHMARK_DIR, 'VerticalSuite')
+        suite_folder = os.path.join(C.GEM_FORGE_BENCHMARK_PATH, 'VerticalSuite')
         # Every folder in the suite is a benchmark.
         items = os.listdir(suite_folder)
         items.sort()

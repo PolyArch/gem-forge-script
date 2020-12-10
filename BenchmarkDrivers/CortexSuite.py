@@ -1,6 +1,6 @@
 import Util
 import Constants as C
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 from Utils import TraceFlagEnum
 
@@ -204,7 +204,7 @@ class CortexBenchmark(Benchmark):
         self.src_dir = os.path.join(self.top_folder, benchmark_name)
 
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, self.suite, self.benchmark_name)
+            C.GEM_FORGE_RESULT_PATH, self.suite, self.benchmark_name)
         Util.mkdir_chain(self.work_path)
 
         # Create a symbolic link for everything in the source dir.
@@ -332,7 +332,6 @@ class CortexBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.work_path)
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

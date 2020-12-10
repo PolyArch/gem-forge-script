@@ -6,7 +6,7 @@ from Utils import TraceFlagEnum
 
 import Constants as C
 import Util
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 
 class MachSuiteBenchmark(Benchmark):
@@ -45,7 +45,7 @@ class MachSuiteBenchmark(Benchmark):
             self.source_dir, MachSuiteBenchmark.COMMON_SOURCE_DIR, 'gem5_pseudo.cpp')
         # Create the result directory outside of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'mach', self.benchmark_name, self.subbenchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'mach', self.benchmark_name, self.subbenchmark_name
         )
         Util.mkdir_chain(self.work_path)
         self.source_bc_dir = os.path.join(self.work_path, 'obj')
@@ -147,7 +147,6 @@ class MachSuiteBenchmark(Benchmark):
 
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 
@@ -252,7 +251,7 @@ class MachSuiteBenchmarks:
     }
 
     def __init__(self, benchmark_args):
-        suite_folder = os.path.join(C.LLVM_TDG_BENCHMARK_DIR, 'MachSuite')
+        suite_folder = os.path.join(C.GEM_FORGE_BENCHMARK_PATH, 'MachSuite')
         self.benchmarks = list()
         for benchmark in MachSuiteBenchmarks.BENCHMARK_PARAMS:
             for subbenchmark in MachSuiteBenchmarks.BENCHMARK_PARAMS[benchmark]:

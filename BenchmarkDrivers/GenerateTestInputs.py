@@ -1,6 +1,6 @@
 
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TransformManager
 from Utils import Gem5ConfigureManager
@@ -88,7 +88,6 @@ class TestInputBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.work_path)
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
             # debugs=['TracePass']
         )
@@ -113,7 +112,7 @@ class TestInputSuite:
     def __init__(self, benchmark_args):
 
         # Find all the test input c files.
-        test_folder = os.path.join(C.LLVM_TDG_BUILD_DIR, 'test')
+        test_folder = os.path.join(C.GEM_FORGE_TRANSFORM_BUILD_PATH, 'test')
         test_inputs = list()
         for root, dirs, files in os.walk(test_folder):
             for f in files:

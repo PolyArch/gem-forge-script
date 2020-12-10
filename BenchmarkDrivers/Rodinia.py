@@ -1,5 +1,5 @@
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TransformManager
 from Utils import Gem5ConfigureManager
@@ -278,7 +278,7 @@ class RodiniaBenchmark(Benchmark):
             self.sim_input_name = benchmark_args.options.sim_input_name
 
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'rodinia', self.benchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'rodinia', self.benchmark_name
         )
         Util.mkdir_chain(self.work_path)
         super(RodiniaBenchmark, self).__init__(benchmark_args)
@@ -402,7 +402,6 @@ class RodiniaBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.get_exe_path())
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
 

@@ -1,6 +1,6 @@
 
-from Benchmark import Benchmark
-from Benchmark import BenchmarkArgs
+from BenchmarkDrivers.Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import BenchmarkArgs
 
 from Utils import TraceFlagEnum
 
@@ -85,7 +85,7 @@ class ParboilBenchmark(Benchmark):
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'parboil', self.benchmark_name
+            C.GEM_FORGE_RESULT_PATH, 'parboil', self.benchmark_name
         )
         Util.mkdir_chain(self.work_path)
 
@@ -206,7 +206,6 @@ class ParboilBenchmark(Benchmark):
     def trace(self):
         os.chdir(self.work_path)
         self.build_trace(
-            link_stdlib=False,
             trace_reachable_only=False,
         )
         # For this benchmark, we only trace the target function.

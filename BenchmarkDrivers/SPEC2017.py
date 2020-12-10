@@ -7,7 +7,7 @@ from Utils import TraceFlagEnum
 
 import Constants as C
 import Util
-from Benchmark import Benchmark
+from BenchmarkDrivers.Benchmark import Benchmark
 
 
 class SPEC2017Benchmark(Benchmark):
@@ -28,7 +28,6 @@ class SPEC2017Benchmark(Benchmark):
         self.target = params['target']
         self.trace_func = params['trace_func']
 
-        self.trace_stdlib = False
         self.cwd = os.getcwd()
 
         self.build_system = 'gclang'
@@ -36,7 +35,7 @@ class SPEC2017Benchmark(Benchmark):
 
         # Create the run_path.
         self.run_path = os.path.join(
-            C.LLVM_TDG_RESULT_DIR, 'spec2017', self.work_load)
+            C.GEM_FORGE_RESULT_PATH, 'spec2017', self.work_load)
         Util.mkdir_chain(self.run_path)
 
         # Check if build dir and exe dir exists.
@@ -217,17 +216,6 @@ class SPEC2017Benchmark(Benchmark):
         else:
             # Unknown build system.
             assert(False)
-        if self.trace_stdlib:
-            # Link with the llvm bitcode of standard library.
-            link_cmd = [
-                C.LLVM_LINK,
-                raw_bc,
-                C.MUSL_LIBC_LLVM_BC,
-                '-o',
-                raw_bc
-            ]
-            print('# Link with stdlib...')
-            Util.call_helper(link_cmd)
 
         # Name everything in the bitcode.
         print('# Naming everything in the llvm bitcode...')
@@ -304,11 +292,8 @@ class SPEC2017Benchmark(Benchmark):
 
     def trace(self):
         os.chdir(self.get_exe_path())
-        self.build_trace(
-            link_stdlib=False,
-        )
+        self.build_trace()
         # Set the tracer mode.
-
         os.putenv('LLVM_TDG_TRACE_MODE', str(
             TraceFlagEnum.GemForgeTraceMode.TraceSpecifiedInterval.value
         ))
@@ -474,7 +459,6 @@ class SPEC2017Benchmarks:
             'lang': 'CPP',
         },
         # Will throw exception.
-        # Does not work with ellcc as RE.
         'povray_r': {
             'name': '511.povray_r',
             'links': [],
@@ -491,7 +475,6 @@ class SPEC2017Benchmarks:
             'lang': 'CPP',
         },
 
-        # Does not work with ellcc as it uses linux header.
         # Does not throw.
         'xalancbmk_r': {
             'name': '523.xalancbmk_r',
@@ -512,7 +495,6 @@ class SPEC2017Benchmarks:
 
         # Portablity issue with using std::isfinite but include <math.h>, not <cmath>
         # Does not throw.
-        # Haven't tested with ellcc.
         'blender_r': {
             'name': '526.blender_r',
             'links': [],
@@ -550,23 +532,6 @@ class SPEC2017Benchmarks:
             trace_func = SPEC2017Benchmarks.BENCHMARK_PARAMS[target]['trace_func']
             links = SPEC2017Benchmarks.BENCHMARK_PARAMS[target]['links']
 
-            # If we want to trace the std library, then we have to change the links.
-            # if self.trace_stdlib:
-            #     links = [
-            #         '-static',
-            #         '-nostdlib',
-            #         C.MUSL_LIBC_CRT,
-            #         C.MUSL_LIBC_STATIC_LIB,
-            #         C.LLVM_COMPILER_RT_BUILTIN_LIB,
-            #         C.LLVM_UNWIND_STATIC_LIB,
-            #         # '-lgcc_s',
-            #         # '-lgcc',
-            #         # C++ run time library for tracer.
-            #         '-lstdc++',
-            #         # '-lc++',
-            #         # '-lc++abi',
-            #     ]
-
             self.benchmarks.append(
                 SPEC2017Benchmark(
                     benchmark_args=benchmark_args,
@@ -583,16 +548,8 @@ class SPEC2017Benchmarks:
         return self.benchmarks
 
     def set_gllvm(self):
-        # Set up the environment for gllvm.
-        if C.USE_ELLCC:
-            os.putenv('LLVM_COMPILER_PATH', C.ELLCC_BIN_PATH)
-            os.putenv('LLVM_CC_NAME', 'ecc')
-            os.putenv('LLVM_CXX_NAME', 'ecc++')
-            os.putenv('LLVM_LINK_NAME', 'llvm-link')
-            os.putenv('LLVM_AR_NAME', 'ecc-ar')
-        else:
-            os.putenv('LLVM_COMPILER_PATH', C.LLVM_BIN_PATH)
-            os.putenv('LLVM_CC_NAME', 'clang')
-            os.putenv('LLVM_CXX_NAME', 'clang++')
-            os.putenv('LLVM_LINK_NAME', 'llvm-link')
-            os.putenv('LLVM_AR_NAME', 'llvm-ar')
+        os.putenv('LLVM_COMPILER_PATH', C.LLVM_BIN_PATH)
+        os.putenv('LLVM_CC_NAME', 'clang')
+        os.putenv('LLVM_CXX_NAME', 'clang++')
+        os.putenv('LLVM_LINK_NAME', 'llvm-link')
+        os.putenv('LLVM_AR_NAME', 'llvm-ar')
