@@ -5,7 +5,7 @@ import os
 GEM_FORGE_TRANSFORM_PATH = os.getenv('GEM_FORGE_TRANSFORM_PATH')
 assert(GEM_FORGE_TRANSFORM_PATH is not None)
 GEM_FORGE_TRANSFORM_BUILD_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'build')
-GEM_FORGE_DRIVER_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'driver')
+GEM_FORGE_DRIVER_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, '../driver')
 GEM_FORGE_BENCHMARK_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'benchmark')
 
 # Where to store the llvm_bc and traces.
