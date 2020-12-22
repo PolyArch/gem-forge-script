@@ -226,7 +226,7 @@ def configureNoC(self, ruby, numL3s):
     mcpatNoC.type = 1 # 0 bus, 1 NoC.
 
     network = ruby.network
-    mcpatNoC.horizontal_nodes = numL3s / network.num_rows
+    mcpatNoC.horizontal_nodes = numL3s // network.num_rows
     mcpatNoC.vertical_nodes = network.num_rows
     mcpatNoC.has_global_link = 0
     mcpatNoC.link_throughput = 1

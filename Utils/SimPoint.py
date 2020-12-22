@@ -1,5 +1,5 @@
 
-import ProfileMessage_pb2
+from . import ProfileMessage_pb2
 
 import numpy
 from sklearn.decomposition import PCA

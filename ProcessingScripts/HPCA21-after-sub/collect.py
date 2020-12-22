@@ -15,51 +15,51 @@ fix_transforms = [
     {
         'transform': 'valid.ex',
         'simulations': [
-            'replay.ruby.single.i4.tlb.8x8c-l256-s64B',
-            'replay.ruby.single.i4.tlb.8x8c-l256-s64B.pf8-l2pf16',
-            'replay.ruby.single.i4.tlb.8x8c-l256-s64B.bingo-l2pf16',
-            'replay.ruby.single.o4.tlb.8x8c-l256-s64B',
-            'replay.ruby.single.o4.tlb.8x8c-l256-s64B.pf8-l2pf16',
-            'replay.ruby.single.o4.tlb.8x8c-l256-s64B.bingo-l2pf16',
+            # 'replay.ruby.single.i4.tlb.8x8c-l256-s64B',
+            # 'replay.ruby.single.i4.tlb.8x8c-l256-s64B.pf8-l2pf16',
+            # 'replay.ruby.single.i4.tlb.8x8c-l256-s64B.bingo-l2pf16',
+            # 'replay.ruby.single.o4.tlb.8x8c-l256-s64B',
+            # 'replay.ruby.single.o4.tlb.8x8c-l256-s64B.pf8-l2pf16',
+            # 'replay.ruby.single.o4.tlb.8x8c-l256-s64B.bingo-l2pf16',
             'replay.ruby.single.o8.tlb.8x8c-l256-s64B',
-            'replay.ruby.single.o8.tlb.8x8c-l256-s64B.pf8-l2pf16',
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s64B.pf8-l2pf16',
             'replay.ruby.single.o8.tlb.8x8c-l256-s64B.bingo-l2pf16',
-            'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.pf8-l2pf16-blk4',
-            'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.bingo-l2pf16-blk4',
-            # # Link 128b 512b
-            'replay.ruby.single.o8.tlb.8x8c-l128-s64B.bingo-l2pf16',
-            'replay.ruby.single.o8.tlb.8x8c-l512-s64B.bingo-l2pf16',
-            # # SNUCA 64B 256B 4kB
-            'replay.ruby.single.o8.tlb.8x8c-l256-s256B.bingo-l2pf16',
-            'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.bingo-l2pf16',
-            'replay.ruby.single.o8.tlb.8x8c-l256-s4kB.bingo-l2pf16',
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.pf8-l2pf16-blk4',
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.bingo-l2pf16-blk4',
+            # # # Link 128b 512b
+            # 'replay.ruby.single.o8.tlb.8x8c-l128-s64B.bingo-l2pf16',
+            # 'replay.ruby.single.o8.tlb.8x8c-l512-s64B.bingo-l2pf16',
+            # # # SNUCA 64B 256B 4kB
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s256B.bingo-l2pf16',
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s1kB.bingo-l2pf16',
+            # 'replay.ruby.single.o8.tlb.8x8c-l256-s4kB.bingo-l2pf16',
         ]
     },
 ]
 
 hpca21_submission_stream_simulations = [
-    'stream.ruby.single.i4.tlb.8x8c-l256-s64B.f256-c',
-    'stream.ruby.single.i4.tlb.8x8c-l256-s1kB.f256-c.flts-mc2',
-    'stream.ruby.single.i4.tlb.8x8c-l256-s64B.f512-c',
-    'stream.ruby.single.i4.tlb.8x8c-l256-s1kB.f512-c.flts-mc2',
-    'stream.ruby.single.o4.tlb.8x8c-l256-s64B.f1024-c-gb',
-    'stream.ruby.single.o4.tlb.8x8c-l256-s1kB.f1024-c-gb.flts-mc2',
+    # 'stream.ruby.single.i4.tlb.8x8c-l256-s64B.f256-c',
+    # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB.f256-c.flts-mc2',
+    # 'stream.ruby.single.i4.tlb.8x8c-l256-s64B.f512-c',
+    # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB.f512-c.flts-mc2',
+    # 'stream.ruby.single.o4.tlb.8x8c-l256-s64B.f1024-c-gb',
+    # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB.f1024-c-gb.flts-mc2',
     'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb',
     'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.flts-mc2',
-    'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.flts',
-    'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.flts-direct',
-    # # Link 128b 512b
-    'stream.ruby.single.o8.tlb.8x8c-l128-s1kB.f2048-c-gb.flts-mc2',
-    'stream.ruby.single.o8.tlb.8x8c-l512-s1kB.f2048-c-gb.flts-mc2',
-    # # SNUCA 64B 256B 4kB
-    'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb.flts-mc2',
-    'stream.ruby.single.o8.tlb.8x8c-l256-s256B.f2048-c-gb.flts-mc2',
-    'stream.ruby.single.o8.tlb.8x8c-l256-s4kB.f2048-c-gb.flts-mc2',
-    # # Core 4x4 and 4x8
-    'stream.ruby.single.o8.tlb.4x4c-l256-s64B.f2048-c-gb',
-    'stream.ruby.single.o8.tlb.4x4c-l256-s1kB.f2048-c-gb.flts-mc2',
-    'stream.ruby.single.o8.tlb.4x8c-l256-s64B.f2048-c-gb',
-    'stream.ruby.single.o8.tlb.4x8c-l256-s1kB.f2048-c-gb.flts-mc2',
+    # 'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.flts',
+    # 'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.flts-direct',
+    # # # Link 128b 512b
+    # 'stream.ruby.single.o8.tlb.8x8c-l128-s1kB.f2048-c-gb.flts-mc2',
+    # 'stream.ruby.single.o8.tlb.8x8c-l512-s1kB.f2048-c-gb.flts-mc2',
+    # # # SNUCA 64B 256B 4kB
+    # 'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb.flts-mc2',
+    # 'stream.ruby.single.o8.tlb.8x8c-l256-s256B.f2048-c-gb.flts-mc2',
+    # 'stream.ruby.single.o8.tlb.8x8c-l256-s4kB.f2048-c-gb.flts-mc2',
+    # # # Core 4x4 and 4x8
+    # 'stream.ruby.single.o8.tlb.4x4c-l256-s64B.f2048-c-gb',
+    # 'stream.ruby.single.o8.tlb.4x4c-l256-s1kB.f2048-c-gb.flts-mc2',
+    # 'stream.ruby.single.o8.tlb.4x8c-l256-s64B.f2048-c-gb',
+    # 'stream.ruby.single.o8.tlb.4x8c-l256-s1kB.f2048-c-gb.flts-mc2',
 ]
 
 stream_simulations = hpca21_submission_stream_simulations
