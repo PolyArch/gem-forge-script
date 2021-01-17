@@ -87,6 +87,10 @@ class Benchmark(object):
         return
 
     @abc.abstractmethod
+    def get_extra_compile_flags(self):
+        return
+
+    @abc.abstractmethod
     def get_exe_path(self):
         return
 
@@ -859,7 +863,7 @@ class Benchmark(object):
             transformed_bc,
             '-o',
             transformed_obj,
-        ]
+        ] + self.get_extra_compile_flags()
         Util.call_helper(compile_cmd)
         if self.options.transform_text:
             # Disassembly it for debug purpose.
@@ -871,17 +875,8 @@ class Benchmark(object):
                 transformed_bc,
                 '-o',
                 transformed_asm,
-            ]
+            ] + self.get_extra_compile_flags()
             Util.call_helper(disasm_cmd)
-            # ! Don't use llvm_objdump as it does not decode floating instructions.
-            # with open(transformed_asm, 'w') as asm:
-            #     disasm_cmd = [
-            #         C.LLVM_OBJDUMP_DEBUG,
-            #         '-d',
-            #         '-march=rv64g',
-            #         transformed_obj,
-            #     ]
-            #     Util.call_helper(disasm_cmd, stdout=asm)
         # Link them into code.
         transformed_exe = self.get_replay_exe(transform_config, trace, 'exe')
         link_cmd = C.get_sim_linker() + [

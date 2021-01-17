@@ -62,6 +62,9 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D-avx512-fix': {
             'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
         },
+        'hotspot3D-avx512-fix-z66': {
+            'large':  ['512', '66', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
+        },
         'hotspot3D-fix': {
             'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
         },
@@ -103,14 +106,13 @@ class RodiniaBenchmark(Benchmark):
         'pathfinder-avx512': {
             'test': ['100', '100', '$NTHREADS'],
             'medium': ['1000', '100', '$NTHREADS'],
-            # 'large': ['96256', '150', '$NTHREADS'],
             'large': ['1572864', '8', '$NTHREADS'],
         },
-        # 'srad_v1': {
-        #     'test':   ['100', '0.5', '502', '458', '$NTHREADS'],
-        #     'medium': ['100', '0.5', '502', '458', '$NTHREADS'],
-        #     'large':  ['100', '0.5', '502', '458', '$NTHREADS'],
-        # },
+        'pathfinder-avx512-nounroll': {
+            'test': ['100', '100', '$NTHREADS'],
+            'medium': ['1000', '100', '$NTHREADS'],
+            'large': ['1572864', '8', '$NTHREADS'],
+        },
         'srad_v2': {
             'test': ['128', '128', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
             'medium': ['512', '512', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
@@ -135,8 +137,8 @@ class RodiniaBenchmark(Benchmark):
 
     ROI_FUNCS = {
         'b+tree': [
-            '.omp_outlined..33', # kernel_range
-            '.omp_outlined..37', # kernel_query
+            '.omp_outlined..33',  # kernel_range
+            '.omp_outlined..37',  # kernel_query
         ],
         'bfs': [
             '.omp_outlined.',
@@ -144,10 +146,10 @@ class RodiniaBenchmark(Benchmark):
         ],
         'cfd': [
             # '.omp_outlined.',   # initialize_variables()
-            '.omp_outlined..5', # compute_step_factor()
-            '.omp_outlined..6', # compute_flux()
-            '.omp_outlined..7', # time_step()
-            '.omp_outlined..12', # copy()
+            '.omp_outlined..5',  # compute_step_factor()
+            '.omp_outlined..6',  # compute_flux()
+            '.omp_outlined..7',  # time_step()
+            '.omp_outlined..12',  # copy()
         ],
         'hotspot': [
             '.omp_outlined.',
@@ -171,6 +173,9 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined.',
         ],
         'hotspot3D-avx512-fix': [
+            '.omp_outlined.',
+        ],
+        'hotspot3D-avx512-fix-z66': [
             '.omp_outlined.',
         ],
         'hotspot3D-fix': [
@@ -197,19 +202,22 @@ class RodiniaBenchmark(Benchmark):
         ],
         'particlefilter': [
             '.omp_outlined.',  # applyMotionModel()
-            '.omp_outlined..2', # computeLikelihood()
-            '.omp_outlined..4', # updateWeight(): exp(likelihood) + sum(weights)
-            '.omp_outlined..5', # updateWeight(): normalize(weight)
-            '.omp_outlined..7', # averageParticles()
-            'resampleParticles', # resampleParticles(): compute(CDF)
-            '.omp_outlined..11', # resampleParticles(): compute(U)
-            '.omp_outlined..13', # resampleParticles(): resample
-            '.omp_outlined..15', # resampleParticles(): reset
+            '.omp_outlined..2',  # computeLikelihood()
+            '.omp_outlined..4',  # updateWeight(): exp(likelihood) + sum(weights)
+            '.omp_outlined..5',  # updateWeight(): normalize(weight)
+            '.omp_outlined..7',  # averageParticles()
+            'resampleParticles',  # resampleParticles(): compute(CDF)
+            '.omp_outlined..11',  # resampleParticles(): compute(U)
+            '.omp_outlined..13',  # resampleParticles(): resample
+            '.omp_outlined..15',  # resampleParticles(): reset
         ],
         'pathfinder': [
             '.omp_outlined.',
         ],
         'pathfinder-avx512': [
+            '.omp_outlined.',
+        ],
+        'pathfinder-avx512-nounroll': [
             '.omp_outlined.',
         ],
         'srad_v2': [
@@ -240,31 +248,34 @@ class RodiniaBenchmark(Benchmark):
     microops to be roughly 1e8.
     """
     WORK_ITEMS = {
-        'b+tree': 2, # Two commands.
+        'b+tree': 2,  # Two commands.
         'bfs': 2 * int(1e8 / 15e5),  # One iter takes 15e5 ops.
-        'cfd': 4 * int(1e8 / 2e7), 
-        'hotspot': 2, # Two iters takes 10 min.
-        'hotspot-avx512': 2, # Two iters takes 10 min.
-        'hotspot-avx512-fix': 2, # Two iters takes 10 min.
-        'hotspot-fix': 2, # Two iters takes 10 min.
-        'hotspot-avx512-fix2k': 2, # Two iters takes 10 min.
+        'cfd': 4 * int(1e8 / 2e7),
+        'hotspot': 2,  # Two iters takes 10 min.
+        'hotspot-avx512': 2,  # Two iters takes 10 min.
+        'hotspot-avx512-fix': 2,  # Two iters takes 10 min.
+        'hotspot-fix': 2,  # Two iters takes 10 min.
+        'hotspot-avx512-fix2k': 2,  # Two iters takes 10 min.
         'hotspot3D': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512-fix': 1 * int(1e8 / 2e7),
+        'hotspot3D-avx512-fix-z66': 1 * int(1e8 / 2e7),
         'hotspot3D-fix': 1 * int(1e8 / 2e7),
-        'kmeans': 3 * 1, 
+        'kmeans': 3 * 1,
         'lavaMD': 1,            # Invoke kernel for once.
         'nw': 2,                # nw can finish.
         'nw-blk32': 2,                # nw can finish.
         'nn': 4,                # One iteration is 4 work items.
-        'particlefilter': 9 * 1, # One itertion is enough.
+        'particlefilter': 9 * 1,  # One itertion is enough.
         'pathfinder': 149,        # pathfinder takes 99 iterations.
         'pathfinder-avx512': 149,        # pathfinder takes 99 iterations.
-        'srad_v2': 2 * 1, # One iteration is enough.
-        'srad_v2-avx512': 2 * 1, # One iteration is enough.
-        'srad_v2-avx512-fix': 2 * 1, # One iteration is enough.
-        'srad_v2-fix': 2 * 1, # One iteration is enough.
-        'streamcluster': 1, # Try one iteration?
+        # pathfinder takes 99 iterations.
+        'pathfinder-avx512-nounroll': 149,
+        'srad_v2': 2 * 1,  # One iteration is enough.
+        'srad_v2-avx512': 2 * 1,  # One iteration is enough.
+        'srad_v2-avx512-fix': 2 * 1,  # One iteration is enough.
+        'srad_v2-fix': 2 * 1,  # One iteration is enough.
+        'streamcluster': 1,  # Try one iteration?
     }
 
     def __init__(self, benchmark_args, benchmark_path):
@@ -330,6 +341,11 @@ class RodiniaBenchmark(Benchmark):
         assert(False)
         return None
 
+    def get_extra_compile_flags(self):
+        if 'avx' in self.benchmark_name:
+            return ['-mavx512f']
+        return list()
+
     def get_sim_args(self):
         return self._get_args(self.sim_input_name)
 
@@ -363,17 +379,6 @@ class RodiniaBenchmark(Benchmark):
         return [
             '--work-end-exit-count={v}'.format(v=work_items)
         ]
-
-    # def get_gem5_mem_size(self):
-    #     # Jesus so many benchmarks have to use large memory.
-    #     return '16GB'
-    #     # large_mem_benchmarks = [
-    #     #     'nn', 'srad_v2', 'bfs', 'b+tree', 'nw', 'pathfinder', 'hotspot-'
-    #     # ]
-    #     # for p in large_mem_benchmarks:
-    #     #     if self.benchmark_name.startswith(p):
-    #     #         return '16GB'
-    #     # return None
 
     def build_raw_bc(self):
         os.chdir(self.benchmark_path)
@@ -414,7 +419,11 @@ class RodiniaBenchmark(Benchmark):
 
 class RodiniaSuite:
     def __init__(self, benchmark_args):
-        suite_folder = os.getenv('RODINIA_SUITE_PATH')
+        benchmark_path = os.getenv('GEM_FORGE_BENCHMARK_PATH')
+        if benchmark_path is None:
+            print('Please specify where the benchmark is in GEM_FORGE_BENCHMARK_PATH')
+            assert(False)
+        suite_folder = os.path.join(benchmark_path, 'Rodinia')
         self.benchmarks = list()
         sub_folders = ['openmp']
         for sub_folder in sub_folders:

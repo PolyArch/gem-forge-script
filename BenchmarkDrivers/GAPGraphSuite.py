@@ -50,10 +50,13 @@ class GAPGraphBenchmark(Benchmark):
         args = [
             '-f', graph_fn,
             '-p', str(self.n_thread),
+            # Only one trial.
+            '-n', '1',
         ]
-        if self.benchmark_name in ['bc', 'bfs', 'sssp', 'tc']:
-            args += ['-n', '1']
         return args
+
+    def get_extra_compile_flags(self):
+        return list()
 
     def get_sim_input_name(self):
         return self.sim_input_name
@@ -62,7 +65,8 @@ class GAPGraphBenchmark(Benchmark):
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
-        'pr':  ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'pr_pull':  ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'pr_push':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
         'sssp': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],
     }
@@ -96,10 +100,13 @@ class GAPGraphBenchmark(Benchmark):
             '-O3',
             '-Wall',
             '-fopenmp',
+            '-DGEM_FORGE',
+            '-DGEM_FORGE_WARM_CACHE',
         ]
         no_unroll_workloads = [
             'bfs',
-            'pr',
+            'pr_pull',
+            'pr_push',
         ]
         if self.benchmark_name in no_unroll_workloads:
             flags.append('-fno-unroll-loops')
@@ -112,7 +119,6 @@ class GAPGraphBenchmark(Benchmark):
                 C.CXX,
                 source,
                 '-c',
-                '-DGEM_FORGE',
             ] + flags + [
                 '-emit-llvm',
                 '-gline-tables-only',
@@ -155,9 +161,9 @@ class GAPGraphBenchmark(Benchmark):
         to ensure that we simualte for the same amount of work.
         """
         work_items = -1
-        if self.benchmark_name == 'pr':
-            # One kernel, two iteration.
-            work_items = 2
+        if self.benchmark_name.startswith('pr'):
+            # Two kernels, two iteration.
+            work_items = 4
         if work_items == -1:
             # This benchmark can finish.
             return list()
@@ -172,11 +178,18 @@ class GAPGraphBenchmark(Benchmark):
 class GAPGraphSuite:
 
     def __init__(self, benchmark_args):
-        # For now I assume gapbs and rodinia are in the same folder.
-        suite_folder = os.path.join(os.path.dirname(
-            os.getenv('RODINIA_SUITE_PATH')), 'gapbs')
+        benchmark_path = os.getenv('GEM_FORGE_BENCHMARK_PATH')
+        if benchmark_path is None:
+            print('Please specify where the benchmark is in GEM_FORGE_BENCHMARK_PATH')
+            assert(False)
+        suite_folder = os.path.join(benchmark_path, 'gapbs')
         self.benchmarks = list()
         for name in GAPGraphBenchmark.GRAPH_FUNC:
+            benchmark_name = 'gap.{n}'.format(n=name)
+            if benchmark_args.options.benchmark:
+                if benchmark_name not in benchmark_args.options.benchmark:
+                    # Ignore benchmark not required.
+                    continue
             self.benchmarks.append(GAPGraphBenchmark(
                 benchmark_args, suite_folder, name))
 

@@ -16,6 +16,9 @@ class GemForgeMicroBenchmark(Benchmark):
     def __init__(self, benchmark_args, src_path):
         self.cwd = os.getcwd()
         self.src_path = src_path
+        self.suite_path = src_path
+        while os.path.basename(self.suite_path) != 'GemForgeMicroSuite':
+            self.suite_path = os.path.dirname(self.suite_path)
         self.benchmark_name = os.path.basename(self.src_path)
         self.source = self.benchmark_name + '.c'
         self.graph_utils_source = '../gfm_graph_utils.c'
@@ -23,7 +26,9 @@ class GemForgeMicroBenchmark(Benchmark):
             self.src_path, 'stream_whitelist.txt')
 
         self.is_omp = self.benchmark_name.startswith('omp_')
-        self.is_graph = os.path.basename(os.path.dirname(self.src_path)) == 'graph'
+        self.is_avx512 = 'avx' in self.benchmark_name
+        self.is_graph = os.path.basename(
+            os.path.dirname(self.src_path)) == 'graph'
         self.n_thread = benchmark_args.options.input_threads
         self.sim_input_name = benchmark_args.options.sim_input_name
 
@@ -53,11 +58,28 @@ class GemForgeMicroBenchmark(Benchmark):
             args = [str(self.n_thread)]
             if self.is_graph:
                 graphs = os.path.join(os.getenv('BENCHMARK_PATH'), 'graphs')
-                suffix = 'wbin' if self.benchmark_name.startswith('omp_sssp_') else 'bin'
+                suffix = 'wbin' if self.benchmark_name.startswith(
+                    'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
                     i=self.sim_input_name, s=suffix)))
             return args
         return None
+
+    def get_extra_compile_flags(self):
+        flags = list()
+        avx512_workloads = [
+            'omp_array_sum_avx',
+            'omp_array_sum_avx_int',
+            'omp_conv3d2',
+            'omp_conv3d2_no_unroll',
+            'omp_conv3d2_unroll',
+            'omp_conv3d2_unroll_xy',
+            'omp_dense_mv_blk',
+            'omp_dense_mv',
+        ]
+        if self.benchmark_name in avx512_workloads or self.is_avx512:
+            flags.append('-mavx512f')
+        return flags
 
     def get_sim_input_name(self):
         # Only these workloads has sim_input_name.
@@ -108,18 +130,8 @@ class GemForgeMicroBenchmark(Benchmark):
             # '-ffp-contract=off',
             '-mllvm',
             '-loop-unswitch-threshold=1',
-        ]
-        avx512_workloads = [
-            'omp_array_sum',
-            'omp_conv3d2',
-            'omp_conv3d2_no_unroll',
-            'omp_conv3d2_unroll',
-            'omp_conv3d2_unroll_xy',
-            'omp_dense_mv_blk',
-            'omp_dense_mv',
-        ]
-        if self.benchmark_name in avx512_workloads:
-            flags.append('-mavx512f')
+            '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
+        ] + self.get_extra_compile_flags()
         no_unroll_workloads = [
             'omp_bfs',
             'omp_page_rank',
