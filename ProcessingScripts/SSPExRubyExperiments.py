@@ -156,7 +156,7 @@ class TileStatsParser(object):
 
     def parse_flit_type_breakdown(self, fields):
         # ! Keep this sync with CoherenceRequestType/CoherenceResponseType
-        msg_type_category = [
+        msg_type_req_category = [
             ('ctrl', 'Request::GETX'),
             ('ctrl', 'Request::UPGRADE'),
             ('ctrl', 'Request::GETS'),
@@ -173,6 +173,10 @@ class TileStatsParser(object):
             ('strm', 'Request::STREAM_END'),
             ('ctrl', 'Request::STREAM_STORE'),
             ('strm', 'Request::STREAM_MIGRATE'),
+            ('data', 'Request::STREAM_FORWARD'),
+            ('strm', 'Request::STREAM_COMMIT'),
+        ]
+        msg_type_resp_category = [
             ('ctrl', 'Response::MEMORY_ACK'),
             ('data', 'Response::DATA'),
             ('data', 'Response::DATA_EXCLUSIVE'),
@@ -183,14 +187,23 @@ class TileStatsParser(object):
             ('ctrl', 'Response::EXCLUSIVE_UNBLOCK'),
             ('ctrl', 'Response::INV'),
             ('strm', 'Response::STREAM_ACK'),
+            ('strm', 'Response::STREAM_RANGE'),
+            ('strm', 'Response::STREAM_DONE'),
         ]
-        n_types = 32
+        n_categories = 2
+        n_types_per_category = 20
+        n_types = n_categories * n_types_per_category
         flits = [float(fields[i * 4 + 2]) for i in range(n_types)]
         control_flits = 0
         data_flits = 0
         stream_flits = 0
-        for i in range(len(msg_type_category)):
-            msg_type = msg_type_category[i][0]
+        for i in range(n_types):
+            category = i // n_types_per_category
+            type_in_category = i % n_types_per_category
+            msg_type_category = msg_type_req_category if category == 0 else msg_type_resp_category
+            if type_in_category >= len(msg_type_category):
+                continue
+            msg_type = msg_type_category[type_in_category][0]
             # print('Flits {t} {f}'.format(t=msg_type_category[i][1], f=flits[i]))
             if msg_type == 'ctrl':
                 control_flits += flits[i]

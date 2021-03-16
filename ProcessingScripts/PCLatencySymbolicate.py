@@ -45,7 +45,7 @@ def processLine(line, w, target):
     if not symbol:
         w.write(line)
         return
-    print symbol.GetName()
+    print(symbol.GetName())
 
 def symbolicateWithLLVMDwarf(binary, pcLatFn):
     w = open('annotated.' + pcLatFn, 'w')
@@ -70,7 +70,7 @@ def processLineWithLLVMDwarf(line, w, binary):
         binary,
         '--lookup={pc}'.format(pc=pc),
     ]
-    output = subprocess.check_output(command)
+    output = subprocess.check_output(command, encoding='UTF-8')
     for output_line in output.splitlines():
         if output_line.startswith('Line info:'):
             idx = output_line.find('start')
