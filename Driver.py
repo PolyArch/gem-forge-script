@@ -364,8 +364,8 @@ class Driver:
                         simulation_config,
                     ),
                     deps=deps,
-                    # Use a 20 hour timeout for simulation to avoid deadlock.
-                    timeout=20*60*60
+                    # Use a 48 hour timeout for simulation to avoid deadlock.
+                    timeout=48*60*60
                 )
 
     def schedule_mcpat(self, job_scheduler, benchmark):
