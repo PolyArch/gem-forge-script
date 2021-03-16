@@ -79,6 +79,9 @@ class GemForgeMicroBenchmark(Benchmark):
         ]
         if self.benchmark_name in avx512_workloads or self.is_avx512:
             flags.append('-mavx512f')
+        if self.benchmark_name.endswith('histogram_avx'):
+            flags.append('-mavx512dq')
+            flags.append('-mavx512vl')
         return flags
 
     def get_sim_input_name(self):

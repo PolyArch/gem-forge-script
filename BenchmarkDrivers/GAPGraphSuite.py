@@ -59,14 +59,18 @@ class GAPGraphBenchmark(Benchmark):
         return list()
 
     def get_sim_input_name(self):
-        return self.sim_input_name
+        return f'{self.sim_input_name}-thread{self.n_thread}'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
+        'bfs_push': ['.omp_outlined.'],
+        'bfs_pull': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
         'pr_pull':  ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'pr_push':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
+        'pr_push_atomic':  ['.omp_outlined..12'],  # One kernel.
+        'pr_push_swap':  ['.omp_outlined..12'],  # One kernel.
         'sssp': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],
     }
@@ -105,12 +109,16 @@ class GAPGraphBenchmark(Benchmark):
         ]
         no_unroll_workloads = [
             'bfs',
+            'bfs_pull',
+            'bfs_push',
             'pr_pull',
-            'pr_push',
         ]
         if self.benchmark_name in no_unroll_workloads:
             flags.append('-fno-unroll-loops')
-            flags.append('-fno-vectorize')
+        if self.benchmark_name.startswith('pr_push'):
+            flags.append('-ffast-math')
+            flags.append('-fno-unroll-loops')
+            # flags.append('-mavx512f')
 
         sources = [self.source]
         bcs = [s[:-2] + '.bc' for s in sources]
@@ -157,19 +165,25 @@ class GAPGraphBenchmark(Benchmark):
 
     def get_additional_gem5_simulate_command(self):
         """
+        To reduce simulation time, here I charge 4000ns yield latency.
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
         """
+        additional_options = [
+            "--cpu-yield-lat=4000ns",
+        ]
         work_items = -1
         if self.benchmark_name.startswith('pr'):
             # Two kernels, two iteration.
-            work_items = 4
-        if work_items == -1:
-            # This benchmark can finish.
-            return list()
-        return [
-            '--work-end-exit-count={v}'.format(v=work_items)
-        ]
+            if self.benchmark_name in ['pr_push_atomic', 'pr_push_swap']:
+                work_items = 2
+            else:
+                work_items = 4
+        if work_items != -1:
+            additional_options.append(
+                f'--work-end-exit-count={work_items}'
+            )
+        return additional_options
 
     def get_gem5_mem_size(self):
         return '1GB'
