@@ -131,7 +131,10 @@ class RodiniaBenchmark(Benchmark):
             'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
         },
         'streamcluster': {
-            'large': ['10', '20', '128', '0', '1024', '1000', '128_65536.data', 'output.txt', '$NTHREADS'],
+            'tiny': ['10', '20', '16', '1024', '1024', '1000', '16_1024.data', 'output.txt', '$NTHREADS'],
+            'test': ['10', '20', '16', '16384', '16384', '1000', '16_16384.data', 'output.txt', '$NTHREADS'],
+            'medium': ['10', '20', '16', '131072', '131072', '1000', '16_131072.data', 'output.txt', '$NTHREADS'],
+            'large': ['10', '20', '16', '786432', '786432', '1000', '16_786432.data', 'output.txt', '$NTHREADS'],
         },
     }
 
@@ -237,8 +240,8 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..15',
         ],
         'streamcluster': [
-            '.omp_outlined.',
-            '.omp_outlined..1',
+            'pgain_dist',
+            'pgain_assign',
         ],
     }
 
@@ -275,7 +278,7 @@ class RodiniaBenchmark(Benchmark):
         'srad_v2-avx512': 2 * 1,  # One iteration is enough.
         'srad_v2-avx512-fix': 2 * 1,  # One iteration is enough.
         'srad_v2-fix': 2 * 1,  # One iteration is enough.
-        'streamcluster': 1,  # Try one iteration?
+        'streamcluster': 4,  # Try one iteration?
     }
 
     def __init__(self, benchmark_args, benchmark_path):
@@ -350,7 +353,7 @@ class RodiniaBenchmark(Benchmark):
         return self._get_args(self.sim_input_name)
 
     def get_sim_input_name(self):
-        return self.sim_input_name
+        return f'{self.sim_input_name}-thread{self.n_thread}'
 
     def get_lang(self):
         return 'CPP'
@@ -372,13 +375,19 @@ class RodiniaBenchmark(Benchmark):
         # if self.sim_input_name != 'large' and self.benchmark_name != 'pathfinder':
         #     # Pathfinder has deadlock at exit stage.
         #     return list()
+        flags = list()
         work_items = RodiniaBenchmark.WORK_ITEMS[self.benchmark_name]
-        if work_items == -1:
-            # This benchmark can finish.
-            return list()
-        return [
-            '--work-end-exit-count={v}'.format(v=work_items)
-        ]
+        if work_items != -1:
+            flags.append(
+                '--work-end-exit-count={v}'.format(v=work_items)
+            )
+        if self.benchmark_name == 'streamcluster':
+            # Streamcluster uses pthread, which barrier may cause CPU 0 to wait for
+            # a long when other thread is still working. So we disable deadlock check.
+            flags.append(
+                '--gem-forge-disable-cpu-check-deadlock'
+            )
+        return flags
 
     def build_raw_bc(self):
         os.chdir(self.benchmark_path)
