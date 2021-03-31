@@ -86,9 +86,10 @@ class GemForgeMicroBenchmark(Benchmark):
 
     def get_sim_input_name(self):
         # Only these workloads has sim_input_name.
+        sim_name = f'thread{self.n_thread}'
         if self.is_graph:
-            return self.sim_input_name
-        return None
+            sim_name = f'{sim_name}-{self.sim_input_name}'
+        return sim_name
 
     OMP_GRAPH_FUNC_SUFFIX = {
         'omp_bfs': [''],
@@ -184,12 +185,13 @@ class GemForgeMicroBenchmark(Benchmark):
         """
         Adhoc stream whitelist file as additional option.
         """
+        ret = list()
         if os.path.isfile(self.stream_whitelist_fn):
-            return [
+            ret.append(
                 '-stream-whitelist-file={whitelist}'.format(
                     whitelist=self.stream_whitelist_fn)
-            ]
-        return list()
+            )
+        return ret
 
     def trace(self):
         print('what?')
@@ -205,7 +207,7 @@ class GemForgeMicroBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    # def get_additional_gem5_simulate_command(self):
+    # def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
     #     # For validation, we disable cache warm.
     #     return ['--gem-forge-cold-cache']
 
@@ -235,11 +237,12 @@ class GemForgeMicroBenchmark(Benchmark):
             ]
             Util.call_helper(disasm_cmd, stdout=f)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         """
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
         """
+        flags = list()
         work_items = -1
         if self.benchmark_name == 'omp_page_rank':
             # One iteration, two kernels.
@@ -247,12 +250,20 @@ class GemForgeMicroBenchmark(Benchmark):
         if self.benchmark_name == 'omp_bfs':
             # Try to finish them?
             work_items = -1
-        if work_items == -1:
-            # This benchmark can finish.
-            return list()
-        return [
-            '--work-end-exit-count={v}'.format(v=work_items)
-        ]
+        if work_items != -1:
+            flags.append(
+                '--work-end-exit-count={v}'.format(v=work_items),
+            )
+        if self.benchmark_name == 'omp_radix_partition_avx':
+            flags.append(
+                '--cpu-yield-lat=4000ns',
+            )
+        if self.benchmark_name == 'omp_indirect_sum':
+            # Disable deadlock check for this workload as we are offloading long indirect access.
+            flags.append(
+                '--gem-forge-disable-cpu-check-deadlock'
+            )
+        return flags
 
     def get_gem5_mem_size(self):
         if not self.is_omp:

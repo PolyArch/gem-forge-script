@@ -917,7 +917,7 @@ class Benchmark(object):
 
         os.chdir(cwd)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         return []
 
     """
@@ -926,6 +926,7 @@ class Benchmark(object):
 
     def get_gem5_simulate_command(
             self,
+            transform_config,
             simulation_config,
             binary,
             outdir,
@@ -973,7 +974,9 @@ class Benchmark(object):
         gem5_args += additional_options
 
         # Add any options from derived classes.
-        gem5_args += self.get_additional_gem5_simulate_command()
+        gem5_args += self.get_additional_gem5_simulate_command(
+            transform_config=transform_config,
+            simulation_config=simulation_config)
 
         # Allow each benchmark to have a customized memory capacity.
         if self.get_gem5_mem_size():
@@ -1022,6 +1025,7 @@ class Benchmark(object):
         gem5_out_dir = simulation_config.get_gem5_dir(
             tdg, self.get_sim_input_name())
         gem5_args = self.get_gem5_simulate_command(
+            transform_config=transform_config,
             simulation_config=simulation_config,
             binary=self.get_replay_exe(transform_config, trace, 'exe'),
             outdir=gem5_out_dir,
@@ -1064,6 +1068,7 @@ class Benchmark(object):
         gem5_out_dir = simulation_config.get_gem5_dir(tdg)
         Util.call_helper(['mkdir', '-p', gem5_out_dir])
         gem5_args = self.get_gem5_simulate_command(
+            transform_config=transform_config,
             simulation_config=simulation_config,
             binary=self.get_replay_exe(transform_config, trace, 'exe'),
             outdir=gem5_out_dir,

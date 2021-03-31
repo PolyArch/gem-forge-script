@@ -228,7 +228,7 @@ class ParboilBenchmark(Benchmark):
         'tpacf': 5,
     }
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         if self.benchmark_name in ParboilBenchmark.WORK_ITEMS:
             return [
                 '--work-end-exit-count={v}'.format(

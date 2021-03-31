@@ -121,7 +121,11 @@ class MultiProgramBenchmark(Benchmark):
         sim_out_dir = simulation_config.get_gem5_dir(tdg)
         Util.mkdir_p(sim_out_dir)
         gem5_args = self.get_gem5_simulate_command(
-            simulation_config, self.get_replay_bin, sim_out_dir, False)
+            transform_config=transform_config,
+            simulation_config=simulation_config,
+            binary=self.get_replay_bin,
+            outdir=sim_out_dir,
+            standalone=False)
         # Remember to add back all the tdgs.
         gem5_args.append(
             '--llvm-trace-file={tdgs}'.format(

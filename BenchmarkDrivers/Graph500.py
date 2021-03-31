@@ -184,7 +184,7 @@ class Graph500Benchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         """
         We just simulate one BFS.
         """

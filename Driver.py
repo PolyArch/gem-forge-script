@@ -15,6 +15,7 @@ from BenchmarkDrivers import SDVBS
 from BenchmarkDrivers import SDVBSValid
 from BenchmarkDrivers import VerticalSuite
 from BenchmarkDrivers import MediaBench
+from BenchmarkDrivers import MineBench
 from BenchmarkDrivers import GemForgeMicroSuite
 from BenchmarkDrivers import GenerateTestInputs
 
@@ -185,6 +186,8 @@ class Driver:
                 suite = VerticalSuite.VerticalSuite(benchmark_args)
             elif suite_name == 'mb':
                 suite = MediaBench.MediaBenchSuite(benchmark_args)
+            elif suite_name == 'mine':
+                suite = MineBench.MineSuite(benchmark_args)
             elif suite_name == 'gfm':
                 suite = GemForgeMicroSuite.GemForgeMicroSuite(benchmark_args)
             elif suite_name == 'test':

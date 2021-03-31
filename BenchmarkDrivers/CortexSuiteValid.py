@@ -36,7 +36,7 @@ class CortexValidBenchmark(CortexBenchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         # For validation, we disable cache warm.
         return ['--gem-forge-cold-cache']
 
@@ -75,6 +75,7 @@ class CortexValidBenchmark(CortexBenchmark):
         tdg_dir = os.path.dirname(tdg)
         binary = os.path.join(tdg_dir, self.get_valid_bin())
         gem5_args = self.get_gem5_simulate_command(
+            transform_config=transform_config,
             simulation_config=simulation_config,
             binary=binary,
             outdir=gem5_out_dir,

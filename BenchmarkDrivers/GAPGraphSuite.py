@@ -66,8 +66,11 @@ class GAPGraphBenchmark(Benchmark):
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
         'bfs_push': ['.omp_outlined.'],
-        'bfs_pull': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
-        'pr_pull':  ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
+        'pr_pull_shuffle':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
+        # 'pr_pull_shuffle':  ['.omp_outlined..13'],  # Two kernels.
         'pr_push':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
         'pr_push_atomic':  ['.omp_outlined..12'],  # One kernel.
         'pr_push_swap':  ['.omp_outlined..12'],  # One kernel.
@@ -110,8 +113,10 @@ class GAPGraphBenchmark(Benchmark):
         no_unroll_workloads = [
             'bfs',
             'bfs_pull',
+            'bfs_pull_shuffle',
             'bfs_push',
             'pr_pull',
+            'pr_pull_shuffle',
         ]
         if self.benchmark_name in no_unroll_workloads:
             flags.append('-fno-unroll-loops')
@@ -163,7 +168,7 @@ class GAPGraphBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         """
         To reduce simulation time, here I charge 4000ns yield latency.
         Some benchmarks takes too long to finish, so we use work item
@@ -183,6 +188,29 @@ class GAPGraphBenchmark(Benchmark):
             additional_options.append(
                 f'--work-end-exit-count={work_items}'
             )
+        """
+        To avoid the performance degrade after configuring the IndirectReductionStream
+        in bfs_pull, bfs_pull_shuffle, pr_pull, pr_pull_shuffle, we increment the
+        default CoreSE FIFO entries from 128 to 136.
+        """
+        pull_benchmarks = {
+            'bfs_pull': 192,
+            'bfs_pull_shuffle': 192,
+            'pr_pull': 160,
+            'pr_pull_shuffle': 160,
+        }
+        transform_id = transform_config.get_transform_id()
+        simulation_id = simulation_config.get_simulation_id()
+        if self.benchmark_name in pull_benchmarks:
+            if transform_id.startswith('stream.ex.static.so.store.cmp'):
+                entries = pull_benchmarks[self.benchmark_name]
+                additional_options.append(
+                    f'--gem-forge-stream-engine-total-run-ahead-length={entries}',
+                )
+                if 'fltsc-cmp-' in simulation_id:
+                    additional_options.append(
+                        '--gem-forge-enable-stream-float-indirect-reduction',
+                    )
         return additional_options
 
     def get_gem5_mem_size(self):

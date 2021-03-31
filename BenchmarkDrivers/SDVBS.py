@@ -439,7 +439,7 @@ class SDVBSBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
         """
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
