@@ -1,4 +1,5 @@
 
+import datetime
 import multiprocessing
 import multiprocessing.dummy
 import logging
@@ -63,6 +64,8 @@ class JobScheduler:
             self.args = args
             self.status = JobScheduler.STATE_INIT
             self.timeout = timeout
+            self.start_time = datetime.datetime.now()
+            self.end_time = datetime.datetime.now()
 
     def __init__(self, name, cores, poll_seconds):
         self.state = JobScheduler.STATE_INIT
@@ -119,6 +122,7 @@ class JobScheduler:
         job = self.jobs[job_id]
         assert(job.status == JobScheduler.STATE_STARTED)
         job.status = JobScheduler.STATE_FINISHED
+        job.end_time = datetime.datetime.now()
         for child in self.job_children[job_id]:
             child_job = self.jobs[child]
             assert(child_job.status == JobScheduler.STATE_INIT or child_job.status ==
@@ -155,6 +159,7 @@ class JobScheduler:
             assert(False)
 
         job.status = new_status
+        job.end_time = datetime.datetime.now()
         stack = list()
         for child_id in self.job_children[job_id]:
             stack.append(job_id)
@@ -178,6 +183,7 @@ class JobScheduler:
             self.running_jobs += 1
             # Do we actually need to use nested lambda to capture job_id?
             job.status = JobScheduler.STATE_STARTED
+            job.start_time = datetime.datetime.now()
             print('{job} started'.format(job=job.job_id))
             job.res = self.pool.apply_async(
                 func=LogExceptions(job.job, job.timeout),
@@ -185,15 +191,16 @@ class JobScheduler:
                 callback=(lambda i: lambda _: self.call_back(i))(job.job_id)
             )
 
-    def str_status(self, status):
+    def str_status(self, job):
+        status = job.status
         if status == JobScheduler.STATE_INIT:
-            return 'INIT'
+            return f'INIT'
         if status == JobScheduler.STATE_FAILED:
-            return 'FAILED'
+            return f'{job.end_time - job.start_time} FAILED'
         if status == JobScheduler.STATE_STARTED:
-            return 'STARTED'
+            return f'{datetime.datetime.now() - job.start_time} STARTED'
         if status == JobScheduler.STATE_FINISHED:
-            return 'FINISHED'
+            return f'{job.end_time - job.start_time} FINISHED'
         if status == JobScheduler.STATE_TIMEOUTED:
             return 'TIMEOUTED'
         return 'UNKNOWN'
@@ -211,7 +218,7 @@ class JobScheduler:
                 tab='  '*level,
                 job_id=job_id,
                 job_name=job.name,
-                status=self.str_status(self.jobs[job_id].status)
+                status=self.str_status(self.jobs[job_id])
             ))
             for child_id in self.job_children[job_id]:
                 stack.append((child_id, level + 1))
@@ -234,7 +241,7 @@ class JobScheduler:
                     tab='  '*level,
                     job_id=job_id,
                     job_name=job.name,
-                    status=self.str_status(self.jobs[job_id].status)
+                    status=self.str_status(self.jobs[job_id])
                 ))
             for child_id in self.job_children[job_id]:
                 stack.append((child_id, level + 1))
