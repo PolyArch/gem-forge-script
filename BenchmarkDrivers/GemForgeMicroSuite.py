@@ -32,6 +32,11 @@ class GemForgeMicroBenchmark(Benchmark):
         self.n_thread = benchmark_args.options.input_threads
         self.sim_input_name = benchmark_args.options.sim_input_name
 
+        self.is_partition = self.benchmark_name in [
+            'omp_partition_avx',
+            'omp_radix_partition_indirect_avx',
+        ]
+
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
             C.GEM_FORGE_RESULT_PATH, 'gfm', self.benchmark_name
@@ -62,6 +67,8 @@ class GemForgeMicroBenchmark(Benchmark):
                     'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
                     i=self.sim_input_name, s=suffix)))
+            if self.is_partition:
+                args.append(self.sim_input_name)
             return args
         return None
 
@@ -87,7 +94,7 @@ class GemForgeMicroBenchmark(Benchmark):
     def get_sim_input_name(self):
         # Only these workloads has sim_input_name.
         sim_name = f'thread{self.n_thread}'
-        if self.is_graph:
+        if self.is_graph or self.is_partition:
             sim_name = f'{sim_name}-{self.sim_input_name}'
         return sim_name
 
@@ -254,7 +261,7 @@ class GemForgeMicroBenchmark(Benchmark):
             flags.append(
                 '--work-end-exit-count={v}'.format(v=work_items),
             )
-        if self.benchmark_name == 'omp_radix_partition_avx':
+        if self.is_partition:
             flags.append(
                 '--cpu-yield-lat=4000ns',
             )

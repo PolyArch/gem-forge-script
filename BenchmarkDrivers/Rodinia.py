@@ -42,9 +42,11 @@ class RodiniaBenchmark(Benchmark):
         },
         'hotspot-avx512-fix': {
             'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
+            'xlarge':  ['2048', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
         },
         'hotspot-fix': {
             'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
+            'xlarge':  ['2048', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
         },
         'hotspot-avx512-fix2k': {
             'large':  ['1024', '2048', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
@@ -125,6 +127,7 @@ class RodiniaBenchmark(Benchmark):
         'srad_v2-avx512-fix': {
             # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
             'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
+            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
         },
         'srad_v2-fix': {
             # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],

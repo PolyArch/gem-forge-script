@@ -44,7 +44,7 @@ class GAPGraphBenchmark(Benchmark):
     def get_args(self):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
-        if self.benchmark_name == 'sssp':
+        if self.benchmark_name.startswith('sssp'):
             suffix = '.wsg'
         graph_fn = os.path.join(graphs, self.sim_input_name + suffix)
         args = [
@@ -66,6 +66,7 @@ class GAPGraphBenchmark(Benchmark):
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
         'bfs_push': ['.omp_outlined.'],
+        'bfs_push_check': ['.omp_outlined.'],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
@@ -75,6 +76,7 @@ class GAPGraphBenchmark(Benchmark):
         'pr_push_atomic':  ['.omp_outlined..12'],  # One kernel.
         'pr_push_swap':  ['.omp_outlined..12'],  # One kernel.
         'sssp': ['RelaxEdges'],
+        'sssp_check': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],
     }
 
@@ -115,6 +117,7 @@ class GAPGraphBenchmark(Benchmark):
             'bfs_pull',
             'bfs_pull_shuffle',
             'bfs_push',
+            'bfs_push_check',
             'pr_pull',
             'pr_pull_shuffle',
         ]
