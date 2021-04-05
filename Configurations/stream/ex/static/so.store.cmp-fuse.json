@@ -1,5 +1,5 @@
 {
-    "id": "stream.ex.static.so.store.cmp",
+    "id": "stream.ex.static.so.store.cmp-fuse",
     "is_execution_transform": true,
     "options": [
         "-stream-execution-static-pass",

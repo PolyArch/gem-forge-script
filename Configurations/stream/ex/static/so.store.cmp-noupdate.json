@@ -1,5 +1,5 @@
 {
-    "id": "stream.ex.static.so.store.cmp",
+    "id": "stream.ex.static.so.store.cmp-noupdate",
     "is_execution_transform": true,
     "options": [
         "-stream-execution-static-pass",
@@ -9,8 +9,6 @@
         "-stream-pass-merge-ind-predicated-store",
         "-stream-pass-enable-store",
         "-stream-pass-enable-reduce",
-        "-stream-pass-upgrade-load-to-update",
-        "-stream-pass-enable-value-dg",
-        "-stream-pass-enable-fuse-load-op"
+        "-stream-pass-enable-value-dg"
     ]
 }
