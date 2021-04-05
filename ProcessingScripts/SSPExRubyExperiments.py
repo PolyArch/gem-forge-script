@@ -140,6 +140,8 @@ class TileStatsParser(object):
                 'system.ruby.l2_cntrl{tile_id}.llcStreamAtomicsRealConflict'),
             'llc_stream_real_xaw_conflict_atomics': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.llcStreamAtomicsRealXAWConflict'),
+            'llc_stream_deadlock_atomics': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcStreamAtomicsDeadlock'),
             'stream_wait_cycles': self.format_re(
                 'system.cpu{tile_id}.accelManager.se.numLoadElementWaitCycles'),
         }
@@ -442,30 +444,36 @@ def print_stats(tile_stats):
         total=sum(value_or_zero(ts, 'llc_stream_computations') for ts in tile_stats),
         v=' '.join(str(value_or_zero(ts, 'llc_stream_computations')) for ts in tile_stats),
     ))
-    print('num llc atomics                  {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_atomics') for ts in tile_stats),
-    ))
-    print('num llc commit atomics           {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_committed_atomics') for ts in tile_stats),
-    ))
-    print('num llc locked atomics           {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_locked_atomics') for ts in tile_stats),
-    ))
-    print('num llc unlocked atomics         {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_unlocked_atomics') for ts in tile_stats),
-    ))
-    print('num llc line conflict atomics    {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_line_conflict_atomics') for ts in tile_stats),
-    ))
-    print('num llc xaw  conflict atomics    {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_xaw_conflict_atomics') for ts in tile_stats),
-    ))
-    print('num llc real conflict atomics    {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_real_conflict_atomics') for ts in tile_stats),
-    ))
-    print('num llc real xaw conflict atomic {total}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_real_xaw_conflict_atomics') for ts in tile_stats),
-    ))
+    total_atomics = sum(value_or_zero(ts, 'llc_stream_atomics') for ts in tile_stats)
+    print('num llc atomics                  {total}'.format(total=total_atomics))
+    if total_atomics != 0:
+        print('num llc commit atomics           {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_committed_atomics') for ts in tile_stats),
+        ))
+        print('num llc locked atomics           {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_locked_atomics') for ts in tile_stats),
+        ))
+        print('num llc unlocked atomics         {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_unlocked_atomics') for ts in tile_stats),
+        ))
+        print('num llc line conflict atomics    {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_line_conflict_atomics') for ts in tile_stats),
+        ))
+        print('num llc xaw  conflict atomics    {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_xaw_conflict_atomics') for ts in tile_stats),
+        ))
+        print('num llc real conflict atomics    {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_real_conflict_atomics') for ts in tile_stats),
+        ))
+        print('num llc real xaw conflict atomic {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_real_xaw_conflict_atomics') for ts in tile_stats),
+        ))
+        print('num llc real xaw conflict atomic {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_real_xaw_conflict_atomics') for ts in tile_stats),
+        ))
+        print('num llc deadlock atomic          {total}'.format(
+            total=sum(value_or_zero(ts, 'llc_stream_deadlock_atomics') for ts in tile_stats),
+        ))
     for ts in tile_stats:
         atomics = value_or_zero(ts, 'llc_stream_atomics')
         if atomics == 0:
@@ -475,7 +483,8 @@ def print_stats(tile_stats):
         atomics_unlocked = value_or_zero(ts, 'llc_stream_unlocked_atomics')
         atomics_line_conflict = value_or_zero(ts, 'llc_stream_line_conflict_atomics')
         atomics_real_conflict = value_or_zero(ts, 'llc_stream_real_conflict_atomics')
-        print(f'Tile {ts.tile_id} Atomic {atomics} Commit {atomics_committed} Lock {atomics_locked} Unlock {atomics_unlocked} Line {atomics_line_conflict} Real {atomics_real_conflict}')
+        atomics_deadlock = value_or_zero(ts, 'llc_stream_deadlock_atomics')
+        print(f'Tile {ts.tile_id} Atomic {atomics} Commit {atomics_committed} Lock {atomics_locked} Unlock {atomics_unlocked} Line {atomics_line_conflict} Real {atomics_real_conflict} Deadlock {atomics_deadlock}')
 
 
 if __name__ == '__main__':
