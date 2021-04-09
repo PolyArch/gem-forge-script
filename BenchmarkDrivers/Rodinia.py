@@ -41,7 +41,7 @@ class RodiniaBenchmark(Benchmark):
             'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
         },
         'hotspot-avx512-fix': {
-            'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
+            'large':  ['2048', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
             'xlarge':  ['2048', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
         },
         'hotspot-fix': {
@@ -64,8 +64,13 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D-avx512-fix': {
             'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
         },
-        'hotspot3D-avx512-fix-z66': {
-            'large':  ['512', '66', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
+        'hotspot3D-avx512-fix-fuse': {
+            'large':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
+            'xlarge':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
+        },
+        'hotspot3D-avx512-fix-fuse-dyn': {
+            'large':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
+            'xlarge':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
         },
         'hotspot3D-fix': {
             'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
@@ -129,6 +134,11 @@ class RodiniaBenchmark(Benchmark):
             'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
             'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
         },
+        'srad_v2-avx512-fix-dyn': {
+            # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
+            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
+        },
         'srad_v2-fix': {
             # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
             'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
@@ -181,7 +191,10 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D-avx512-fix': [
             '.omp_outlined.',
         ],
-        'hotspot3D-avx512-fix-z66': [
+        'hotspot3D-avx512-fix-fuse': [
+            '.omp_outlined.',
+        ],
+        'hotspot3D-avx512-fix-fuse-dyn': [
             '.omp_outlined.',
         ],
         'hotspot3D-fix': [
@@ -238,6 +251,11 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..14',
             '.omp_outlined..15',
         ],
+        'srad_v2-avx512-fix-dyn': [
+            'sumROI',
+            '.omp_outlined..14',
+            '.omp_outlined..15',
+        ],
         'srad_v2-fix': [
             '.omp_outlined..14',
             '.omp_outlined..15',
@@ -265,7 +283,8 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512-fix': 1 * int(1e8 / 2e7),
-        'hotspot3D-avx512-fix-z66': 1 * int(1e8 / 2e7),
+        'hotspot3D-avx512-fix-fuse': 1 * int(1e8 / 2e7),
+        'hotspot3D-avx512-fix-fuse-dyn': 1 * int(1e8 / 2e7),
         'hotspot3D-fix': 1 * int(1e8 / 2e7),
         'kmeans': 3 * 1,
         'lavaMD': 1,            # Invoke kernel for once.
@@ -280,6 +299,7 @@ class RodiniaBenchmark(Benchmark):
         'srad_v2': 2 * 1,  # One iteration is enough.
         'srad_v2-avx512': 2 * 1,  # One iteration is enough.
         'srad_v2-avx512-fix': 2 * 1,  # One iteration is enough.
+        'srad_v2-avx512-fix-dyn': 2 * 1,  # One iteration is enough.
         'srad_v2-fix': 2 * 1,  # One iteration is enough.
         'streamcluster': 4,  # Try one iteration?
     }

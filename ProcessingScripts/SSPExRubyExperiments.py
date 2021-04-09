@@ -144,6 +144,14 @@ class TileStatsParser(object):
                 'system.ruby.l2_cntrl{tile_id}.llcStreamAtomicsDeadlock'),
             'stream_wait_cycles': self.format_re(
                 'system.cpu{tile_id}.accelManager.se.numLoadElementWaitCycles'),
+            'stream_data_traffic_fix': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.dataAccFix.hops'),
+            'stream_data_traffic_float': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.dataAccFloat.hops'),
+            'core_data_traffic_fix': self.format_re(
+                'system.future_cpus{tile_id}statCoreDataHops'),
+            'core_data_traffic_fix_ignored': self.format_re(
+                'system.future_cpus{tile_id}statCoreDataHopsIgnored'),
         }
         self.l2_transition_re = re.compile('system\.ruby\.L2Cache_Controller\.[A-Z_]+\.[A-Z0-9_]+::total')
 
@@ -440,13 +448,23 @@ def print_stats(tile_stats):
     print('num llc GETV event      {v}'.format(
         v=sum([value_or_zero(main_ts.l3_transitions[s], 'L1_GETV') for s in main_ts.l3_transitions])
     ))
-    print('num llc computations    {total} {v}'.format(
-        total=sum(value_or_zero(ts, 'llc_stream_computations') for ts in tile_stats),
-        v=' '.join(str(value_or_zero(ts, 'llc_stream_computations')) for ts in tile_stats),
-    ))
+
+    total_stream_data_traffic_fix = sum(value_or_zero(ts, 'stream_data_traffic_fix') for ts in tile_stats)
+    if total_stream_data_traffic_fix != 0:
+        total_stream_data_traffic_float = sum(value_or_zero(ts, 'stream_data_traffic_float') for ts in tile_stats)
+        total_core_data_traffic_fix = sum(value_or_zero(ts, 'core_data_traffic_fix') for ts in tile_stats)
+        total_core_data_traffic_fix_ignored = sum(value_or_zero(ts, 'core_data_traffic_fix_ignored') for ts in tile_stats)
+        print(f'data traffic           {total_core_data_traffic_fix} {total_core_data_traffic_fix_ignored} {total_stream_data_traffic_fix} {total_stream_data_traffic_float}')
+
+    total_llc_computations = sum(value_or_zero(ts, 'llc_stream_computations') for ts in tile_stats)
+    if total_llc_computations != 0:
+        print('num llc computations    {total} {v}'.format(
+            total=total_llc_computations,
+            v=' '.join(str(value_or_zero(ts, 'llc_stream_computations')) for ts in tile_stats),
+        ))
     total_atomics = sum(value_or_zero(ts, 'llc_stream_atomics') for ts in tile_stats)
-    print('num llc atomics                  {total}'.format(total=total_atomics))
     if total_atomics != 0:
+        print('num llc atomics                  {total}'.format(total=total_atomics))
         print('num llc commit atomics           {total}'.format(
             total=sum(value_or_zero(ts, 'llc_stream_committed_atomics') for ts in tile_stats),
         ))

@@ -992,11 +992,17 @@ class Benchmark(object):
                 gem5_args.append('--mem-size={s}'.format(s=mem_size))
 
         if self.get_name() == 'rodinia.srad_v2-avx512-fix':
-            for i in range(len(gem5_args)):
-                if gem5_args[i].startswith('--gem-forge-stream-engine'):
-                    gem5_args.insert(
-                        i, '--gem-forge-stream-engine-enable-float-cancel')
-                    break
+            transform_id = transform_config.get_transform_id()
+            if transform_id == 'stream.ex.static.so.store':
+                for i in range(len(gem5_args)):
+                    if gem5_args[i] == '--gem-forge-stream-engine-enable':
+                        gem5_args.insert(
+                            i, '--gem-forge-stream-engine-enable-float-cancel')
+                        break
+                # for i in range(len(gem5_args)):
+                #     if gem5_args[i].startswith('--gem-forge-stream-engine-mlc-stream-buffer-init-num-entries='):
+                #         gem5_args[i] = '--gem-forge-stream-engine-mlc-stream-buffer-init-num-entries=16'
+                #         break
 
         adhoc_mc0_benchmarks = [
             'rodinia.hotspot3D-avx512-fix',

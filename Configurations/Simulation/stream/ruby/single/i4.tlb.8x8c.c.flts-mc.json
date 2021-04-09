@@ -8,6 +8,7 @@
         "--gem-forge-stream-engine-enable",
         "--gem-forge-stream-engine-default-run-ahead-length=4",
         "--gem-forge-stream-engine-total-run-ahead-bytes={stream_fifo}",
+        "--gem-forge-stream-engine-max-num-elements-prefetch-for-atomic=2",
         "--gem-forge-stream-engine-enable-lsq",
         "--gem-forge-stream-engine-enable-coalesce",
         "--gem-forge-stream-engine-enable-float",
