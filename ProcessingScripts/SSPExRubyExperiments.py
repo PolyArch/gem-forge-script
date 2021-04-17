@@ -146,12 +146,48 @@ class TileStatsParser(object):
                 'system.cpu{tile_id}.accelManager.se.numLoadElementWaitCycles'),
             'stream_data_traffic_fix': self.format_re(
                 'system.cpu{tile_id}.accelManager.se.dataAccFix.hops'),
+            'stream_data_traffic_cached': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.dataAccFix.cachedHops'),
             'stream_data_traffic_float': self.format_re(
                 'system.cpu{tile_id}.accelManager.se.dataAccFloat.hops'),
             'core_data_traffic_fix': self.format_re(
-                'system.future_cpus{tile_id}statCoreDataHops'),
+                'system.future_cpus{tile_id}.statCoreDataHops'),
             'core_data_traffic_fix_ignored': self.format_re(
-                'system.future_cpus{tile_id}statCoreDataHopsIgnored'),
+                'system.future_cpus{tile_id}.statCoreDataHopsIgnored'),
+            'core_data_traffic_cached': self.format_re(
+                'system.future_cpus{tile_id}.statCoreCachedDataHops'),
+            'core_data_traffic_cached_ignored': self.format_re(
+                'system.future_cpus{tile_id}.statCoreCachedDataHopsIgnored'),
+            'core_committed_microops': self.format_re(
+                'system.future_cpus{tile_id}.statCoreCommitMicroOps'),
+            'core_committed_microops_ignored': self.format_re(
+                'system.future_cpus{tile_id}.statCoreCommitMicroOpsIgnored'),
+            'core_committed_microops_gem_forge': self.format_re(
+                'system.future_cpus{tile_id}.statCoreCommitMicroOpsGemForge'),
+            'core_se_microops': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedComputeMicroOps'),
+            'core_se_microops_atomic': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedAtomicComputeMicroOps'),
+            'core_se_microops_load': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedLoadComputeMicroOps'),
+            'core_se_microops_store': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedStoreComputeMicroOps'),
+            'core_se_microops_reduce': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedReduceMicroOps'),
+            'core_se_microops_update': self.format_re(
+                'system.cpu{tile_id}.accelManager.se.numCompletedUpdateMicroOps'),
+            'llc_se_microops': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamComputeMicroOps'),
+            'llc_se_microops_atomic': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamAtomicComputeMicroOps'),
+            'llc_se_microops_load': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamLoadComputeMicroOps'),
+            'llc_se_microops_store': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamStoreComputeMicroOps'),
+            'llc_se_microops_reduce': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamReduceMicroOps'),
+            'llc_se_microops_update': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamUpdateMicroOps'),
         }
         self.l2_transition_re = re.compile('system\.ruby\.L2Cache_Controller\.[A-Z_]+\.[A-Z0-9_]+::total')
 
@@ -447,6 +483,9 @@ def print_stats(tile_stats):
     ))
     print('num llc GETV event      {v}'.format(
         v=sum([value_or_zero(main_ts.l3_transitions[s], 'L1_GETV') for s in main_ts.l3_transitions])
+    ))
+    print('num core microops       {v}'.format(
+        v=sum(value_or_zero(ts, 'core_committed_microops') for ts in tile_stats)
     ))
 
     total_stream_data_traffic_fix = sum(value_or_zero(ts, 'stream_data_traffic_fix') for ts in tile_stats)

@@ -22,7 +22,7 @@
             "64B"
         ],
         "link": [256],
-        "stream_fifo": [512]
+        "stream_fifo": [256, 512]
     },
     "support-transform-ids": [
         "stream.i",

@@ -465,7 +465,8 @@ def main(options):
 
 
 def parse_comma_sep(option, opt, value, parser):
-    setattr(parser.values, option.dest, value.split(','))
+    values = [v for v in value.split(',') if v != '']
+    setattr(parser.values, option.dest, values)
 
 
 def parse_trace_ids(option, opt, value, parser):

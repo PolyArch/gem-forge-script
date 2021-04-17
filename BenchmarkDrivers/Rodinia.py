@@ -68,10 +68,6 @@ class RodiniaBenchmark(Benchmark):
             'large':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
             'xlarge':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
         },
-        'hotspot3D-avx512-fix-fuse-dyn': {
-            'large':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
-            'xlarge':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
-        },
         'hotspot3D-fix': {
             'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
         },
@@ -194,9 +190,6 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D-avx512-fix-fuse': [
             '.omp_outlined.',
         ],
-        'hotspot3D-avx512-fix-fuse-dyn': [
-            '.omp_outlined.',
-        ],
         'hotspot3D-fix': [
             '.omp_outlined.',
         ],
@@ -253,8 +246,8 @@ class RodiniaBenchmark(Benchmark):
         ],
         'srad_v2-avx512-fix-dyn': [
             'sumROI',
+            '.omp_outlined..13',
             '.omp_outlined..14',
-            '.omp_outlined..15',
         ],
         'srad_v2-fix': [
             '.omp_outlined..14',
@@ -284,7 +277,6 @@ class RodiniaBenchmark(Benchmark):
         'hotspot3D-avx512': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512-fix': 1 * int(1e8 / 2e7),
         'hotspot3D-avx512-fix-fuse': 1 * int(1e8 / 2e7),
-        'hotspot3D-avx512-fix-fuse-dyn': 1 * int(1e8 / 2e7),
         'hotspot3D-fix': 1 * int(1e8 / 2e7),
         'kmeans': 3 * 1,
         'lavaMD': 1,            # Invoke kernel for once.
@@ -317,8 +309,23 @@ class RodiniaBenchmark(Benchmark):
         self.work_path = os.path.join(
             C.GEM_FORGE_RESULT_PATH, 'rodinia', self.benchmark_name
         )
+        self.benchmark_name_prefix = RodiniaBenchmark.get_name_prefix(self.benchmark_name)
+
         Util.mkdir_chain(self.work_path)
         super(RodiniaBenchmark, self).__init__(benchmark_args)
+
+    @staticmethod
+    def get_name_prefix(name):
+        prefixes = [
+            'hotspot-avx512-fix',
+            'hotspot3D-avx512-fix-fuse',
+            'pathfinder-avx512-nounroll',
+            'srad_v2-avx512-fix-dyn',
+        ]
+        for prefix in prefixes:
+            if name.startswith(prefix):
+                return prefix
+        return name
 
     def get_name(self):
         return 'rodinia.{b}'.format(b=self.benchmark_name)
@@ -342,8 +349,8 @@ class RodiniaBenchmark(Benchmark):
         ]
 
     def get_trace_func(self):
-        if self.benchmark_name in RodiniaBenchmark.ROI_FUNCS:
-            roi_funcs = RodiniaBenchmark.ROI_FUNCS[self.benchmark_name]
+        if self.benchmark_name_prefix in RodiniaBenchmark.ROI_FUNCS:
+            roi_funcs = RodiniaBenchmark.ROI_FUNCS[self.benchmark_name_prefix]
             return Benchmark.ROI_FUNC_SEPARATOR.join(
                 roi_funcs
             )
@@ -356,7 +363,7 @@ class RodiniaBenchmark(Benchmark):
             self.benchmark_name,
         )
         args = list()
-        for arg in RodiniaBenchmark.ARGS[self.benchmark_name][input_name]:
+        for arg in RodiniaBenchmark.ARGS[self.benchmark_name_prefix][input_name]:
             if arg == '$NTHREADS':
                 args.append(str(self.n_thread))
             else:
@@ -399,7 +406,7 @@ class RodiniaBenchmark(Benchmark):
         #     # Pathfinder has deadlock at exit stage.
         #     return list()
         flags = list()
-        work_items = RodiniaBenchmark.WORK_ITEMS[self.benchmark_name]
+        work_items = RodiniaBenchmark.WORK_ITEMS[self.benchmark_name_prefix]
         if work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=work_items)
@@ -450,6 +457,33 @@ class RodiniaBenchmark(Benchmark):
 
 
 class RodiniaSuite:
+
+    def search(self, benchmark_args, folder):
+        if not os.path.isdir(folder):
+            return
+        items = os.listdir(folder)
+        items.sort()
+        for item in items:
+            if item[0] == '.':
+                # Ignore special folders.
+                continue
+            prefix = RodiniaBenchmark.get_name_prefix(item)
+            if prefix not in RodiniaBenchmark.ARGS:
+                # Search in subfolders.
+                self.search(benchmark_args, os.path.join(folder, item))
+                continue
+            benchmark_name = 'rodinia.{b}'.format(b=os.path.basename(item))
+            if benchmark_args.options.benchmark:
+                if benchmark_name not in benchmark_args.options.benchmark:
+                    # Search in subfolders.
+                    self.search(benchmark_args, os.path.join(folder, item))
+                    # Ignore benchmark not required.
+                    continue
+            abs_path = os.path.join(folder, item)
+            if os.path.isdir(abs_path):
+                self.benchmarks.append(
+                    RodiniaBenchmark(benchmark_args, abs_path))
+
     def __init__(self, benchmark_args):
         benchmark_path = os.getenv('GEM_FORGE_BENCHMARK_PATH')
         if benchmark_path is None:
@@ -459,23 +493,7 @@ class RodiniaSuite:
         self.benchmarks = list()
         sub_folders = ['openmp']
         for sub_folder in sub_folders:
-            items = os.listdir(os.path.join(suite_folder, sub_folder))
-            items.sort()
-            for item in items:
-                if item[0] == '.':
-                    # Ignore special folders.
-                    continue
-                if item not in RodiniaBenchmark.ARGS:
-                    continue
-                benchmark_name = 'rodinia.{b}'.format(b=os.path.basename(item))
-                if benchmark_args.options.benchmark:
-                    if benchmark_name not in benchmark_args.options.benchmark:
-                        # Ignore benchmark not required.
-                        continue
-                abs_path = os.path.join(suite_folder, sub_folder, item)
-                if os.path.isdir(abs_path):
-                    self.benchmarks.append(
-                        RodiniaBenchmark(benchmark_args, abs_path))
+            self.search(benchmark_args, os.path.join(suite_folder, sub_folder))
 
     def get_benchmarks(self):
         return self.benchmarks
