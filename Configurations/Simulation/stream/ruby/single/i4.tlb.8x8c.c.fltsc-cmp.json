@@ -16,7 +16,6 @@
         "--gem-forge-stream-engine-float-policy=smart-computation",
         "--gem-forge-stream-engine-enable-float-indirect",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
-        "--gem-forge-stream-engine-enable-float-idea-sync",
         "--gem-forge-stream-engine-enable-float-subline",
         "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
         "--llc-select-low-bit={log2Byte(llc_interleave)}",
@@ -25,7 +24,10 @@
         "--gem-forge-stream-engine-llc-access-core-simd-delay=4",
         "--gem-forge-stream-engine-llc-max-infly-computation=2",
         "--gem-forge-stream-engine-llc-multicast-group-size={mc}",
-        "--gem-forge-stream-engine-llc-multicast-issue-policy=first"
+        "--gem-forge-stream-engine-llc-multicast-issue-policy=first",
+        "--gem-forge-enable-stream-float-indirect-reduction",
+        "--gem-forge-stream-engine-llc-neighbor-stream-threshold={neighbor_stream_threshold}",
+        "--gem-forge-stream-engine-llc-neighbor-migration-delay={neighbor_migration_delay}"
     ],
     "snippts": [
         "i4.tlb",
@@ -36,8 +38,10 @@
             "1kB"
         ],
         "link": [256],
-        "stream_fifo": [256, 512],
-        "mc": [2]
+        "stream_fifo": [256],
+        "mc": [2],
+        "neighbor_stream_threshold": [2],
+        "neighbor_migration_delay": [100]
     },
     "support-transform-ids": [
         "stream.i",
@@ -50,6 +54,7 @@
         "stream.ex.static.so.store.cmp",
         "stream.ex.static.so.store.cmp-fuse",
         "stream.ex.static.so.store.cmp-nest",
+        "stream.ex.static.so.store.cmp-bnd-elim-nst",
         "stream.ex.static.so.store.rdc"
     ]
 }

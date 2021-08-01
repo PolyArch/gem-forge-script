@@ -72,7 +72,7 @@ def analyzeFunctionWeight(fn):
 
         count += 1
         if count % 100000 == 0:
-            print count
+            print(count)
     func_names = list(funcs.keys())
     func_names.sort(key=lambda x: funcs[x], reverse=True)
     total_insts = sum(funcs.values())

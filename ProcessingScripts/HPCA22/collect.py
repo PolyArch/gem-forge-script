@@ -53,38 +53,6 @@ def getConfigureations(subset):
         'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-traffic',
     ]
 
-    stream_cmp_simd_lat_simulations = [
-        'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-cmp',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd1-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd2-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd8-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd16-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd32-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd1-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd2-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd8-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd16-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd32-inflyc4',
-    ]
-
-    stream_cmp_inflyc_simulations = [
-        'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-cmp',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc1',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc2',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc8',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc16',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc32',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc1',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc2',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc4',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc8',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc16',
-        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc32',
-    ]
-
     stream_cmp_data_placement_simulations = [
         'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-cmp',
         'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp',
@@ -128,6 +96,7 @@ def getConfigureations(subset):
             'stream.ruby.single.o4.tlb.8x8c-l256-s1kB.f1024-c-gb.ndc',
             'stream.ruby.single.o4.tlb.8x8c-l256-s1kB.f1024-c-gb.fltsc-cmp',
             'stream.ruby.single.o4.tlb.8x8c-l256-s1kB.f1024-c-gb.fltsc-cmp-sync',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-traffic',
             'stream.ruby.single.o8.tlb.8x8c-l256-s64B.f2048-c-gb-cmp',
             'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.ndc',
             'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp',
@@ -146,11 +115,11 @@ def getConfigureations(subset):
             ],
         }
         for suite, benchmark, tdg_folder in [
-            # ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
             ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
             ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
             ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
             ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
+            ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
             ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
             ('mine', 'svm', 'fake.0.tdg.large-thread64'),
             ('gap', 'bfs_push', 'fake.0.tdg.kronecker-scale18-thread64'),
@@ -172,6 +141,112 @@ def getConfigureations(subset):
                     ssp_so_cmp_transform,
                     ssp_so_cmp_bnd_elim_nst_transform,
                 ] + fix_transforms,
+            })
+
+    if subset in ['cmp-simd-lat']:
+
+        stream_cmp_simd_lat_simulations = [
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd1-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd2-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd8-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd16-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd32-inflyc4',
+        ]
+        stream_cmp_sync_simd_lat_simulations = [
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd1-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd2-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd8-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd16-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd32-inflyc4',
+        ]
+        ssp_so_cmp_transform = {
+            'transform': 'stream.ex.static.so.store.cmp',
+            'simulations': stream_cmp_simd_lat_simulations + stream_cmp_sync_simd_lat_simulations,
+        }
+        ssp_so_cmp_bnd_elim_nst_transform = {
+            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+            'simulations': stream_cmp_simd_lat_simulations,
+        }
+
+        for suite, benchmark, tdg_folder in [
+            ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
+            ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
+            ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
+            ('mine', 'svm', 'fake.0.tdg.large-thread64'),
+            ('gap', 'bfs_push', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'pr_push', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'sssp', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'bfs_pull_shuffle', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'pr_pull_shuffle', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gfm', 'omp_binary_tree', 'fake.0.tdg.thread64-large'),
+            ('gfm', 'omp_hash_join', 'fake.0.tdg.thread64-large'),
+        ]:
+            configurations.append({
+                'suite': suite,
+                'benchmark': benchmark,
+                'tdg_folder': tdg_folder,
+                'transforms': [
+                    ssp_so_cmp_transform,
+                    ssp_so_cmp_bnd_elim_nst_transform,
+                ],
+            })
+
+    if subset in ['cmp-inflyc']:
+
+        stream_cmp_inflyc_simulations = [
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc1',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc2',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc8',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc16',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-simd4-inflyc32',
+        ]
+        stream_cmp_sync_inflyc_simulations = [
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc1',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc2',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc4',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc8',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc16',
+            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB.f2048-c-gb.fltsc-cmp-sync-simd4-inflyc32',
+        ]
+        ssp_so_cmp_transform = {
+            'transform': 'stream.ex.static.so.store.cmp',
+            'simulations': stream_cmp_inflyc_simulations + stream_cmp_sync_inflyc_simulations,
+        }
+        ssp_so_cmp_bnd_elim_nst_transform = {
+            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+            'simulations': stream_cmp_inflyc_simulations,
+        }
+
+        for suite, benchmark, tdg_folder in [
+            ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
+            ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
+            ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
+            ('mine', 'svm', 'fake.0.tdg.large-thread64'),
+            ('gap', 'bfs_push', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'pr_push', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'sssp', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'bfs_pull_shuffle', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gap', 'pr_pull_shuffle', 'fake.0.tdg.kronecker-scale18-thread64'),
+            ('gfm', 'omp_binary_tree', 'fake.0.tdg.thread64-large'),
+            ('gfm', 'omp_hash_join', 'fake.0.tdg.thread64-large'),
+        ]:
+            configurations.append({
+                'suite': suite,
+                'benchmark': benchmark,
+                'tdg_folder': tdg_folder,
+                'transforms': [
+                    ssp_so_cmp_transform,
+                    ssp_so_cmp_bnd_elim_nst_transform,
+                ],
             })
 
     elif subset in ['cmp-ptr']:
@@ -397,18 +472,25 @@ def addComputeResult(result, tile_stats):
     addSumDefaultZeroResult(result, tile_stats, 'core_committed_microops')
     addSumDefaultZeroResult(result, tile_stats, 'core_committed_microops_ignored')
     addSumDefaultZeroResult(result, tile_stats, 'core_committed_microops_gem_forge')
+    for addr in ['Affine', 'Indirect', 'PointerChase', 'MultiAffine']:
+        for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
+            core_microops = f'core_se_microps_{addr}_{cmp}'
+            addSumDefaultZeroResult(result, tile_stats, core_microops)
+            llc_microops = f'llc_se_microps_{addr}_{cmp}'
+            addSumDefaultZeroResult(result, tile_stats, llc_microops)
+
     addSumDefaultZeroResult(result, tile_stats, 'core_se_microops')
-    addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_atomic')
-    addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_load')
-    addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_store')
-    addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_reduce')
-    addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_update')
+    # addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_atomic')
+    # addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_load')
+    # addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_store')
+    # addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_reduce')
+    # addSumDefaultZeroResult(result, tile_stats, 'core_se_microops_update')
     addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops')
-    addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_atomic')
-    addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_load')
-    addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_store')
-    addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_reduce')
-    addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_update')
+    # addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_atomic')
+    # addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_load')
+    # addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_store')
+    # addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_reduce')
+    # addSumDefaultZeroResult(result, tile_stats, 'llc_se_microops_update')
     addSumDefaultZeroResult(result, tile_stats, 'llc_stream_computations')
     addSumDefaultZeroResult(result, tile_stats, 'llc_stream_atomics')
     addSumDefaultZeroResult(result, tile_stats, 'llc_stream_committed_atomics')
@@ -578,28 +660,6 @@ def getSubset(subset):
             'mine',
         ]
         return (subset, lambda suite, benchmark: suite in cmp_sync_suites and benchmark in cmp_sync_benchmarks)
-    elif subset == 'cmp-simd-lat' or subset == 'cmp-inflyc':
-        cmp_sync_benchmarks = [
-            'pr_push',
-            'pr_pull_shuffle',
-            'bfs_push',
-            'bfs_pull_shuffle',
-            'sssp',
-            'hotspot-avx512-fix',
-            'hotspot3D-avx512-fix-fuse',
-            'pathfinder-avx512-nounroll',
-            'srad_v2-avx512-fix-dyn',
-            'streamcluster',
-            'omp_histogram_avx',
-            "svm",
-        ]
-        cmp_sync_suites = [
-            'gap',
-            'gfm',
-            'rodinia',
-            'mine',
-        ]
-        return (subset, lambda suite, benchmark: suite in cmp_sync_suites and benchmark in cmp_sync_benchmarks)
     elif subset == 'dot-offset':
         return ('dot-offset', lambda _, benchmark: benchmark.find('omp_dot_prod_avx_offset') != -1)
     elif subset == 'dot-interleave':
@@ -673,7 +733,7 @@ def main(subset):
 
     if failed:
         return
-    conference = 'micro21-submission'
+    conference = 'hpca22-submission'
     fn = '{conf}.{subset}.json'.format(
         conf=conference, subset=subset_name)
     with open(fn, 'w') as f:

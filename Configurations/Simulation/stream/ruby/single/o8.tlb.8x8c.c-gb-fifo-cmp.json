@@ -38,7 +38,9 @@
         "stream.ex.static.so.store",
         "stream.ex.static.so.store.cmp",
         "stream.ex.static.so.store.cmp-fuse",
-        "stream.ex.static.so.store.cmp-noupdate",
+        "stream.ex.static.so.store.cmp-bnd",
+        "stream.ex.static.so.store.cmp-bnd-elim",
+        "stream.ex.static.so.store.cmp-bnd-elim-nst",
         "stream.ex.static.so.store.cmp-nest",
         "stream.ex.static.so.store.rdc"
     ]

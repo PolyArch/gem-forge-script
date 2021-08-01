@@ -1,5 +1,5 @@
 {
-    "id": "stream.ex.static.so.store.cmp-fuse",
+    "id": "stream.ex.static.so.store.cmp-bnd",
     "is_execution_transform": true,
     "options": [
         "-stream-execution-static-pass",
@@ -11,6 +11,7 @@
         "-stream-pass-enable-reduce",
         "-stream-pass-upgrade-load-to-update",
         "-stream-pass-enable-value-dg",
-        "-stream-pass-enable-fuse-load-op"
+        "-stream-pass-enable-fuse-load-op",
+        "-stream-pass-enable-loop-bound-predication"
     ]
 }

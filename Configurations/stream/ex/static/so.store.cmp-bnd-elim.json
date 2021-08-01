@@ -1,5 +1,5 @@
 {
-    "id": "stream.ex.static.so.store.cmp-nest",
+    "id": "stream.ex.static.so.store.cmp-bnd-elim",
     "is_execution_transform": true,
     "options": [
         "-stream-execution-static-pass",
@@ -12,6 +12,7 @@
         "-stream-pass-upgrade-load-to-update",
         "-stream-pass-enable-value-dg",
         "-stream-pass-enable-fuse-load-op",
-        "-stream-pass-enable-nest-stream"
+        "-stream-pass-enable-loop-bound-predication",
+        "-stream-pass-enable-loop-elimination"
     ]
 }

@@ -999,10 +999,14 @@ class Benchmark(object):
                         gem5_args.insert(
                             i, '--gem-forge-stream-engine-enable-float-cancel')
                         break
-                # for i in range(len(gem5_args)):
-                #     if gem5_args[i].startswith('--gem-forge-stream-engine-mlc-stream-buffer-init-num-entries='):
-                #         gem5_args[i] = '--gem-forge-stream-engine-mlc-stream-buffer-init-num-entries=16'
-                #         break
+        
+        if self.get_name() == 'gfm.omp_binary_tree':
+            for i in range(len(gem5_args)):
+                if gem5_args[i] == '--gem-forge-stream-engine-enable-float':
+                    gem5_args += [
+                        '--gem-forge-stream-engine-enable-midway-float',
+                        '--gem-forge-stream-engine-midway-float-element-idx=12',
+                    ]
 
         adhoc_mc0_benchmarks = [
             'rodinia.hotspot3D-avx512-fix',

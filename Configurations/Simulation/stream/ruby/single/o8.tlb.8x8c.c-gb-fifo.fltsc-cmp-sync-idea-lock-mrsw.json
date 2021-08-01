@@ -16,7 +16,6 @@
         "--gem-forge-stream-engine-float-policy=smart-computation",
         "--gem-forge-stream-engine-enable-float-indirect",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
-        "--gem-forge-stream-engine-enable-float-idea-sync",
         "--gem-forge-stream-engine-enable-float-subline",
         "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
         "--llc-select-low-bit={log2Byte(llc_interleave)}",

@@ -189,6 +189,16 @@ class TileStatsParser(object):
             'llc_se_microops_update': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamUpdateMicroOps'),
         }
+        for addr in ['Affine', 'Indirect', 'PointerChase', 'MultiAffine']:
+            for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
+                core_microops = f'core_se_microps_{addr}_{cmp}'
+                core_stats = f'numCompleted{addr}{cmp}MicroOps'
+                self.re[core_microops] = self.format_re(
+                    'system.cpu{tile_id}.accelManager.se.' + core_stats)
+                llc_microops = f'llc_se_microps_{addr}_{cmp}'
+                llc_stats = f'llcScheduledStream{addr}{cmp}MicroOps'
+                self.re[llc_microops] = self.format_re(
+                    'system.ruby.l2_cntrl{tile_id}.' + llc_stats)
         self.l2_transition_re = re.compile('system\.ruby\.L2Cache_Controller\.[A-Z_]+\.[A-Z0-9_]+::total')
 
     def format_re(self, expression):
@@ -239,6 +249,7 @@ class TileStatsParser(object):
             ('strm', 'Request::STREAM_MIGRATE'),
             ('data', 'Request::STREAM_FORWARD'),
             ('strm', 'Request::STREAM_COMMIT'),
+            ('strm', 'Request::STREAM_NDC'),
         ]
         msg_type_resp_category = [
             ('ctrl', 'Response::MEMORY_ACK'),
@@ -253,6 +264,7 @@ class TileStatsParser(object):
             ('strm', 'Response::STREAM_ACK'),
             ('strm', 'Response::STREAM_RANGE'),
             ('strm', 'Response::STREAM_DONE'),
+            ('strm', 'Response::STREAM_NDC'),
         ]
         n_categories = 2
         n_types_per_category = 20
@@ -267,8 +279,8 @@ class TileStatsParser(object):
             msg_type_category = msg_type_req_category if category == 0 else msg_type_resp_category
             if type_in_category >= len(msg_type_category):
                 continue
-            msg_type = msg_type_category[type_in_category][0]
-            # print('Flits {t} {f}'.format(t=msg_type_category[i][1], f=flits[i]))
+            msg_type, msg_name = msg_type_category[type_in_category]
+            # print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':

@@ -13,6 +13,41 @@ import os
 
 
 class GemForgeMicroBenchmark(Benchmark):
+
+    INPUT_SIZE = {
+        'omp_partition_avx': {
+            'large': ['large']
+        },
+        'omp_radix_partition_indirect_avx': {
+            'large': ['large']
+        },
+        'omp_link_list_search': {
+            # nodes per list, num of lists.
+            'test': [str(64), str(64)],
+            'small': [str(1*1024), str(64)],
+            'medium': [str(1*1024), str(512)],
+            'large': [str(2*1024), str(1024)],
+        },
+        'omp_hash_join': {
+            # total elements, bucket size, total keys, 1 / hit ratio, check
+            'test': [str(x) for x in [512, 8, 128, 8, 1]],
+            'small': [str(x) for x in [1 * 1024 * 1024 / 16, 8, 1 * 1024 * 1024 / 8, 8, 1]],
+            'medium': [str(x) for x in [2 * 1024 * 1024 / 16, 8, 2 * 1024 * 1024 / 8, 8, 1]],
+            'large': [str(x) for x in [4 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0]],
+        },
+        'omp_binary_tree': {
+            # total elements, total keys, 1 / hit ratio, check
+            'test': [str(x) for x in [512, 128, 8, 1]],
+            'small': [str(x) for x in [4 * 1024 * 1024 / 32, 1 * 1024 / 8, 8, 1]],
+            'medium': [str(x) for x in [2 * 1024 * 1024 / 32, 2 * 1024 * 1024 / 8, 8, 1]],
+            'large': [str(x) for x in [4 * 1024 * 1024 / 32, 4 * 1024 * 1024 / 8, 8, 0]],
+        },
+        # 'omp_histogram_avx': {
+        #     'medium': [str(x) for x in [1 * 1024 * 1024 / 4]],
+        #     'large': [str(x) for x in [48 * 1024 * 1024 / 4]],
+        # }
+    }
+
     def __init__(self, benchmark_args, src_path):
         self.cwd = os.getcwd()
         self.src_path = src_path
@@ -32,10 +67,7 @@ class GemForgeMicroBenchmark(Benchmark):
         self.n_thread = benchmark_args.options.input_threads
         self.sim_input_name = benchmark_args.options.sim_input_name
 
-        self.is_partition = self.benchmark_name in [
-            'omp_partition_avx',
-            'omp_radix_partition_indirect_avx',
-        ]
+        self.is_variant_input = self.benchmark_name in GemForgeMicroBenchmark.INPUT_SIZE
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
@@ -47,6 +79,15 @@ class GemForgeMicroBenchmark(Benchmark):
 
     def get_name(self):
         return 'gfm.{b}'.format(b=self.benchmark_name)
+
+    def get_sim_input_args(self):
+        if self.is_variant_input:
+            input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[self.benchmark_name]
+            if self.sim_input_name not in input_sizes:
+                print(f'{self.benchmark_name} Missing Input Size {self.sim_input_name}')
+                assert(False)
+            return input_sizes[self.sim_input_name]
+        return list()
 
     def get_links(self):
         if self.is_omp:
@@ -67,8 +108,7 @@ class GemForgeMicroBenchmark(Benchmark):
                     'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
                     i=self.sim_input_name, s=suffix)))
-            if self.is_partition:
-                args.append(self.sim_input_name)
+            args += self.get_sim_input_args()
             return args
         return None
 
@@ -94,7 +134,7 @@ class GemForgeMicroBenchmark(Benchmark):
     def get_sim_input_name(self):
         # Only these workloads has sim_input_name.
         sim_name = f'thread{self.n_thread}'
-        if self.is_graph or self.is_partition:
+        if self.is_graph or self.is_variant_input:
             sim_name = f'{sim_name}-{self.sim_input_name}'
         return sim_name
 
@@ -261,14 +301,18 @@ class GemForgeMicroBenchmark(Benchmark):
             flags.append(
                 '--work-end-exit-count={v}'.format(v=work_items),
             )
-        if self.is_partition:
+        if self.is_variant_input:
             flags.append(
                 '--cpu-yield-lat=4000ns',
             )
         if self.benchmark_name == 'omp_indirect_sum':
             # Disable deadlock check for this workload as we are offloading long indirect access.
             flags.append(
-                '--gem-forge-disable-cpu-check-deadlock'
+                '--gem-forge-cpu-deadlock-interval=0ns',
+            )
+        if self.benchmark_name.startswith('omp_dot_prod_avx'):
+            flags.append(
+                '--gem-forge-cpu-deadlock-interval=0ns',
             )
         return flags
 
