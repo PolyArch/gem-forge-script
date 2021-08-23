@@ -72,8 +72,8 @@ def transform(benchmark, transform_config, trace, tdg):
     benchmark.transform(transform_config, trace, tdg)
 
 
-def simulate(benchmark, trace, transform_config, simulation_config):
-    benchmark.simulate(trace, transform_config, simulation_config)
+def simulate(benchmark, trace, transform_config, simulation_config, sim_input):
+    benchmark.simulate(trace, transform_config, simulation_config, sim_input)
 
 
 def mcpat(benchmark, tdg, transform_config, simulation_config):
@@ -352,24 +352,31 @@ class Driver:
             )
             for simulation_config in simulation_configs:
                 simulation_id = simulation_config.get_simulation_id()
-                self.simulate_jobs[name][transform_id][trace_id][simulation_id] = job_scheduler.add_job(
-                    name='{name}.{trace_id}.{transform_id}.{simulation_id}'.format(
+                self.simulate_jobs[name][transform_id][trace_id][simulation_id] = dict()
+                for sim_input in self.options.sim_inputs:
+                    job_name='{name}.{trace_id}.{transform_id}.{simulation_id}.{sim_input}'.format(
                         name=name,
                         trace_id=trace_id,
                         transform_id=transform_id,
-                        simulation_id=simulation_config.get_simulation_id()
-                    ),
-                    job=simulate,
-                    args=(
-                        benchmark,
-                        trace,
-                        transform_config,
-                        simulation_config,
-                    ),
-                    deps=deps,
-                    # Use a 48 hour timeout for simulation to avoid deadlock.
-                    timeout=48*60*60
-                )
+                        simulation_id=simulation_config.get_simulation_id(),
+                        sim_input=sim_input,
+                    )
+                    print(sim_input)
+                    self.simulate_jobs[name][transform_id][trace_id][simulation_id][sim_input] = \
+                        job_scheduler.add_job(
+                            name=job_name,
+                            job=simulate,
+                            args=(
+                                benchmark,
+                                trace,
+                                transform_config,
+                                simulation_config,
+                                sim_input,
+                            ),
+                            deps=deps,
+                            # Use a 48 hour timeout for simulation to avoid deadlock.
+                            timeout=48*60*60
+                        )
 
     def schedule_mcpat(self, job_scheduler, benchmark):
         name = benchmark.get_name()
@@ -468,6 +475,13 @@ def parse_comma_sep(option, opt, value, parser):
     values = [v for v in value.split(',') if v != '']
     setattr(parser.values, option.dest, values)
 
+def parse_comma_sep_with_default(default):
+    def parse_comma_sep_with_default_impl(option, opt, value, parser):
+        values = [v for v in value.split(',') if v != '']
+        if not values:
+            values = [default]
+        setattr(parser.values, option.dest, values)
+    return parse_comma_sep_with_default_impl
 
 def parse_trace_ids(option, opt, value, parser):
     vs = value.split(',')
@@ -568,8 +582,8 @@ if __name__ == '__main__':
                       dest='input_name', default=None)
     parser.add_option('--input-threads', type='int', action='store',
                       dest='input_threads', default=1)
-    parser.add_option('--sim-input-size', type='string', action='store',
-                      dest='sim_input_name', default=None)
+    parser.add_option('--sim-input-size', type='string', action='callback',
+                      dest='sim_inputs', callback=parse_comma_sep_with_default('default'))
 
     parser.add_option('--stream-plot', type='string', action='callback',
                       dest='stream_plot', callback=parse_stream_plot)

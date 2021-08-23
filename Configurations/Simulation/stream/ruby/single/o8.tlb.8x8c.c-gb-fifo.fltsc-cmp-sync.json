@@ -45,19 +45,6 @@
         "neighbor_migration_delay": [100]
     },
     "support-transform-ids": [
-        "stream.i",
-        "stream.ex.i",
-        "stream.ex.so",
-        "stream.ex.static.i",
-        "stream.ex.static.so",
-        "stream.ex.static.i.store",
-        "stream.ex.static.so.store",
-        "stream.ex.static.so.store.cmp",
-        "stream.ex.static.so.store.cmp-fuse",
-        "stream.ex.static.so.store.cmp-nest",
-        "stream.ex.static.so.store.cmp-bnd",
-        "stream.ex.static.so.store.cmp-bnd-elim",
-        "stream.ex.static.so.store.cmp-bnd-elim-nst",
-        "stream.ex.static.so.store.rdc"
+        "stream.ex.static.so.store.cmp"
     ]
 }

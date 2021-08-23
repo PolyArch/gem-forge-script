@@ -36,14 +36,6 @@
         "mc": [2]
     },
     "support-transform-ids": [
-        "stream.i",
-        "stream.ex.i",
-        "stream.ex.so",
-        "stream.ex.static.i",
-        "stream.ex.static.so",
-        "stream.ex.static.i.store",
-        "stream.ex.static.so.store",
-        "stream.ex.static.so.store.cmp",
-        "stream.ex.static.so.store.rdc"
+        "stream.ex.static.so.store"
     ]
 }

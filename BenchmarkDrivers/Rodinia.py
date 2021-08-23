@@ -307,9 +307,6 @@ class RodiniaBenchmark(Benchmark):
         self.benchmark_name = os.path.basename(self.benchmark_path)
 
         self.n_thread = benchmark_args.options.input_threads
-        self.sim_input_name = 'test'
-        if benchmark_args.options.sim_input_name:
-            self.sim_input_name = benchmark_args.options.sim_input_name
 
         self.work_path = os.path.join(
             C.GEM_FORGE_RESULT_PATH, 'rodinia', self.benchmark_name
@@ -375,7 +372,7 @@ class RodiniaBenchmark(Benchmark):
                 args.append(arg.format(DATA=data_folder))
         return args
 
-    def get_args(self):
+    def get_args(self, input_name):
         assert(False)
         return None
 
@@ -384,11 +381,11 @@ class RodiniaBenchmark(Benchmark):
             return ['-mavx512f']
         return list()
 
-    def get_sim_args(self):
-        return self._get_args(self.sim_input_name)
+    def get_sim_args(self, input_name):
+        return self._get_args(input_name)
 
-    def get_sim_input_name(self):
-        return f'{self.sim_input_name}-thread{self.n_thread}'
+    def get_sim_input_name(self, sim_input):
+        return f'{sim_input}-thread{self.n_thread}'
 
     def get_lang(self):
         return 'CPP'
@@ -407,9 +404,6 @@ class RodiniaBenchmark(Benchmark):
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
         """
-        # if self.sim_input_name != 'large' and self.benchmark_name != 'pathfinder':
-        #     # Pathfinder has deadlock at exit stage.
-        #     return list()
         flags = list()
         work_items = RodiniaBenchmark.WORK_ITEMS[self.benchmark_name_prefix]
         if work_items != -1:

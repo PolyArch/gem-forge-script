@@ -75,7 +75,7 @@ class Benchmark(object):
         return
 
     @abc.abstractmethod
-    def get_args(self):
+    def get_args(self, input_name):
         return
 
     @abc.abstractmethod
@@ -100,6 +100,9 @@ class Benchmark(object):
     @abc.abstractmethod
     def get_run_path(self):
         return
+
+    def get_sim_args(self, sim_input):
+        return self.get_args(sim_input)
 
     def get_gem5_links(self):
         return self.get_links()
@@ -145,7 +148,7 @@ class Benchmark(object):
         # Please override if the suite has various input_name.
         return None
 
-    def get_sim_input_name(self):
+    def get_sim_input_name(self, sim_input):
         # Please override if the suite has various input_name.
         return None
 
@@ -276,13 +279,6 @@ class Benchmark(object):
 
     def get_traces(self):
         return self.traces
-
-    def get_sim_args(self):
-        """
-        As an extension, we support execution simulation with different
-        input than the trace. Default to get_args().
-        """
-        return self.get_args()
 
     def get_hard_exit_in_billion(self):
         """
@@ -928,6 +924,7 @@ class Benchmark(object):
             self,
             transform_config,
             simulation_config,
+            sim_input,
             binary,
             outdir,
             standalone):
@@ -1016,9 +1013,9 @@ class Benchmark(object):
                 if gem5_args[i] == '--gem-forge-stream-engine-llc-multicast-group-size=2':
                     gem5_args[i] = '--gem-forge-stream-engine-llc-multicast-group-size=0'
         # Append the arguments.
-        if self.get_sim_args() is not None:
+        if self.get_sim_args(sim_input) is not None:
             gem5_args.append(
-                '--options={binary_args}'.format(binary_args=' '.join(self.get_sim_args())))
+                '--options={binary_args}'.format(binary_args=' '.join(self.get_sim_args(sim_input))))
         return gem5_args
 
     """
@@ -1028,15 +1025,16 @@ class Benchmark(object):
     def simulate_valid(self, tdg, transform_config, simulation_config):
         raise NotImplementedError
 
-    def simulate_execution_transform(self, trace, transform_config, simulation_config):
+    def simulate_execution_transform(self, trace, transform_config, simulation_config, sim_input):
         assert(transform_config.is_execution_transform())
         assert(self.options.fake_trace)
         tdg = self.get_tdg(transform_config, trace)
         gem5_out_dir = simulation_config.get_gem5_dir(
-            tdg, self.get_sim_input_name())
+            tdg, self.get_sim_input_name(sim_input))
         gem5_args = self.get_gem5_simulate_command(
             transform_config=transform_config,
             simulation_config=simulation_config,
+            sim_input=sim_input,
             binary=self.get_replay_exe(transform_config, trace, 'exe'),
             outdir=gem5_out_dir,
             standalone=False,
@@ -1063,13 +1061,13 @@ class Benchmark(object):
     Simulate a single datagraph with gem5.
     """
 
-    def simulate(self, trace, transform_config, simulation_config):
+    def simulate(self, trace, transform_config, simulation_config, sim_input):
         if transform_config.get_transform_id() == 'valid':
             self.simulate_valid(tdg, transform_config, simulation_config)
             return
         if transform_config.is_execution_transform():
             self.simulate_execution_transform(
-                trace, transform_config, simulation_config)
+                trace, transform_config, simulation_config, sim_input)
             return
 
         print('# Simulating the datagraph')

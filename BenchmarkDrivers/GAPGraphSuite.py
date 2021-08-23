@@ -20,7 +20,6 @@ class GAPGraphBenchmark(Benchmark):
         self.source = os.path.join('src', self.benchmark_name + '.cc')
 
         self.n_thread = benchmark_args.options.input_threads
-        self.sim_input_name = benchmark_args.options.sim_input_name
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
@@ -41,12 +40,12 @@ class GAPGraphBenchmark(Benchmark):
             '-ldl',
         ]
 
-    def get_args(self):
+    def get_args(self, input_name):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
         if self.benchmark_name.startswith('sssp'):
             suffix = '.wsg'
-        graph_fn = os.path.join(graphs, self.sim_input_name + suffix)
+        graph_fn = os.path.join(graphs, input_name + suffix)
         args = [
             '-f', graph_fn,
             '-p', str(self.n_thread),
@@ -58,8 +57,8 @@ class GAPGraphBenchmark(Benchmark):
     def get_extra_compile_flags(self):
         return list()
 
-    def get_sim_input_name(self):
-        return f'{self.sim_input_name}-thread{self.n_thread}'
+    def get_sim_input_name(self, sim_input):
+        return f'{sim_input}-thread{self.n_thread}'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels

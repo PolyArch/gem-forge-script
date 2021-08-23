@@ -65,7 +65,6 @@ class GemForgeMicroBenchmark(Benchmark):
         self.is_graph = os.path.basename(
             os.path.dirname(self.src_path)) == 'graph'
         self.n_thread = benchmark_args.options.input_threads
-        self.sim_input_name = benchmark_args.options.sim_input_name
 
         self.is_variant_input = self.benchmark_name in GemForgeMicroBenchmark.INPUT_SIZE
 
@@ -80,13 +79,13 @@ class GemForgeMicroBenchmark(Benchmark):
     def get_name(self):
         return 'gfm.{b}'.format(b=self.benchmark_name)
 
-    def get_sim_input_args(self):
+    def get_sim_input_args(self, input_name):
         if self.is_variant_input:
             input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[self.benchmark_name]
-            if self.sim_input_name not in input_sizes:
-                print(f'{self.benchmark_name} Missing Input Size {self.sim_input_name}')
+            if input_name not in input_sizes:
+                print(f'{self.benchmark_name} Missing Input Size {input_name}')
                 assert(False)
-            return input_sizes[self.sim_input_name]
+            return input_sizes[input_name]
         return list()
 
     def get_links(self):
@@ -99,7 +98,7 @@ class GemForgeMicroBenchmark(Benchmark):
             ]
         return []
 
-    def get_args(self):
+    def get_args(self, input_name):
         if self.is_omp:
             args = [str(self.n_thread)]
             if self.is_graph:
@@ -107,8 +106,8 @@ class GemForgeMicroBenchmark(Benchmark):
                 suffix = 'wbin' if self.benchmark_name.startswith(
                     'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
-                    i=self.sim_input_name, s=suffix)))
-            args += self.get_sim_input_args()
+                    i=input_name, s=suffix)))
+            args += self.get_sim_input_args(input_name)
             return args
         return None
 
@@ -131,11 +130,11 @@ class GemForgeMicroBenchmark(Benchmark):
             flags.append('-mavx512vl')
         return flags
 
-    def get_sim_input_name(self):
+    def get_sim_input_name(self, sim_input):
         # Only these workloads has sim_input_name.
         sim_name = f'thread{self.n_thread}'
         if self.is_graph or self.is_variant_input:
-            sim_name = f'{sim_name}-{self.sim_input_name}'
+            sim_name = f'{sim_name}-{sim_input}'
         return sim_name
 
     OMP_GRAPH_FUNC_SUFFIX = {
