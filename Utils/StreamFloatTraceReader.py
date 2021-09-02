@@ -71,14 +71,24 @@ def collectStreamChangesForBank(all_events, bank):
             current_streams = new_streams
     return stream_changes
 
+def collectBanks(all_events):
+    all_banks = list()
+    for e in all_events:
+        bank = e.llc_bank
+        if bank not in all_banks:
+            all_banks.append(bank)
+    all_banks.sort()
+    return all_banks
 
 def dumpAliveStreams(folder, keyword=None):
     all_events = collectAllTraces(folder, keyword)
     all_events.sort(key=lambda x: x.cycle)
     base_folder = os.path.basename(os.path.basename(os.path.basename(folder)))
+    banks = collectBanks(all_events)
+    print(f'All Banks {banks}')
     with open(f'{base_folder}-llc-{keyword if keyword else "all"}-streams-timeline.csv', 'w') as f:
         max_streams = list()
-        for bank in range(0, 64, 1):
+        for bank in banks:
             f.write(f'bank{bank}\n')
             stream_changes = collectStreamChangesForBank(all_events, bank)
             max_streams.append(max(x[1] for x in stream_changes))
