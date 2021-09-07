@@ -39,6 +39,7 @@ GEM5_SE_CONFIG = os.path.join(
 GEM5_M5OPS_X86 = os.path.join(GEM5_DIR, 'util', 'm5', 'm5op_x86.S')
 GEM5_M5OPS_RISCV = os.path.join(GEM5_DIR, 'util', 'm5', 'm5op_riscv.S')
 GEM5_M5OPS_EMPTY = os.path.join(GEM5_DIR, 'util', 'm5', 'm5op_empty.cpp')
+DRAMSIM3_DIR = os.path.join(GEM5_DIR, 'ext/dramsim3/DRAMsim3')
 
 M5_THREADS_LIB = os.getenv('M5_THREADS_LIB')
 

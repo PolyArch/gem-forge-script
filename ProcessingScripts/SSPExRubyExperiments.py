@@ -188,6 +188,14 @@ class TileStatsParser(object):
                 'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamReduceMicroOps'),
             'llc_se_microops_update': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamUpdateMicroOps'),
+            'mem_bytes_read': self.format_re(
+                'system.mem_ctrls{tile_id}.bytes_read::total'),
+            'mem_num_reads': self.format_re(
+                'system.mem_ctrls{tile_id}.num_reads::total'),
+            'mem_bw_read': self.format_re(
+                'system.mem_ctrls{tile_id}.bw_read::total'),
+            'mem_bw_total': self.format_re(
+                'system.mem_ctrls{tile_id}.bw_total::total'),
         }
         for addr in ['Affine', 'Indirect', 'PointerChase', 'MultiAffine']:
             for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
@@ -284,6 +292,7 @@ class TileStatsParser(object):
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':
+                # print(f'DataTraffic of {msg_name} {flits[i]}')
                 data_flits += flits[i]
             elif msg_type == 'strm':
                 stream_flits += flits[i]

@@ -305,6 +305,8 @@ class Gem5ReplayConfigureManager(object):
     ]
     RUBY_L3 = RUBY_L3_BASE + RUBY_MESH
     RUBY_L3_DIR_CORNER = RUBY_L3_BASE + RUBY_MESH_DIR_CORNER
+
+    DRAMSim3ConfigPath = os.path.join(C.DRAMSIM3_DIR, 'configs')
     
     SNIPPTS = {
         '4x4.dir_corner.l3.4MB.ruby': [
@@ -428,4 +430,21 @@ class Gem5ReplayConfigureManager(object):
             "--prog-interval=1000", # Hz
             "--tlb-timing-se",
         ] + L2_TLB,
+        'ddr3': [
+            "--mem-type=DRAMsim3",
+            f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR3_8Gb_x8_1600.ini",
+            "--mem-channel-xor-low-bit=20",
+        ],
+        'ddr4': [
+            "--mem-type=DRAMsim3",
+            f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200.ini",
+            "--mem-channel-xor-low-bit=0",
+            "--sys-clock=1GHz",
+        ],
+        'ddr4-test': [
+            "--mem-type=DRAMsim3",
+            f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200_Stream.ini",
+            "--mem-channel-xor-low-bit=20",
+            "--sys-clock=1GHz",
+        ],
     }

@@ -1,5 +1,5 @@
 {
-    "id": "o8.tlb.8x8c-l{link}-s{llc_interleave}.f{stream_fifo}-c-gb-noflush",
+    "id": "o8.tlb.8x8c-l{link}-s{llc_intrlv}.f{stream_fifo}-c-gb-noflush",
     "options": [
         "--gem-forge-num-active-cpus=1",
         "--gem-forge-cache-load-ports=6",
@@ -12,14 +12,14 @@
         "--gem-forge-stream-engine-force-no-flush-peb",
         "--gem-forge-stream-engine-enable-coalesce",
         "--gem-forge-stream-engine-throttling=global",
-        "--llc-select-low-bit={log2Byte(llc_interleave)}"
+        "--llc-select-low-bit={log2Byte(llc_intrlv)}"
     ],
     "snippts": [
         "o8.tlb",
         "8x8.dir_corner.l2_256kB.l3_1MB_s0.ruby"
     ],
     "design_space": {
-        "llc_interleave": [
+        "llc_intrlv": [
             "64B"
         ],
         "link": [256],

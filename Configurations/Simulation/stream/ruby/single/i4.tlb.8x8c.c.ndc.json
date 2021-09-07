@@ -1,5 +1,5 @@
 {
-    "id": "i4.tlb.8x8c-l{link}-s{llc_interleave}.f{stream_fifo}-c.ndc",
+    "id": "i4.tlb.8x8c-l{link}-s{llc_intrlv}.f{stream_fifo}-c.ndc",
     "options": [
         "--gem-forge-num-active-cpus=1",
         "--gem-forge-cache-load-ports=2",
@@ -11,7 +11,7 @@
         "--gem-forge-stream-engine-max-num-elements-prefetch-for-atomic=2",
         "--gem-forge-stream-engine-enable-lsq",
         "--gem-forge-stream-engine-enable-coalesce",
-        "--llc-select-low-bit={log2Byte(llc_interleave)}",
+        "--llc-select-low-bit={log2Byte(llc_intrlv)}",
         "--gem-forge-stream-engine-enable-fine-grained-near-data-computing",
         "--gem-forge-stream-engine-enable-float-subline",
         "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
@@ -24,7 +24,7 @@
         "8x8.dir_corner.l2_256kB.l3_1MB_s0.ruby"
     ],
     "design_space": {
-        "llc_interleave": [
+        "llc_intrlv": [
             "1kB"
         ],
         "link": [256],

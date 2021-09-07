@@ -42,6 +42,38 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium': [str(x) for x in [2 * 1024 * 1024 / 32, 2 * 1024 * 1024 / 8, 8, 1]],
             'large': [str(x) for x in [4 * 1024 * 1024 / 32, 4 * 1024 * 1024 / 8, 8, 0]],
         },
+        'omp_array_sum_avx': {
+            # total elements (float), check, warm
+            'medium': [str(x) for x in [1 * 1024 * 1024 / 4, 1, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 0]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 4, 0, 0]],
+        },
+        'omp_dot_prod_avx': {
+            # total elements (float), check, warm
+            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+        },
+        'omp_vec_add_avx': {
+            # total elements (float), check, warm
+            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+        },
+        'omp_vec_add_static_chunk_avx': {
+            # total elements (float), check, warm
+            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+        },
         # 'omp_histogram_avx': {
         #     'medium': [str(x) for x in [1 * 1024 * 1024 / 4]],
         #     'large': [str(x) for x in [48 * 1024 * 1024 / 4]],
@@ -66,7 +98,12 @@ class GemForgeMicroBenchmark(Benchmark):
             os.path.dirname(self.src_path)) == 'graph'
         self.n_thread = benchmark_args.options.input_threads
 
-        self.is_variant_input = self.benchmark_name in GemForgeMicroBenchmark.INPUT_SIZE
+        self.is_variant_input = False
+        self.variant_input_sizes = None
+        for prefix in GemForgeMicroBenchmark.INPUT_SIZE:
+            if self.benchmark_name.startswith(prefix):
+                self.is_variant_input = True
+                self.variant_input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[prefix]
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
@@ -81,7 +118,7 @@ class GemForgeMicroBenchmark(Benchmark):
 
     def get_sim_input_args(self, input_name):
         if self.is_variant_input:
-            input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[self.benchmark_name]
+            input_sizes = self.variant_input_sizes
             if input_name not in input_sizes:
                 print(f'{self.benchmark_name} Missing Input Size {input_name}')
                 assert(False)
@@ -185,10 +222,13 @@ class GemForgeMicroBenchmark(Benchmark):
         no_unroll_workloads = [
             'omp_bfs',
             'omp_page_rank',
+            'omp_array_sum_avx',
         ]
-        if self.benchmark_name in no_unroll_workloads:
-            flags.append('-fno-unroll-loops')
-            flags.append('-fno-vectorize')
+        for prefix in no_unroll_workloads:
+            if self.benchmark_name.startswith(prefix):
+                flags.append('-fno-unroll-loops')
+                flags.append('-fno-vectorize')
+                break
 
         if self.is_omp:
             flags.append('-fopenmp')

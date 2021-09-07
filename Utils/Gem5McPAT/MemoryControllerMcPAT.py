@@ -1,4 +1,9 @@
 
+def configureMemoryControlDRAMSim3(self, mc, mcpat_mc):
+    # ! So far we use the fixed configuration for DDR4_8Gb_x8_3200.ini
+    mcpat_mc.number_ranks = 2
+    mcpat_mc.llc_line_length = 64
+
 def configureMemoryControl(self):
     # ! Dual channel have two memory controller,
     # ! But mcpat supports only one.
@@ -6,11 +11,15 @@ def configureMemoryControl(self):
     mcpat_mc = self.xml.sys.mc
     mcpat_mc.mc_clock = self.toMHz(self.getSystemClockDomain())
     mcpat_mc.memory_channels_per_mc = 1
-    mcpat_mc.number_ranks = mc['ranks_per_channel']
-    mcpat_mc.llc_line_length = mc['write_buffer_size']
+    if mc['type'] == 'DRAMsim3':
+        configureMemoryControlDRAMSim3(self, mc, mcpat_mc)
+    else:
+        mcpat_mc.number_ranks = mc['ranks_per_channel']
+        mcpat_mc.llc_line_length = mc['write_buffer_size']
 
 def setStatsMemoryControl(self):
     # ! I simply sum up all memory controllers
+    # ! Even for DRAMSim3 we still use gem5 stats.
     mcs = self.gem5Sys['mem_ctrls']
     memReads = 0
     memWrites = 0
