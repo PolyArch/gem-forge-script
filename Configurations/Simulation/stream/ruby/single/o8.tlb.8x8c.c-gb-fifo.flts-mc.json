@@ -34,6 +34,8 @@
         "ch_intrlv": ["4kB"],
         "link": [256],
         "stream_fifo": [2048],
+        "neighbor_stream_threshold": [2],
+        "neighbor_migration_delay": [100],
         "mc": [2]
     },
     "support-transform-ids": [

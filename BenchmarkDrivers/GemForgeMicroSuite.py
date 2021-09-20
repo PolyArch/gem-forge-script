@@ -29,11 +29,12 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': [str(2*1024), str(1024)],
         },
         'omp_hash_join': {
-            # total elements, bucket size, total keys, 1 / hit ratio, check
-            'test': [str(x) for x in [512, 8, 128, 8, 1]],
-            'small': [str(x) for x in [1 * 1024 * 1024 / 16, 8, 1 * 1024 * 1024 / 8, 8, 1]],
-            'medium': [str(x) for x in [2 * 1024 * 1024 / 16, 8, 2 * 1024 * 1024 / 8, 8, 1]],
-            'large': [str(x) for x in [4 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0]],
+            # total elements, bucket size, total keys, 1 / hit ratio, check, warm
+            'test': [str(x) for x in [512, 8, 128, 8, 1, 1]],
+            'small': [str(x) for x in [1 * 1024 * 1024 / 16, 8, 1 * 1024 * 1024 / 8, 8, 1, 1]],
+            'medium': [str(x) for x in [2 * 1024 * 1024 / 16, 8, 2 * 1024 * 1024 / 8, 8, 1, 1]],
+            'large': [str(x) for x in [4 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0, 1]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 16, 8, 64 * 1024 * 1024 / 8, 8, 0, 0]],
         },
         'omp_binary_tree': {
             # total elements, total keys, 1 / hit ratio, check
@@ -59,14 +60,6 @@ class GemForgeMicroBenchmark(Benchmark):
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
         'omp_vec_add_avx': {
-            # total elements (float), check, warm
-            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
-            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
-            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
-            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
-            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
-        },
-        'omp_vec_add_static_chunk_avx': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
             'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],

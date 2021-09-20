@@ -102,43 +102,30 @@ class RodiniaBenchmark(Benchmark):
             'large':  ['-x', '1000', '-y', '1000', '-z', '10', '-np', '49152', '-nt', '$NTHREADS'],
             # 'large':  ['-x', '100', '-y', '100', '-z', '10', '-np', '32768', '-nt', '$NTHREADS'],
         },
-        'pathfinder': {
-            'test': ['100', '100', '$NTHREADS'],
-            'medium': ['1000', '100', '$NTHREADS'],
-            'large': ['1572864', '8', '$NTHREADS'],
-        },
-        'pathfinder-avx512': {
-            'test': ['100', '100', '$NTHREADS'],
-            'medium': ['1000', '100', '$NTHREADS'],
-            'large': ['1572864', '8', '$NTHREADS'],
-        },
         'pathfinder-avx512-nounroll': {
-            'test': ['100', '100', '$NTHREADS'],
-            'medium': ['1000', '100', '$NTHREADS'],
-            'large': ['1572864', '8', '$NTHREADS'],
+            # cols, rows, threads, warm.
+            'test': ['100', '100', '$NTHREADS', '1'],
+            'medium': ['1000', '100', '$NTHREADS', '1'],
+            'large': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '1'],
+            'large-cold': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
+            'mix': [str(24 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
+            'mem': [str(48 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
         },
-        'srad_v2': {
-            'test': ['128', '128', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-            'medium': ['512', '512', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-            'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-        },
-        'srad_v2-avx512': {
-            # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-        },
+        # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
         'srad_v2-avx512-fix': {
             # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
+        },
+        'srad_v2-avx512-fix-kernel1': {
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
+        },
+        'srad_v2-avx512-fix-kernel2': {
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
         },
         'srad_v2-avx512-fix-dyn': {
             # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
-        },
-        'srad_v2-fix': {
-            # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['512', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10'],
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
+            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
         },
         'streamcluster': {
             'tiny': ['10', '20', '16', '1024', '1024', '1000', '16_1024.data', 'output.txt', '$NTHREADS'],
@@ -227,35 +214,26 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..13',  # resampleParticles(): resample
             '.omp_outlined..15',  # resampleParticles(): reset
         ],
-        'pathfinder': [
-            '.omp_outlined.',
-        ],
-        'pathfinder-avx512': [
-            '.omp_outlined.',
-        ],
         'pathfinder-avx512-nounroll': [
-            '.omp_outlined.',
-        ],
-        'srad_v2': [
-            '.omp_outlined.',
-            '.omp_outlined..14',
-        ],
-        'srad_v2-avx512': [
-            '.omp_outlined.',
-            '.omp_outlined..14',
+            '.omp_outlined..3',
         ],
         'srad_v2-avx512-fix': [
+            'sumROI',
+            '.omp_outlined..13',
             '.omp_outlined..14',
-            '.omp_outlined..15',
+        ],
+        'srad_v2-avx512-fix-kernel1': [
+            'sumROI',
+            '.omp_outlined..13',
+        ],
+        'srad_v2-avx512-fix-kernel2': [
+            'sumROI',
+            '.omp_outlined..13',
         ],
         'srad_v2-avx512-fix-dyn': [
             'sumROI',
             '.omp_outlined..13',
             '.omp_outlined..14',
-        ],
-        'srad_v2-fix': [
-            '.omp_outlined..14',
-            '.omp_outlined..15',
         ],
         'streamcluster': [
             'pgain_dist',
@@ -293,9 +271,9 @@ class RodiniaBenchmark(Benchmark):
         'pathfinder-avx512': 149,        # pathfinder takes 99 iterations.
         # pathfinder takes 99 iterations.
         'pathfinder-avx512-nounroll': 149,
-        'srad_v2': 2 * 1,  # One iteration is enough.
-        'srad_v2-avx512': 2 * 1,  # One iteration is enough.
         'srad_v2-avx512-fix': 2 * 1,  # One iteration is enough.
+        'srad_v2-avx512-fix-kernel1': 1 * 1,  # One iteration is enough.
+        'srad_v2-avx512-fix-kernel2': 1 * 1,  # One iteration is enough.
         'srad_v2-avx512-fix-dyn': 2 * 1,  # One iteration is enough.
         'srad_v2-fix': 2 * 1,  # One iteration is enough.
         'streamcluster': 4,  # Try one iteration?

@@ -143,6 +143,61 @@ def getConfigureations(subset):
                 ] + fix_transforms,
             })
 
+    if subset in ['cmp-fine-new']:
+        for suite, benchmark, tdg_folder in [
+            ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'srad_v2-avx512-fix', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
+            ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
+            ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
+            ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
+            ('mine', 'svm', 'fake.0.tdg.large-thread64'),
+            ('gap', 'bfs_push', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'bfs_push_check', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'pr_push', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'sssp', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'sssp_check', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'bfs_pull_shuffle', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gap', 'pr_pull_shuffle', 'fake.0.tdg.krn18-k16-thread64'),
+            ('gfm', 'omp_binary_tree', 'fake.0.tdg.thread64-large'),
+            ('gfm', 'omp_hash_join', 'fake.0.tdg.thread64-large'),
+        ]:
+            configurations.append({
+                'suite': suite,
+                'benchmark': benchmark,
+                'tdg_folder': tdg_folder,
+                'transforms': [
+                    {
+                        'transform': 'valid.ex',
+                        'simulations': [
+                            'replay.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B',
+                            'replay.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
+                        ]
+                    },
+                    {
+                        'transform': 'stream.ex.static.so.store',
+                        'simulations': [
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb',
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.flts-mc2',
+                        ]
+                    },
+                    {
+                        'transform': 'stream.ex.static.so.store.cmp',
+                        'simulations': [
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb-cmp',
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp',
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-sync',
+                        ]
+                    },
+                    {
+                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'simulations': [
+                            'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp',
+                        ],
+                    },
+                ]
+            })
+
     if subset in ['cmp-simd-lat']:
 
         stream_cmp_simd_lat_simulations = [

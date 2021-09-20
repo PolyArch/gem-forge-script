@@ -992,9 +992,13 @@ class Benchmark(object):
             transform_id = transform_config.get_transform_id()
             if transform_id == 'stream.ex.static.so.store':
                 for i in range(len(gem5_args)):
-                    if gem5_args[i] == '--gem-forge-stream-engine-enable':
-                        gem5_args.insert(
-                            i, '--gem-forge-stream-engine-enable-float-cancel')
+                    if gem5_args[i] == '--gem-forge-stream-engine-enable-float':
+                        gem5_args += [
+                            "--gem-forge-stream-engine-llc-neighbor-stream-threshold=2",
+                            "--gem-forge-stream-engine-llc-neighbor-migration-delay=100",
+                            "--gem-forge-stream-engine-llc-neighbor-migration-valve-type=all",
+                            "--gem-forge-stream-engine-enable-float-cancel",
+                        ]
                         break
         
         if self.get_name() == 'gfm.omp_binary_tree':

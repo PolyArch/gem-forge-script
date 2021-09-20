@@ -67,13 +67,13 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push': ['.omp_outlined.'],
         'bfs_push_check': ['.omp_outlined.'],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
-        'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..11'],  # Two kernels.
         'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
-        'pr_pull_shuffle':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
+        'pr_pull_shuffle':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
         # 'pr_pull_shuffle':  ['.omp_outlined..13'],  # Two kernels.
-        'pr_push':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
-        'pr_push_atomic':  ['.omp_outlined..12'],  # One kernel.
-        'pr_push_swap':  ['.omp_outlined..12'],  # One kernel.
+        'pr_push':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
+        'pr_push_atomic':  ['.omp_outlined..13'],  # One kernel.
+        'pr_push_swap':  ['.omp_outlined..13'],  # One kernel.
         'sssp': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],

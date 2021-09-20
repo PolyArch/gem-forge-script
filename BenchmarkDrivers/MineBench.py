@@ -24,7 +24,7 @@ class MineBenchmark(Benchmark):
 
     ROI_FUNCS = {
         'svm': [
-            '.omp_outlined..57', # get_Q.
+            '.omp_outlined..11', # SVC_Q::get_Q.
         ],
     }
 
@@ -43,9 +43,6 @@ class MineBenchmark(Benchmark):
         self.benchmark_name = os.path.basename(self.benchmark_path)
 
         self.n_thread = benchmark_args.options.input_threads
-        self.sim_input_name = 'test'
-        if benchmark_args.options.sim_input_name:
-            self.sim_input_name = benchmark_args.options.sim_input_name
 
         self.work_path = os.path.join(
             C.GEM_FORGE_RESULT_PATH, 'mine', self.benchmark_name
@@ -96,20 +93,19 @@ class MineBenchmark(Benchmark):
                 args.append(arg.format(DATA=data_folder))
         return args
 
-    def get_args(self):
-        assert(False)
-        return None
+    def get_args(self, input_name):
+        return self._get_args(input_name)
 
     def get_extra_compile_flags(self):
         if 'avx' in self.benchmark_name:
             return ['-mavx512f']
         return list()
 
-    def get_sim_args(self):
-        return self._get_args(self.sim_input_name)
+    def get_sim_input_args(self, input_name):
+        return self._get_args(input_name)
 
-    def get_sim_input_name(self):
-        return f'{self.sim_input_name}-thread{self.n_thread}'
+    def get_sim_input_name(self, input_name):
+        return f'{input_name}-thread{self.n_thread}'
 
     def get_lang(self):
         return 'CPP'

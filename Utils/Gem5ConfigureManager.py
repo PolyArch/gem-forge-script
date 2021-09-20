@@ -438,7 +438,7 @@ class Gem5ReplayConfigureManager(object):
         'ddr4': [
             "--mem-type=DRAMsim3",
             f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200.ini",
-            "--mem-channel-xor-low-bit=0",
+            "--mem-channel-xor-low-bit=20",
             "--sys-clock=1GHz",
         ],
         'ddr4-test': [
