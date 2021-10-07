@@ -345,6 +345,10 @@ def process(f):
             p.parse(fields)
     return tile_stats
 
+def print_if_non_zero(v, f):
+    if v > 0:
+        print(f.format(v=v))
+
 def print_stats(tile_stats):
     def sum_or_nan(vs):
         s = sum(vs)
@@ -457,18 +461,18 @@ def print_stats(tile_stats):
     print('num st elements stepped {v}'.format(
         v=sum(value_or_zero(ts, 'stepped_store_elements') for ts in tile_stats)
     ))
-    print('num float               {v}'.format(
-        v=sum(value_or_zero(ts, 'num_floated') for ts in tile_stats)
-    ))
-    print('num llc sent slice      {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_sent_slice') for ts in tile_stats)
-    ))
-    print('num llc migated         {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_migrated') for ts in tile_stats)
-    ))
-    print('num mlc response        {v}'.format(
-        v=sum(value_or_zero(ts, 'mlc_response') for ts in tile_stats)
-    ))
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'num_floated') for ts in tile_stats),
+        f='num float               {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_sent_slice') for ts in tile_stats),
+        f='num llc sent slice      {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_migrated') for ts in tile_stats),
+        f='num llc migrated        {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'mlc_response') for ts in tile_stats),
+        f='num mlc response        {v}')
     print('num d$ core req         {v}'.format(
         v=sum(value_or_zero(ts, 'dcache_core_requests') for ts in tile_stats)
     ))
@@ -478,33 +482,39 @@ def print_stats(tile_stats):
     print('num llc core req        {v}'.format(
         v=sum(value_or_zero(ts, 'llc_core_requests') for ts in tile_stats)
     ))
-    print('num llc core stream req {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_core_stream_requests') for ts in tile_stats)
-    ))
-    print('num llc llc stream req  {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_llc_stream_requests') for ts in tile_stats)
-    ))
-    print('num llc llc ind req     {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_llc_ind_stream_requests') for ts in tile_stats)
-    ))
-    print('num llc llc multi req   {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_llc_multicast_stream_requests') for ts in tile_stats)
-    ))
-    print('num l2 noreuse ctrl pkt {v}'.format(
-        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_ctrl_pkts') for ts in tile_stats)
-    ))
-    print('num l2 noreuse evic pkt {v}'.format(
-        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_ctrl_evict_pkts') for ts in tile_stats)
-    ))
-    print('num l2 noreuse data pkt {v}'.format(
-        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_data_pkts') for ts in tile_stats)
-    ))
-    print('num llc llc multi req   {v}'.format(
-        v=sum(value_or_zero(ts, 'llc_llc_multicast_stream_requests') for ts in tile_stats)
-    ))
-    print('num llc GETV event      {v}'.format(
-        v=sum([value_or_zero(main_ts.l3_transitions[s], 'L1_GETV') for s in main_ts.l3_transitions])
-    ))
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_core_stream_requests') for ts in tile_stats),
+        f='num llc core stream req {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_llc_stream_requests') for ts in tile_stats),
+        f='num llc llc stream req  {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_llc_ind_stream_requests') for ts in tile_stats),
+        f='num llc llc ind req     {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_llc_multicast_stream_requests') for ts in tile_stats),
+        f='num llc llc multi req   {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_ctrl_pkts') for ts in tile_stats),
+        f='num l2 noreuse ctrl pkt {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_ctrl_evict_pkts') for ts in tile_stats),
+        f='num l2 noreuse evic pkt {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'l2_evicts_noreuse_data_pkts') for ts in tile_stats),
+        f='num l2 noreuse data pkt {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'llc_llc_multicast_stream_requests') for ts in tile_stats),
+        f='num llc llc multi req   {v}')
+    print_if_non_zero(
+        v=sum([value_or_zero(main_ts.l3_transitions[s], 'L1_GETV') for s in main_ts.l3_transitions]),
+        f='num llc GETV event      {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'mem_num_reads') for ts in tile_stats),
+        f='num mem reads           {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'mem_bytes_read') for ts in tile_stats),
+        f='num mem bytes reads     {v}')
     print('num core microops       {v}'.format(
         v=sum(value_or_zero(ts, 'core_committed_microops') for ts in tile_stats)
     ))

@@ -303,8 +303,13 @@ class Gem5ReplayConfigureManager(object):
         "--topology=MeshDirCorners_XY",
         "--routing-YX", # Routing in YX direction.
     ]
+    RUBY_MESH_DIR_MIDDLE = [
+        "--topology=MeshDirMiddle_XY",
+        "--routing-YX", # Routing in YX direction.
+    ]
     RUBY_L3 = RUBY_L3_BASE + RUBY_MESH
     RUBY_L3_DIR_CORNER = RUBY_L3_BASE + RUBY_MESH_DIR_CORNER
+    RUBY_L3_DIR_MIDDLE = RUBY_L3_BASE + RUBY_MESH_DIR_MIDDLE
 
     DRAMSim3ConfigPath = os.path.join(C.DRAMSIM3_DIR, 'configs')
     
@@ -376,6 +381,12 @@ class Gem5ReplayConfigureManager(object):
             "--num-l2caches=64",
             "--mesh-rows=8",
         ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB,
+        '8x8.dir_middle4x4.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=64",
+            "--num-dirs=16",
+            "--num-l2caches=64",
+            "--mesh-rows=8",
+        ] + RUBY_L3_DIR_MIDDLE + L0_32kB + MLC_256kB + LLC_1MB,
         'llc_select_512B': LLC_SELECT_512B,
         'llc_select_256B': LLC_SELECT_256B,
         'llc_select_128B': LLC_SELECT_128B,
