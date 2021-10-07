@@ -312,7 +312,7 @@ class MediaBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         # For validation, we disable cache warm.
         args = ['--gem-forge-cold-cache']
         if self.get_name() == 'mb.mpeg2enc':

@@ -119,7 +119,7 @@ class MineBenchmark(Benchmark):
     def get_run_path(self):
         return self.work_path
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         """
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.

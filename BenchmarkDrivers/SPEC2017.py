@@ -319,7 +319,7 @@ class SPEC2017Benchmark(Benchmark):
         # Others we use 10 million as default.
         return 10000000
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         args = []
         """
         Some benchmarks takes too long to finish, so we use work item

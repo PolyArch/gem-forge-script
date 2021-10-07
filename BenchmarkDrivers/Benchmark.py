@@ -913,7 +913,8 @@ class Benchmark(object):
 
         os.chdir(cwd)
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self,
+        transform_config, simulation_config, input_name):
         return []
 
     """
@@ -973,7 +974,8 @@ class Benchmark(object):
         # Add any options from derived classes.
         gem5_args += self.get_additional_gem5_simulate_command(
             transform_config=transform_config,
-            simulation_config=simulation_config)
+            simulation_config=simulation_config,
+            input_name=sim_input)
 
         # Allow each benchmark to have a customized memory capacity.
         if self.get_gem5_mem_size():
@@ -999,6 +1001,26 @@ class Benchmark(object):
                             "--gem-forge-stream-engine-llc-neighbor-migration-valve-type=all",
                             "--gem-forge-stream-engine-enable-float-cancel",
                         ]
+                        break
+
+        if self.get_name() == 'rodinia.srad_v3-avx512-fix':
+            transform_id = transform_config.get_transform_id()
+            if transform_id == 'stream.ex.static.so.store':
+                for i in range(len(gem5_args)):
+                    if gem5_args[i] == '--gem-forge-stream-engine-enable-float':
+                        gem5_args += [
+                            "--gem-forge-stream-engine-enable-float-cancel",
+                        ]
+                        break
+            elif transform_id.startswith('stream.ex.static.so.store.cmp'):
+                # We try to double the number of infly computation to model the pipelined FU.
+                for i in range(len(gem5_args)):
+                    arg = gem5_args[i]
+                    prefix = '--gem-forge-stream-engine-llc-max-infly-computation='
+                    if arg.startswith(prefix):
+                        max_infly_cmp = int(arg[len(prefix):])
+                        doubled_arg = f'{prefix}{max_infly_cmp * 2}'
+                        gem5_args[i] = doubled_arg
                         break
         
         if self.get_name() == 'gfm.omp_binary_tree':

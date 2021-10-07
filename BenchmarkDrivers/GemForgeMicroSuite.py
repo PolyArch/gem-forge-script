@@ -34,6 +34,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'small': [str(x) for x in [1 * 1024 * 1024 / 16, 8, 1 * 1024 * 1024 / 8, 8, 1, 1]],
             'medium': [str(x) for x in [2 * 1024 * 1024 / 16, 8, 2 * 1024 * 1024 / 8, 8, 1, 1]],
             'large': [str(x) for x in [4 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0, 1]],
+            'mix': [str(x) for x in [16 * 1024 * 1024 / 16, 8, 128 * 1024 * 1024 / 8, 8, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 16, 8, 64 * 1024 * 1024 / 8, 8, 0, 0]],
         },
         'omp_binary_tree': {
@@ -208,6 +209,7 @@ class GemForgeMicroBenchmark(Benchmark):
             # '-mavx512f',
             # '-ffast-math',
             # '-ffp-contract=off',
+            '-stream-specialize',
             '-mllvm',
             '-loop-unswitch-threshold=1',
             '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
@@ -216,6 +218,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'omp_bfs',
             'omp_page_rank',
             'omp_array_sum_avx',
+            'omp_vec_add_avx',
         ]
         for prefix in no_unroll_workloads:
             if self.benchmark_name.startswith(prefix):
@@ -286,10 +289,6 @@ class GemForgeMicroBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    # def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
-    #     # For validation, we disable cache warm.
-    #     return ['--gem-forge-cold-cache']
-
     def build_validation(self, transform_config, trace, output_tdg):
         # Build the validation binary.
         output_dir = os.path.dirname(output_tdg)
@@ -316,7 +315,7 @@ class GemForgeMicroBenchmark(Benchmark):
             ]
             Util.call_helper(disasm_cmd, stdout=f)
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         """
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.

@@ -59,7 +59,7 @@ class SDVBSValidBenchmark(SDVBSBenchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         # For validation, we disable cache warm.
         return ['--gem-forge-cold-cache']
 

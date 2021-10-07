@@ -52,6 +52,11 @@ class GAPGraphBenchmark(Benchmark):
             # Only one trial.
             '-n', '1',
         ]
+        if input_name.startswith('krn21-k8'):
+            # This should be mix-level offloading, do not warm up cache.
+            args += [
+                '-c'
+            ]
         return args
 
     def get_extra_compile_flags(self):
@@ -70,10 +75,11 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..11'],  # Two kernels.
         'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
         'pr_pull_shuffle':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
-        # 'pr_pull_shuffle':  ['.omp_outlined..13'],  # Two kernels.
-        'pr_push':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
-        'pr_push_atomic':  ['.omp_outlined..13'],  # One kernel.
-        'pr_push_swap':  ['.omp_outlined..13'],  # One kernel.
+        'pr_push':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
+        'pr_push_double':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
+        'pr_push_shuffle_double':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
+        'pr_push_atomic':  ['.omp_outlined..14'],  # One kernel.
+        'pr_push_swap':  ['.omp_outlined..14'],  # One kernel.
         'sssp': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],
@@ -110,6 +116,9 @@ class GAPGraphBenchmark(Benchmark):
             '-fopenmp',
             '-DGEM_FORGE',
             '-DGEM_FORGE_WARM_CACHE',
+            '-stream-specialize',
+            # '-mllvm',
+            # '-opt-bisect-limit=3410',
         ]
         no_unroll_workloads = [
             'bfs',
@@ -170,7 +179,7 @@ class GAPGraphBenchmark(Benchmark):
         self.run_trace()
         os.chdir(self.cwd)
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         """
         To reduce simulation time, here I charge 4000ns yield latency.
         Some benchmarks takes too long to finish, so we use work item

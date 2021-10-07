@@ -33,44 +33,20 @@ class RodiniaBenchmark(Benchmark):
             'large':  ['{DATA}/fvcorr.domn.193K.data', '$NTHREADS'],
         },
         'hotspot': {
-            'test':   ['64', '64', '10', '$NTHREADS', '{DATA}/temp_64.data', '{DATA}/power_64.data', 'output.txt'],
-            'medium': ['512', '512', '10', '$NTHREADS', '{DATA}/temp_512.data', '{DATA}/power_512.data', 'output.txt'],
-            'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
-        },
-        'hotspot-avx512': {
-            'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
-        },
-        'hotspot-avx512-fix': {
-            'large':  ['2048', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
-        },
-        'hotspot-fix': {
-            'large':  ['1024', '1024', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
-        },
-        'hotspot-avx512-fix2k': {
-            'large':  ['1024', '2048', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
-        },
-        'hotspot512-avx512-fix': {
-            'large':  ['4096', '512', '10', '$NTHREADS', '{DATA}/temp_1024.data', '{DATA}/power_1024.data', 'output.txt'],
+            # DataType(double), 3 Arrays.
+            # rows, cols, iterations, threads, data(unused), power(unused), output(unused), warm
+            'test':   ['64', '64', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'medium': ['512', '512', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large':  ['2048', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'mix':    ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
         'hotspot3D': {
-            'test':   ['64', '8', '2', '$NTHREADS', '{DATA}/temp_64x8.data', '{DATA}/power_64x8.data', 'output.txt'],
-            'medium': ['512', '2', '10', '$NTHREADS', '{DATA}/temp_512x2.data', '{DATA}/power_512x2.data', 'output.txt'],
-            'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
-        },
-        'hotspot3D-avx512': {
-            'test':   ['64', '8', '2', '$NTHREADS', '{DATA}/temp_64x8.data', '{DATA}/power_64x8.data', 'output.txt'],
-            'medium': ['512', '2', '10', '$NTHREADS', '{DATA}/temp_512x2.data', '{DATA}/power_512x2.data', 'output.txt'],
-            'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
-        },
-        'hotspot3D-avx512-fix': {
-            'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
-        },
-        'hotspot3D-avx512-fix-fuse': {
-            'large':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
-            'xlarge':  ['512', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt'],
-        },
-        'hotspot3D-fix': {
-            'large':  ['512', '8', '100', '$NTHREADS', '{DATA}/temp_512x8.data', '{DATA}/power_512x8.data', 'output.txt'],
+            # DataType(double), 3 Arrays
+            # rows, cols, layers, iters, threads, unused, unused, unused, warm,
+            'test':   ['64', '64', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'medium': ['512', '512', '2', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large':  ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'mix':    ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
         'kmeans': {
             'test':   ['-b', 'dummy', '-n', '$NTHREADS', '-i', '{DATA}/100.data'],
@@ -102,30 +78,27 @@ class RodiniaBenchmark(Benchmark):
             'large':  ['-x', '1000', '-y', '1000', '-z', '10', '-np', '49152', '-nt', '$NTHREADS'],
             # 'large':  ['-x', '100', '-y', '100', '-z', '10', '-np', '32768', '-nt', '$NTHREADS'],
         },
-        'pathfinder-avx512-nounroll': {
+        'pathfinder': {
             # cols, rows, threads, warm.
             'test': ['100', '100', '$NTHREADS', '1'],
             'medium': ['1000', '100', '$NTHREADS', '1'],
-            'large': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '1'],
-            'large-cold': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
-            'mix': [str(24 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
-            'mem': [str(48 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
+            'large': [str(6 * 1024 * 1024 // 4), '100', '$NTHREADS', '1'],
+            'large-cold': [str(6 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
+            'mix': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
+            'mem': [str(48 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
         },
-        # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
-        'srad_v2-avx512-fix': {
-            # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
+        'srad_v2': {
+            # DataType(float), 6 arrays.
+            # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
+            'medium': ['256', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'mix': ['1536', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
         },
-        'srad_v2-avx512-fix-kernel1': {
-            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
-        },
-        'srad_v2-avx512-fix-kernel2': {
-            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
-        },
-        'srad_v2-avx512-fix-dyn': {
-            # 'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '2'],
-            'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
-            'xlarge': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '10', '1'],
+        'srad_v3': {
+            # DataType(float), 3 arrays.
+            # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
+            'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'mix': ['4196', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
         },
         'streamcluster': {
             'tiny': ['10', '20', '16', '1024', '1024', '1000', '16_1024.data', 'output.txt', '$NTHREADS'],
@@ -154,34 +127,7 @@ class RodiniaBenchmark(Benchmark):
         'hotspot': [
             '.omp_outlined.',
         ],
-        'hotspot-avx512': [
-            '.omp_outlined.',
-        ],
-        'hotspot-avx512-fix': [
-            '.omp_outlined.',
-        ],
-        'hotspot512-avx512-fix': [
-            '.omp_outlined.',
-        ],
-        'hotspot-fix': [
-            '.omp_outlined.',
-        ],
-        'hotspot-avx512-fix2k': [
-            '.omp_outlined.',
-        ],
         'hotspot3D': [
-            '.omp_outlined.',
-        ],
-        'hotspot3D-avx512': [
-            '.omp_outlined.',
-        ],
-        'hotspot3D-avx512-fix': [
-            '.omp_outlined.',
-        ],
-        'hotspot3D-avx512-fix-fuse': [
-            '.omp_outlined.',
-        ],
-        'hotspot3D-fix': [
             '.omp_outlined.',
         ],
         'kmeans': [
@@ -214,10 +160,10 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..13',  # resampleParticles(): resample
             '.omp_outlined..15',  # resampleParticles(): reset
         ],
-        'pathfinder-avx512-nounroll': [
+        'pathfinder': [
             '.omp_outlined..3',
         ],
-        'srad_v2-avx512-fix': [
+        'srad_v2': [
             'sumROI',
             '.omp_outlined..13',
             '.omp_outlined..14',
@@ -230,7 +176,7 @@ class RodiniaBenchmark(Benchmark):
             'sumROI',
             '.omp_outlined..13',
         ],
-        'srad_v2-avx512-fix-dyn': [
+        'srad_v3': [
             'sumROI',
             '.omp_outlined..13',
             '.omp_outlined..14',
@@ -251,31 +197,16 @@ class RodiniaBenchmark(Benchmark):
         'bfs': 2 * int(1e8 / 15e5),  # One iter takes 15e5 ops.
         'cfd': 4 * int(1e8 / 2e7),
         'hotspot': 2,  # Two iters takes 10 min.
-        'hotspot-avx512': 2,  # Two iters takes 10 min.
-        'hotspot-avx512-fix': 2,  # Two iters takes 10 min.
-        'hotspot512-avx512-fix': 1,  # Two iters takes 10 min.
-        'hotspot-fix': 2,  # Two iters takes 10 min.
-        'hotspot-avx512-fix2k': 2,  # Two iters takes 10 min.
-        'hotspot3D': 1 * int(1e8 / 2e7),
-        'hotspot3D-avx512': 1 * int(1e8 / 2e7),
-        'hotspot3D-avx512-fix': 1 * int(1e8 / 2e7),
-        'hotspot3D-avx512-fix-fuse': 1 * int(1e8 / 2e7),
-        'hotspot3D-fix': 1 * int(1e8 / 2e7),
+        'hotspot3D': 2, # Two iters.
         'kmeans': 3 * 1,
         'lavaMD': 1,            # Invoke kernel for once.
         'nw': 2,                # nw can finish.
         'nw-blk32': 2,                # nw can finish.
         'nn': 4,                # One iteration is 4 work items.
         'particlefilter': 9 * 1,  # One itertion is enough.
-        'pathfinder': 149,        # pathfinder takes 99 iterations.
-        'pathfinder-avx512': 149,        # pathfinder takes 99 iterations.
-        # pathfinder takes 99 iterations.
-        'pathfinder-avx512-nounroll': 149,
-        'srad_v2-avx512-fix': 2 * 1,  # One iteration is enough.
-        'srad_v2-avx512-fix-kernel1': 1 * 1,  # One iteration is enough.
-        'srad_v2-avx512-fix-kernel2': 1 * 1,  # One iteration is enough.
-        'srad_v2-avx512-fix-dyn': 2 * 1,  # One iteration is enough.
-        'srad_v2-fix': 2 * 1,  # One iteration is enough.
+        'pathfinder': 7,        # pathfinder takes 7 iterations.
+        'srad_v2': 2 * 1,  # One iteration is enough.
+        'srad_v3': 2 * 1,  # One iteration is enough.
         'streamcluster': 4,  # Try one iteration?
     }
 
@@ -297,13 +228,14 @@ class RodiniaBenchmark(Benchmark):
     @staticmethod
     def get_name_prefix(name):
         prefixes = [
-            'hotspot-avx512-fix',
-            'hotspot3D-avx512-fix-fuse',
-            'pathfinder-avx512-nounroll',
-            'srad_v2-avx512-fix-dyn',
+            'hotspot',
+            'hotspot3D',
+            'pathfinder',
+            'srad_v2',
+            'srad_v3',
         ]
         for prefix in prefixes:
-            if name.startswith(prefix):
+            if name.startswith(f'{prefix}-'):
                 return prefix
         return name
 
@@ -336,14 +268,29 @@ class RodiniaBenchmark(Benchmark):
             )
         return None
 
+    def break_input_name(self, input_name):
+        """
+        The input name is defined in "size-length"
+        """
+        fields = [input_name]
+        if '-' in input_name:
+            fields = input_name.split('-')
+        while len(fields) < 3:
+            fields.append(None)
+        return fields
+
+    def get_input_size(self, input_name):
+        return self.break_input_name(input_name)[0]
+
     def _get_args(self, input_name):
         data_folder = os.path.join(
             self.benchmark_path,
             '../../data',
             self.benchmark_name,
         )
+        input_size = self.get_input_size(input_name)
         args = list()
-        for arg in RodiniaBenchmark.ARGS[self.benchmark_name_prefix][input_name]:
+        for arg in RodiniaBenchmark.ARGS[self.benchmark_name_prefix][input_size]:
             if arg == '$NTHREADS':
                 args.append(str(self.n_thread))
             else:
@@ -377,13 +324,37 @@ class RodiniaBenchmark(Benchmark):
     def get_run_path(self):
         return self.work_path
 
-    def get_additional_gem5_simulate_command(self, transform_config, simulation_config):
+    def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
         """
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
+
+        Also, we control the number of iters for some workloads based on the input name.
         """
         flags = list()
+
         work_items = RodiniaBenchmark.WORK_ITEMS[self.benchmark_name_prefix]
+
+        # Overwrite work items if the input required.
+        var_work_item_base = {
+            'hotspot': 1,
+            'hotspot3D': 1,
+            'pathfinder': 1,
+            'srad_v2': 2,
+            'srad_v3': 2,
+        }
+        var_work_item_time = {
+            'one': 1,
+            'two': 2,
+            'short': 4,
+            'long': 8,
+        }
+        input_name_fields = self.break_input_name(input_name)
+        if input_name_fields[1] in var_work_item_time:
+            if self.benchmark_name_prefix in var_work_item_base:
+                work_item_bases = var_work_item_base[self.benchmark_name_prefix]
+                work_item_times = var_work_item_time[input_name_fields[1]]
+                work_items = work_item_bases * work_item_times
         if work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=work_items)
