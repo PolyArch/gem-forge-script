@@ -161,20 +161,20 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..15',  # resampleParticles(): reset
         ],
         'pathfinder': [
-            '.omp_outlined..3',
+            '.omp_outlined..6',
         ],
         'srad_v2': [
             'sumROI',
-            '.omp_outlined..13',
-            '.omp_outlined..14',
+            '.omp_outlined..19',
+            '.omp_outlined..20',
         ],
         'srad_v2-avx512-fix-kernel1': [
             'sumROI',
-            '.omp_outlined..13',
+            '.omp_outlined..19',
         ],
         'srad_v2-avx512-fix-kernel2': [
             'sumROI',
-            '.omp_outlined..13',
+            '.omp_outlined..19',
         ],
         'srad_v3': [
             'sumROI',

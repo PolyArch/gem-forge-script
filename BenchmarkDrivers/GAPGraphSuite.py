@@ -52,7 +52,7 @@ class GAPGraphBenchmark(Benchmark):
             # Only one trial.
             '-n', '1',
         ]
-        if input_name.startswith('krn21-k8'):
+        if input_name.startswith('krn21-k8') or input_name.startswith('krn19-k16'):
             # This should be mix-level offloading, do not warm up cache.
             args += [
                 '-c'
@@ -75,11 +75,11 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..11'],  # Two kernels.
         'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
         'pr_pull_shuffle':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
-        'pr_push':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
-        'pr_push_double':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
-        'pr_push_shuffle_double':  ['.omp_outlined..14', '.omp_outlined..15'],  # Two kernels.
-        'pr_push_atomic':  ['.omp_outlined..14'],  # One kernel.
-        'pr_push_swap':  ['.omp_outlined..14'],  # One kernel.
+        'pr_push':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
+        'pr_push_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
+        'pr_push_shuffle_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
+        'pr_push_atomic':  ['.omp_outlined..18'],  # One kernel.
+        'pr_push_swap':  ['.omp_outlined..18'],  # One kernel.
         'sssp': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
         'tc':  ['.omp_outlined.'],

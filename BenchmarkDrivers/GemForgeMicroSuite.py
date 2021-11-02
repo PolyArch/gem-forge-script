@@ -218,6 +218,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'omp_bfs',
             'omp_page_rank',
             'omp_array_sum_avx',
+            'omp_dot_prod_avx',
             'omp_vec_add_avx',
         ]
         for prefix in no_unroll_workloads:

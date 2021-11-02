@@ -304,12 +304,25 @@ class Gem5ReplayConfigureManager(object):
         "--routing-YX", # Routing in YX direction.
     ]
     RUBY_MESH_DIR_MIDDLE = [
-        "--topology=MeshDirMiddle_XY",
+        "--topology=MeshDir_XY",
+        "--ruby-mesh-dir-location=middle",
+        "--routing-YX", # Routing in YX direction.
+    ]
+    RUBY_MESH_DIR_TILE = [
+        "--topology=MeshDir_XY",
+        "--ruby-mesh-dir-location=tile",
+        "--routing-YX", # Routing in YX direction.
+    ]
+    RUBY_MESH_DIR_DIAG = [
+        "--topology=MeshDir_XY",
+        "--ruby-mesh-dir-location=diag",
         "--routing-YX", # Routing in YX direction.
     ]
     RUBY_L3 = RUBY_L3_BASE + RUBY_MESH
     RUBY_L3_DIR_CORNER = RUBY_L3_BASE + RUBY_MESH_DIR_CORNER
     RUBY_L3_DIR_MIDDLE = RUBY_L3_BASE + RUBY_MESH_DIR_MIDDLE
+    RUBY_L3_DIR_TILE = RUBY_L3_BASE + RUBY_MESH_DIR_TILE
+    RUBY_L3_DIR_DIAG = RUBY_L3_BASE + RUBY_MESH_DIR_DIAG
 
     DRAMSim3ConfigPath = os.path.join(C.DRAMSIM3_DIR, 'configs')
     
@@ -387,6 +400,24 @@ class Gem5ReplayConfigureManager(object):
             "--num-l2caches=64",
             "--mesh-rows=8",
         ] + RUBY_L3_DIR_MIDDLE + L0_32kB + MLC_256kB + LLC_1MB,
+        '4x4.dir_middle2x2.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=16",
+            "--num-dirs=4",
+            "--num-l2caches=16",
+            "--mesh-rows=4",
+        ] + RUBY_L3_DIR_MIDDLE + L0_32kB + MLC_256kB + LLC_1MB,
+        '4x4.dir_tile2x2.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=16",
+            "--num-dirs=4",
+            "--num-l2caches=16",
+            "--mesh-rows=4",
+        ] + RUBY_L3_DIR_TILE + L0_32kB + MLC_256kB + LLC_1MB,
+        '4x4.dir_diag.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=16",
+            "--num-dirs=4",
+            "--num-l2caches=16",
+            "--mesh-rows=4",
+        ] + RUBY_L3_DIR_DIAG + L0_32kB + MLC_256kB + LLC_1MB,
         'llc_select_512B': LLC_SELECT_512B,
         'llc_select_256B': LLC_SELECT_256B,
         'llc_select_128B': LLC_SELECT_128B,
@@ -452,10 +483,10 @@ class Gem5ReplayConfigureManager(object):
             "--mem-channel-xor-low-bit=20",
             "--sys-clock=1GHz",
         ],
-        'ddr4-test': [
+        'ddr4-no-xor': [
             "--mem-type=DRAMsim3",
             f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200_Stream.ini",
-            "--mem-channel-xor-low-bit=20",
+            "--mem-channel-xor-low-bit=0",
             "--sys-clock=1GHz",
         ],
     }

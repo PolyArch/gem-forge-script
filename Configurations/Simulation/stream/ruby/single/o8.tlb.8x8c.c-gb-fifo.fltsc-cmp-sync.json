@@ -34,7 +34,7 @@
     "snippts": [
         "o8.tlb",
         "8x8.dir_corner.l2_256kB.l3_1MB_s0.ruby",
-        "ddr4"
+        "ddr4-no-xor"
     ],
     "design_space": {
         "llc_intrlv": [
