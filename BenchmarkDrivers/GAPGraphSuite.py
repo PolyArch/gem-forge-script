@@ -52,11 +52,27 @@ class GAPGraphBenchmark(Benchmark):
             # Only one trial.
             '-n', '1',
         ]
-        if input_name.startswith('krn21-k8') or input_name.startswith('krn19-k16'):
-            # This should be mix-level offloading, do not warm up cache.
-            args += [
-                '-c'
-            ]
+        cold_inputs = [
+            ('krn21-k8', 0),
+            ('krn19-k16', 0),
+            ('roadNet-CA', 0),
+            ('web-BerkStan', 1),
+            ('soc-pokec-relationships', 0),
+        ]
+        for i, c in cold_inputs:
+            if input_name.startswith(i):
+                """
+                This should be mix-level offloading, only warm up with
+                specific level:
+                0: Do not warm up.
+                1: Warm up except the edge list.
+                2: Warm up everything.
+                """
+                args += [
+                    '-c',
+                    f'{c}',
+                ]
+                break
         return args
 
     def get_extra_compile_flags(self):
@@ -225,7 +241,7 @@ class GAPGraphBenchmark(Benchmark):
         return additional_options
 
     def get_gem5_mem_size(self):
-        return '1GB'
+        return '4GB'
 
 
 class GAPGraphSuite:

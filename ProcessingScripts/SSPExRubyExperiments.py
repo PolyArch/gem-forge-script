@@ -194,6 +194,12 @@ class TileStatsParser(object):
                 'system.mem_ctrls{tile_id}.num_reads::total'),
             'mem_bw_read': self.format_re(
                 'system.mem_ctrls{tile_id}.bw_read::total'),
+            'mem_bytes_write': self.format_re(
+                'system.mem_ctrls{tile_id}.bytes_written::total'),
+            'mem_num_writes': self.format_re(
+                'system.mem_ctrls{tile_id}.num_writes::total'),
+            'mem_bw_write': self.format_re(
+                'system.mem_ctrls{tile_id}.bw_write::total'),
             'mem_bw_total': self.format_re(
                 'system.mem_ctrls{tile_id}.bw_total::total'),
         }
@@ -288,7 +294,8 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            # print(f'{msg_name} {flits[i]}')
+            if self.tile_stats.tile_id == 0:
+                print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':
@@ -515,6 +522,12 @@ def print_stats(tile_stats):
     print_if_non_zero(
         v=sum(value_or_zero(ts, 'mem_bytes_read') for ts in tile_stats),
         f='num mem bytes reads     {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'mem_num_writes') for ts in tile_stats),
+        f='num mem writes          {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'mem_bytes_write') for ts in tile_stats),
+        f='num mem bytes writes    {v}')
     print('num core microops       {v}'.format(
         v=sum(value_or_zero(ts, 'core_committed_microops') for ts in tile_stats)
     ))

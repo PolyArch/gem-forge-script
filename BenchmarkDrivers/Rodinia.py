@@ -82,8 +82,8 @@ class RodiniaBenchmark(Benchmark):
             # cols, rows, threads, warm.
             'test': ['100', '100', '$NTHREADS', '1'],
             'medium': ['1000', '100', '$NTHREADS', '1'],
-            'large': [str(6 * 1024 * 1024 // 4), '100', '$NTHREADS', '1'],
-            'large-cold': [str(6 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
+            'large': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '1'],
+            'large-cold': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
             'mix': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
             'mem': [str(48 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
         },
