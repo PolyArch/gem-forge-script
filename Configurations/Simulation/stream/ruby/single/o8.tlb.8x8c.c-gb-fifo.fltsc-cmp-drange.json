@@ -1,5 +1,5 @@
 {
-    "id": "o8.tlb.8x8c-l{link}-s{llc_intrlv}-ch{ch_intrlv}.f{stream_fifo}-c-gb.fltsc-cmp-simd{simd_lat}-inflyc{infly_computation}",
+    "id": "o8.tlb.8x8c-l{link}-s{llc_intrlv}-ch{ch_intrlv}.f{stream_fifo}-c-gb.fltsc-cmp-drange{direct_range}",
     "options": [
         "--gem-forge-num-active-cpus=1",
         "--gem-forge-cache-load-ports=6",
@@ -23,7 +23,8 @@
         "--gem-forge-stream-engine-enable-float-multicast",
         "--gem-forge-stream-engine-llc-stream-engine-issue-width=1",
         "--gem-forge-stream-engine-llc-access-core-simd-delay={simd_lat}",
-        "--gem-forge-stream-engine-llc-max-infly-computation={infly_computation}",
+        "--gem-forge-stream-engine-mlc-generate-direct-range={direct_range}",
+        "--gem-forge-stream-engine-llc-max-infly-computation={infly_c}",
         "--gem-forge-stream-engine-llc-multicast-group-size={mc}",
         "--gem-forge-stream-engine-llc-neighbor-stream-threshold={neighbor_stream_threshold}",
         "--gem-forge-stream-engine-llc-neighbor-migration-delay={neighbor_migration_delay}",
@@ -38,7 +39,8 @@
         "llc_intrlv": ["1kB"],
         "ch_intrlv": ["4kB"],
         "simd_lat": [4],
-        "infly_computation": [1, 2, 8, 16, 32],
+        "direct_range": [0],
+        "infly_c": [4],
         "link": [256],
         "stream_fifo": [2048],
         "mc": [2],

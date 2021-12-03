@@ -53,7 +53,7 @@ def collectAllTraces(folder, keyword=None):
     return all_events
 
 def collectStreamChangesForBank(all_events, bank):
-    bank_events = [e for e in all_events if e.llc_bank == bank]
+    bank_events = [e for e in all_events if (e.se, e.llc_bank) == bank]
     current_streams = 0
     stream_changes = list()
     for e in bank_events:
@@ -74,7 +74,7 @@ def collectStreamChangesForBank(all_events, bank):
 def collectBanks(all_events):
     all_banks = list()
     for e in all_events:
-        bank = e.llc_bank
+        bank = (e.se, e.llc_bank)
         if bank not in all_banks:
             all_banks.append(bank)
     all_banks.sort()

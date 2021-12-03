@@ -260,6 +260,7 @@ class TileStatsParser(object):
             ('strm', 'Request::STREAM_FLOW'),
             ('strm', 'Request::STREAM_END'),
             ('ctrl', 'Request::STREAM_STORE'),
+            ('strm', 'Request::STREAM_UNLOCK'),
             ('strm', 'Request::STREAM_MIGRATE'),
             ('data', 'Request::STREAM_FORWARD'),
             ('strm', 'Request::STREAM_COMMIT'),
@@ -294,8 +295,8 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            if self.tile_stats.tile_id == 0:
-                print(f'{msg_name} {flits[i]}')
+            # if self.tile_stats.tile_id == 0:
+            #     print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':

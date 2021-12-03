@@ -93,6 +93,7 @@ class GAPGraphBenchmark(Benchmark):
         'pr_pull_shuffle':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
         'pr_push':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
         'pr_push_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
+        'pr_push_double_dyn':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
         'pr_push_shuffle_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
         'pr_push_atomic':  ['.omp_outlined..18'],  # One kernel.
         'pr_push_swap':  ['.omp_outlined..18'],  # One kernel.
