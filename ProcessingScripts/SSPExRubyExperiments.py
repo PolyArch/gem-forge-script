@@ -295,8 +295,8 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            # if self.tile_stats.tile_id == 0:
-            #     print(f'{msg_name} {flits[i]}')
+            if self.tile_stats.tile_id == 0:
+                print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':

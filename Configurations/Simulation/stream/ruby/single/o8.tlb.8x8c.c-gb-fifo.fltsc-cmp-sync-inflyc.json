@@ -39,7 +39,7 @@
         "llc_intrlv": ["1kB"],
         "ch_intrlv": ["4kB"],
         "simd_lat": [4],
-        "infly_computation": [1, 2, 4, 8, 16, 32],
+        "infly_computation": [1, 2, 8, 16, 32],
         "link": [256],
         "stream_fifo": [2048],
         "mc": [2],

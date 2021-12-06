@@ -66,7 +66,7 @@ class GAPGraphBenchmark(Benchmark):
                 specific level:
                 0: Do not warm up.
                 1: Warm up except the edge list.
-                2: Warm up everything.
+                2: Warm up everything (default behavior).
                 """
                 args += [
                     '-c',
@@ -96,6 +96,7 @@ class GAPGraphBenchmark(Benchmark):
         'pr_push_double_dyn':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
         'pr_push_shuffle_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
         'pr_push_atomic':  ['.omp_outlined..18'],  # One kernel.
+        'pr_push_atomic_double_dyn':  ['.omp_outlined..18'],  # One kernel.
         'pr_push_swap':  ['.omp_outlined..18'],  # One kernel.
         'sssp': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
@@ -208,10 +209,14 @@ class GAPGraphBenchmark(Benchmark):
         work_items = -1
         if self.benchmark_name.startswith('pr'):
             # Two kernels, two iteration.
-            if self.benchmark_name in ['pr_push_atomic', 'pr_push_swap']:
-                work_items = 2
-            else:
-                work_items = 4
+            work_items = 4
+            for single_kernel_prefix in [
+                'pr_push_atomic',
+                'pr_push_swap',
+            ]:
+                if self.benchmark_name.startswith(single_kernel_prefix):
+                    work_items = 2
+                    break
         if work_items != -1:
             additional_options.append(
                 f'--work-end-exit-count={work_items}'
