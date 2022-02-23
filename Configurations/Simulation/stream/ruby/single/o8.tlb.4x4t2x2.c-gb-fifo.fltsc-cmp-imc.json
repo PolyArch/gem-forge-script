@@ -44,7 +44,7 @@
     ],
     "design_space": {
         "llc_intrlv": ["1kB"],
-        "ch_intrlv": ["2kB", "4kB"],
+        "ch_intrlv": ["4kB"],
         "link": [256],
         "stream_fifo": [2048],
         "mc": [2],
@@ -52,7 +52,7 @@
         "cmp_width": [4],
         "neighbor_stream_threshold": [2],
         "neighbor_migration_delay": [100],
-        "ind_multicast_size": [4],
+        "ind_multicast_size": [1, 4],
         "ind_multicast_bank": [1],
         "idea_ack": [1],
         "idea_end": [1],
