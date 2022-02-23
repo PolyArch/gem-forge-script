@@ -33,7 +33,7 @@
     ],
     "snippts": [
         "o8.tlb",
-        "8x8.dir_tile4x4.l2_256kB.l3_1MB_s0.ruby",
+        "8x8.dir_tile4x4.l2_256kB.l3_4MB_s0.ruby",
         "ddr4-no-xor"
     ],
     "design_space": {
