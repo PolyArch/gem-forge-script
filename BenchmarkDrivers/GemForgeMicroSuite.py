@@ -22,11 +22,22 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': ['large']
         },
         'omp_link_list_search': {
-            # nodes per list, num of lists.
+            # nodes per list, num of lists, check, warm
             'test': [str(64), str(64)],
             'small': [str(1*1024), str(64)],
             'medium': [str(1*1024), str(512)],
-            'large': [str(2*1024), str(1024)],
+            'large': [str(x) for x in [32 * 1024 / 64, 1024, 0, 1]],
+            'mix': [str(x) for x in [512 * 1024 / 64, 1024, 0, 0]],
+        },
+        'omp_link_list_search_bulk64': {
+            # nodes per list, num of lists, check, warm
+            'large': [str(x) for x in [32 * 1024 / 64, 1024, 0, 1]],
+            'mix': [str(x) for x in [512 * 1024 / 64, 1024, 0, 0]],
+        },
+        'omp_link_list_search_bulk2k': {
+            # nodes per list, num of lists, check, warm
+            'large': [str(x) for x in [32 * 1024 / 64, 1024, 0, 1]],
+            'mix': [str(x) for x in [512 * 1024 / 64, 1024, 0, 0]],
         },
         'omp_hash_join': {
             # total elements, bucket size, total keys, 1 / hit ratio, check, warm
@@ -34,15 +45,16 @@ class GemForgeMicroBenchmark(Benchmark):
             'small': [str(x) for x in [1 * 1024 * 1024 / 16, 8, 1 * 1024 * 1024 / 8, 8, 1, 1]],
             'medium': [str(x) for x in [2 * 1024 * 1024 / 16, 8, 2 * 1024 * 1024 / 8, 8, 1, 1]],
             'large': [str(x) for x in [4 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0, 1]],
-            'mix': [str(x) for x in [16 * 1024 * 1024 / 16, 8, 128 * 1024 * 1024 / 8, 8, 0, 0]],
+            'mix': [str(x) for x in [512 * 1024 * 1024 / 16, 8, 4 * 1024 * 1024 / 8, 8, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 16, 8, 64 * 1024 * 1024 / 8, 8, 0, 0]],
         },
         'omp_binary_tree': {
             # total elements, total keys, 1 / hit ratio, check
             'test': [str(x) for x in [512, 128, 8, 1]],
-            'small': [str(x) for x in [4 * 1024 * 1024 / 32, 1 * 1024 / 8, 8, 1]],
-            'medium': [str(x) for x in [2 * 1024 * 1024 / 32, 2 * 1024 * 1024 / 8, 8, 1]],
-            'large': [str(x) for x in [4 * 1024 * 1024 / 32, 4 * 1024 * 1024 / 8, 8, 0]],
+            'small': [str(x) for x in [4 * 1024 * 1024 // 64, 1 * 1024 // 8, 8, 1]],
+            'medium': [str(x) for x in [2 * 1024 * 1024 // 64, 2 * 1024 * 1024 // 8, 8, 1]],
+            'large': [str(x) for x in [8 * 1024 * 1024 // 64, 4 * 1024 * 1024 // 8, 8, 0]],
+            'mix': [str(x) for x in [512 * 1024 * 1024 // 64, 4 * 1024 * 1024 // 8, 8, 0]],
         },
         'omp_array_sum_avx': {
             # total elements (float), check, warm
@@ -61,6 +73,14 @@ class GemForgeMicroBenchmark(Benchmark):
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
         'omp_vec_add_avx': {
+            # total elements (float), check, warm
+            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
+            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+        },
+        'vec_add_avx': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
             'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
@@ -130,7 +150,7 @@ class GemForgeMicroBenchmark(Benchmark):
         return []
 
     def get_args(self, input_name):
-        if self.is_omp:
+        if self.is_omp or self.is_variant_input:
             args = [str(self.n_thread)]
             if self.is_graph:
                 graphs = os.path.join(os.getenv('BENCHMARK_PATH'), 'graphs')
@@ -189,7 +209,8 @@ class GemForgeMicroBenchmark(Benchmark):
         return 'C'
 
     def get_exe_path(self):
-        return self.work_path
+        # Execute in the original src folder.
+        return self.src_path
 
     def get_run_path(self):
         return self.work_path

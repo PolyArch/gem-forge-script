@@ -5,6 +5,7 @@ Assume MinorCPU.
 
 import re
 
+__print_traffic__ = True
 
 class TileStats(object):
     def __init__(self, tile_id):
@@ -31,6 +32,7 @@ class TileStatsParser(object):
     def __init__(self, tile_stats):
         self.tile_stats = tile_stats
         self.re = {
+            'sim_ticks': self.format_re('sim_ticks'),
             'num_cycles': self.format_re(
                 'system.future_cpus{tile_id}.numCycles'),
             'num_dyn_ops': self.format_re(
@@ -252,6 +254,7 @@ class TileStatsParser(object):
             ('ctrl', 'Request::GETH'),
             ('ctrl', 'Request::GET_INSTR'),
             ('ctrl', 'Request::INV'),
+            ('ctrl', 'Request::INV_GET'),
             ('data', 'Request::PUTX'),
             ('ctrl', 'Request::WB_ACK'),
             ('ctrl', 'Request::DMA_READ'),
@@ -282,7 +285,7 @@ class TileStatsParser(object):
             ('strm', 'Response::STREAM_NDC'),
         ]
         n_categories = 2
-        n_types_per_category = 20
+        n_types_per_category = 40
         n_types = n_categories * n_types_per_category
         flits = [float(fields[i * 4 + 2]) for i in range(n_types)]
         control_flits = 0
@@ -295,7 +298,7 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            if self.tile_stats.tile_id == 0:
+            if __print_traffic__ and self.tile_stats.tile_id == 0:
                 print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
@@ -358,6 +361,7 @@ def print_if_non_zero(v, f):
         print(f.format(v=v))
 
 def print_stats(tile_stats):
+    ticks_per_cycle = 500
     def sum_or_nan(vs):
         s = sum(vs)
         if s == 0:
@@ -434,13 +438,13 @@ def print_stats(tile_stats):
     ))
     print('crossbar / cycle        {v}'.format(
         v=sum(value_or_nan(ts, 'crossbar_act') for ts in tile_stats) / \
-            (len(tile_stats) * main_ts.num_cycles)
+            (len(tile_stats) * main_ts.sim_ticks * ticks_per_cycle)
     ))
     print('main cpu cycles         {v}'.format(
-        v=main_ts.num_cycles
+        v=main_ts.sim_ticks / ticks_per_cycle
     ))
     print('main cpu opc            {v}'.format(
-        v=main_ts.commit_op / main_ts.num_cycles
+        v=main_ts.commit_op / main_ts.sim_ticks  * ticks_per_cycle
     ))
     # print('main cpu idea opc       {v}'.format(
     #     v=main_ts.commit_op / main_ts.idea_cycles if hasattr(main_ts, 'idea_cycles') else 0

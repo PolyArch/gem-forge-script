@@ -53,10 +53,14 @@ class GAPGraphBenchmark(Benchmark):
             '-n', '1',
         ]
         cold_inputs = [
-            ('krn21-k8', 0),
+            ('krn21-k8', 1), # 2097152 Nodes (8MB w. 4B key), 16208491 undirected edges (126MB w. 4B key) for degree: 7.72881
             ('krn19-k16', 0),
-            ('roadNet-CA', 0),
+            ('roadNet-PA', 1), # 1090920 Nodes (4.3MB w. 4B key), 3083796 edges (12MB w. 4B key)
+            ('roadNet-TX', 1), # 1393383 Nodes (5.4MB w. 4B key), 3843320 edges (15MB w. 4B key)
+            ('roadNet-CA', 1), # 1971281 Nodes (7.7MB w. 4B key), 5533214 edges (21.6MB w. 4B key)
             ('web-BerkStan', 1),
+            ('road-great-britain-osm', 1), # 7733822 Nodes (30.2MB w. 4B key), 8156517 edges (31.9MB w. 4B key)
+            ('soc-LiveJournal1', 1), # 4847571 Nodes (19MB w. 4B key) and 68475391 directed edges (267MB w. 4B key) for degree: 14.1257
             ('soc-pokec-relationships', 0),
         ]
         for i, c in cold_inputs:
@@ -73,6 +77,16 @@ class GAPGraphBenchmark(Benchmark):
                     f'{c}',
                 ]
                 break
+        # SSSP need specific delta for some graphs to be able to finish.
+        sssp_delta = {
+            'road-great-britain-osm': 200,
+        }
+        if self.benchmark_name.startswith('sssp') and input_name in sssp_delta:
+            delta = sssp_delta[input_name]
+            args += [
+                '-d',
+                f'{delta}',
+            ]
         return args
 
     def get_extra_compile_flags(self):
@@ -81,25 +95,45 @@ class GAPGraphBenchmark(Benchmark):
     def get_sim_input_name(self, sim_input):
         return f'{sim_input}-thread{self.n_thread}'
 
+    PR_PUSH_KERNEL_1 = '.omp_outlined..26'
+    PR_PUSH_KERNEL_2 = '.omp_outlined..27'
+    PR_PULL_KERNEL_1 = '.omp_outlined..27'
+    PR_PULL_KERNEL_2 = '.omp_outlined..28'
+    BFS_PUSH_KERNEL = '.omp_outlined..15'
+    BFS_PULL_KERNEL_1 = '.omp_outlined..15'
+    BFS_PULL_KERNEL_2 = '.omp_outlined..16'
+    SSSP_KERNEL = '.omp_outlined..22'
+
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
-        'bfs_push': ['.omp_outlined.'],
-        'bfs_push_check': ['.omp_outlined.'],
+        'bfs_push': [BFS_PUSH_KERNEL],
+        'bfs_push_check': [BFS_PUSH_KERNEL],
+        'bfs_push_offset': [BFS_PUSH_KERNEL],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
-        'bfs_pull_shuffle': ['.omp_outlined.', '.omp_outlined..11'],  # Two kernels.
+        'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
+        'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
-        'pr_pull_shuffle':  ['.omp_outlined..13', '.omp_outlined..14'],  # Two kernels.
-        'pr_push':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
-        'pr_push_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
-        'pr_push_double_dyn':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
-        'pr_push_shuffle_double':  ['.omp_outlined..18', '.omp_outlined..19'],  # Two kernels.
-        'pr_push_atomic':  ['.omp_outlined..18'],  # One kernel.
-        'pr_push_atomic_double_dyn':  ['.omp_outlined..18'],  # One kernel.
-        'pr_push_swap':  ['.omp_outlined..18'],  # One kernel.
+        'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
+        'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
+        'pr_push':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_double':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_double_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_shuffle_double':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_atomic':  [PR_PUSH_KERNEL_1],  # One kernel.
+        'pr_push_atomic_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
+        'pr_push_atomic_double_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
+        'pr_push_swap':  [PR_PUSH_KERNEL_1],  # One kernel.
         'sssp': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
+        'sssp_inline': [SSSP_KERNEL],
+        'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
     }
 
@@ -136,23 +170,21 @@ class GAPGraphBenchmark(Benchmark):
             '-DGEM_FORGE_WARM_CACHE',
             '-stream-specialize',
             # '-mllvm',
-            # '-opt-bisect-limit=3410',
+            # '-opt-bisect-limit=400',
         ]
         no_unroll_workloads = [
-            'bfs',
             'bfs_pull',
-            'bfs_pull_shuffle',
             'bfs_push',
-            'bfs_push_check',
             'pr_pull',
-            'pr_pull_shuffle',
         ]
-        if self.benchmark_name in no_unroll_workloads:
-            flags.append('-fno-unroll-loops')
+        for b in no_unroll_workloads:
+            if self.benchmark_name.startswith(b):
+                flags.append('-fno-unroll-loops')
+                break
         if self.benchmark_name.startswith('pr_push'):
             flags.append('-ffast-math')
             flags.append('-fno-unroll-loops')
-            # flags.append('-mavx512f')
+            flags.append('-mavx512f')
 
         sources = [self.source]
         bcs = [s[:-2] + '.bc' for s in sources]
@@ -217,6 +249,17 @@ class GAPGraphBenchmark(Benchmark):
                 if self.benchmark_name.startswith(single_kernel_prefix):
                     work_items = 2
                     break
+        """
+        This takes too long to finish. So we limit some work items.
+        """
+        input_benchmark_work_items = [
+            ('road-great-britain-osm', 'sssp', 1000), # 1000 iters -> about 24 hours for NSC+Mem.
+            ('road-great-britain-osm', 'bfs_push', 666), # 666 iters -> 24 hours for NSC+Mem.
+        ]
+        for i, b, w in input_benchmark_work_items:
+            if input_name.startswith(i) and self.benchmark_name.startswith(b):
+                work_items = w
+                break
         if work_items != -1:
             additional_options.append(
                 f'--work-end-exit-count={work_items}'

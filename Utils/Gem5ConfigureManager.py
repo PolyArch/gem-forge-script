@@ -295,6 +295,7 @@ class Gem5ReplayConfigureManager(object):
         "--link-latency=1",
         "--mem-channels=2",
         "--mem-size=16GB",
+        "--no-file-system",
     ]
     RUBY_MESH = [
         "--topology=Mesh_XY",

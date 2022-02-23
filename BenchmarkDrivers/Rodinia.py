@@ -37,8 +37,10 @@ class RodiniaBenchmark(Benchmark):
             # rows, cols, iterations, threads, data(unused), power(unused), output(unused), warm
             'test':   ['64', '64', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'medium': ['512', '512', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'pic':  ['1024', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large':  ['2048', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
-            'mix':    ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'mix':    ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'mix-cold': ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
         'hotspot3D': {
             # DataType(double), 3 Arrays
@@ -46,7 +48,8 @@ class RodiniaBenchmark(Benchmark):
             'test':   ['64', '64', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'medium': ['512', '512', '2', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large':  ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
-            'mix':    ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'mix':    ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'mix-cold': ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
         'kmeans': {
             'test':   ['-b', 'dummy', '-n', '$NTHREADS', '-i', '{DATA}/100.data'],
@@ -84,7 +87,8 @@ class RodiniaBenchmark(Benchmark):
             'medium': ['1000', '100', '$NTHREADS', '1'],
             'large': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '1'],
             'large-cold': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
-            'mix': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
+            'mix': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '1'],
+            'mix-cold': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
             'mem': [str(48 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
         },
         'srad_v2': {
@@ -92,13 +96,15 @@ class RodiniaBenchmark(Benchmark):
             # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
             'medium': ['256', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
             'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
-            'mix': ['1536', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
+            'mix': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'mix-cold': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
         },
         'srad_v3': {
             # DataType(float), 3 arrays.
             # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
             'large': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
-            'mix': ['4196', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
+            'mix': ['4096', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'mix-cold': ['4096', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
         },
         'streamcluster': {
             'tiny': ['10', '20', '16', '1024', '1024', '1000', '16_1024.data', 'output.txt', '$NTHREADS'],
@@ -110,7 +116,7 @@ class RodiniaBenchmark(Benchmark):
 
     ROI_FUNCS = {
         'b+tree': [
-            '.omp_outlined..33',  # kernel_range
+            '.omp_outlined..34',  # kernel_range
             '.omp_outlined..37',  # kernel_query
         ],
         'bfs': [
@@ -161,12 +167,12 @@ class RodiniaBenchmark(Benchmark):
             '.omp_outlined..15',  # resampleParticles(): reset
         ],
         'pathfinder': [
-            '.omp_outlined..6',
+            '.omp_outlined.',
         ],
         'srad_v2': [
             'sumROI',
-            '.omp_outlined..19',
-            '.omp_outlined..20',
+            '.omp_outlined..28',
+            '.omp_outlined..29',
         ],
         'srad_v2-avx512-fix-kernel1': [
             'sumROI',
@@ -178,8 +184,8 @@ class RodiniaBenchmark(Benchmark):
         ],
         'srad_v3': [
             'sumROI',
-            '.omp_outlined..13',
-            '.omp_outlined..14',
+            '.omp_outlined..22',
+            '.omp_outlined..23',
         ],
         'streamcluster': [
             'pgain_dist',
@@ -280,6 +286,8 @@ class RodiniaBenchmark(Benchmark):
         return fields
 
     def get_input_size(self, input_name):
+        if input_name.startswith('mix-cold'):
+            return 'mix-cold'
         return self.break_input_name(input_name)[0]
 
     def _get_args(self, input_name):
@@ -350,11 +358,13 @@ class RodiniaBenchmark(Benchmark):
             'long': 8,
         }
         input_name_fields = self.break_input_name(input_name)
-        if input_name_fields[1] in var_work_item_time:
-            if self.benchmark_name_prefix in var_work_item_base:
-                work_item_bases = var_work_item_base[self.benchmark_name_prefix]
-                work_item_times = var_work_item_time[input_name_fields[1]]
-                work_items = work_item_bases * work_item_times
+        for field in input_name_fields:
+            if field in var_work_item_time:
+                if self.benchmark_name_prefix in var_work_item_base:
+                    work_item_bases = var_work_item_base[self.benchmark_name_prefix]
+                    work_item_times = var_work_item_time[field]
+                    work_items = work_item_bases * work_item_times
+                    break
         if work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=work_items)
@@ -364,6 +374,14 @@ class RodiniaBenchmark(Benchmark):
             # a long when other thread is still working. So we disable deadlock check.
             flags.append(
                 '--gem-forge-cpu-deadlock-interval=0ns'
+            )
+        # Migration valve to all streams in memory controller.
+        memory_stream_valve_all = [
+            'hotspot3D',
+        ]
+        if self.benchmark_name_prefix in memory_stream_valve_all:
+            flags.append(
+                '--gem-forge-stream-engine-mc-neighbor-migration-valve-type=all'
             )
         return flags
 
@@ -389,6 +407,11 @@ class RodiniaBenchmark(Benchmark):
             self.get_run_path(),
         ]
         Util.call_helper(cp_cmd)
+        dis_cmd = [
+            'llvm-dis',
+            os.path.join(self.get_run_path(), self.get_raw_bc())
+        ]
+        Util.call_helper(dis_cmd)
         os.chdir(self.cwd)
 
     def trace(self):
@@ -402,6 +425,16 @@ class RodiniaBenchmark(Benchmark):
         self.run_trace()
 
         os.chdir(self.cwd)
+
+    def get_additional_transform_options(self):
+        """
+        B+tree enable incomplete reduction.
+        """
+        if self.benchmark_name == 'b+tree':
+            return [
+                '-stream-pass-enable-incomplete-reduction',
+            ]
+        return list()
 
 
 class RodiniaSuite:

@@ -251,9 +251,9 @@ class JobScheduler:
     def run(self):
         assert(self.state == JobScheduler.STATE_INIT)
         self.log_f = tempfile.NamedTemporaryFile(
-            mode='wt', prefix='job_scheduler.{n}.'.format(n=self.name), delete=False)
+            mode='wt', prefix='job_scheduler.', suffix='.{n}'.format(n=self.name), delete=False)
         self.log_failed_f = tempfile.NamedTemporaryFile(
-            mode='wt', prefix='job_scheduler.{n}.fail.'.format(n=self.name), delete=False)
+            mode='wt', prefix='job_scheduler.', suffix='.{n}.fail'.format(n=self.name), delete=False)
         print(self.log_f.name)
         seconds = 0
         

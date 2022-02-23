@@ -88,10 +88,14 @@ def dumpAliveStreams(folder, keyword=None):
     print(f'All Banks {banks}')
     with open(f'{base_folder}-llc-{keyword if keyword else "all"}-streams-timeline.csv', 'w') as f:
         max_streams = list()
+        max_cycles = list()
+        min_cycles = list()
         for bank in banks:
-            f.write(f'bank{bank}\n')
+            f.write(f'bank-{bank[0]}-{bank[1]}\n')
             stream_changes = collectStreamChangesForBank(all_events, bank)
             max_streams.append(max(x[1] for x in stream_changes))
+            min_cycles.append(stream_changes[0][0])
+            max_cycles.append(stream_changes[-1][0])
             for c in stream_changes:
                 f.write(f'{c[0]},')
             f.write('\n')
@@ -103,6 +107,15 @@ def dumpAliveStreams(folder, keyword=None):
         f.write('\n')
         for bank in range(len(max_streams)):
             f.write(f'{max_streams[bank]},')
+        f.write('\n')
+        for bank in range(len(min_cycles)):
+            f.write(f'{min_cycles[bank]},')
+        f.write('\n')
+        for bank in range(len(max_cycles)):
+            f.write(f'{max_cycles[bank]},')
+        f.write('\n')
+        for bank in range(len(max_cycles)):
+            f.write(f'{max_cycles[bank] - min_cycles[bank]},')
         f.write('\n')
 
 
