@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# rm -f /tmp/job_scheduler.*
+
+Benchmark='-b gfm.vec_add_avx'
+# Benchmark='-b gfm.stencil1d_avx'
+# Hotspot is not working with strand yet.
+# Benchmark='-b rodinia.hotspot-avx512-fix-fp32'
+# Benchmark='--suite gap'
+SimInput=large-cold
+Threads=1
+
+SimTrace='--fake-trace'
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
+
+BaseTrans=valid.ex
+python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
+# RubyConfig=8x8c
+RubyConfig=8x8t4x4
+Parallel=100
+sim_replay_prefix=replay/ruby/single
+i4=$sim_replay_prefix/i4.tlb.${RubyConfig}
+o4=$sim_replay_prefix/o4.tlb.${RubyConfig}
+o8=$sim_replay_prefix/o8.tlb.${RubyConfig}
+sim_replay=$o8,$o8.bingo-l2pf
+# sim_replay=$o8
+python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
+    --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel 
+    # --gem5-debug DRAMsim3 --gem5-debug-start 15502083420 | tee gfm.log
+
+StreamTransform=stream/ex/static/so.store
+# StreamTransform=stream/ex/static/so.store.cmp
+# StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
+# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+#     --transform-debug StreamLoopEliminator
+
+run_ssp () {
+    local trans=$1
+    local rubyc=$2
+    local input=$3
+    local threads=$4
+    local parallel=$5
+    local i4=stream/ruby/single/i4.tlb.$rubyc.c
+    local o4=stream/ruby/single/o4.tlb.$rubyc.c-gb-fifo
+    local o8=stream/ruby/single/o8.tlb.$rubyc.c-gb-fifo
+    local all_sim=$o8.flts
+    # local all_sim=$o8.fltsc-cmp-strnd
+    # local all_sim=$o8.fltsc-cmp-pum
+    # local all_sim=$o8.fltsc-cmp-strnd,$o8.fltsc-cmp
+    python Driver.py $Benchmark $SimTrace -t $trans \
+        --sim-configs $all_sim \
+        --sim-input $input \
+        --input-threads $threads \
+        -s -j $parallel \
+        --gem5-debug StreamPUM | tee /benchmarks/gfm.log
+        # --gem5-debug StreamEngine --gem5-debug-start  | tee gfm.log
+        # --gem5-debug IEW,LSQ,LSQUnit | tee iew.log
+        # --gem5-debug StreamAlias,O3CPUDelegator,LSQUnit,StreamBase,StreamEngine,StreamElement | tee hhh.log
+        # --gem5-debug RubyStreamLife | tee bfs.log &
+}
+# run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel
