@@ -72,14 +72,6 @@ class GemForgeMicroBenchmark(Benchmark):
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
-        'omp_vec_add_avx': {
-            # total elements (float), check, warm
-            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
-            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
-            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
-            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
-            'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
-        },
         'vec_add_avx': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
@@ -87,6 +79,55 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+        },
+        'stencil1d': {
+            # total elements (float, 3 array), check, warm
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 0]],
+        },
+        'stencil2d': {
+            # M, N, (float, 3 array), check, warm
+            'large': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 0]],
+        },
+        'stencil3d': {
+            # M, N, L, (float, 3 array), check, warm
+            'large': [str(x) for x in [512, 512, 16, 0, 1]],
+            'large-cold': [str(x) for x in [512, 512, 16, 0, 0]],
+        },
+        'gaussian_elim': {
+            # M, N, (float, 1 array), check, warm
+            'small-cold': [str(x) for x in [128, 128, 0, 0]],
+            'small': [str(x) for x in [128, 128, 0, 1]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
+        },
+        'dwt2d53': {
+            # M, N, (float, 1 array), check, warm
+            'small-cold': [str(x) for x in [512, 512, 0, 0]],
+            'small': [str(x) for x in [512, 512, 0, 1]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
+        },
+        'mm_outer': {
+            # L, M, N, (float, 3 array), check, warm
+            'small-cold': [str(x) for x in [512, 512, 512, 0, 0]],
+            'small': [str(x) for x in [512, 512, 512, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 1]],
+        },
+        'mm_inner': {
+            # L, M, N, P, (float, 4 array), check, warm
+            'tiny': [str(x) for x in [128, 128, 128, 128, 1, 1]],
+            'small-cold': [str(x) for x in [512, 512, 512, 512, 0, 0]],
+            'small': [str(x) for x in [512, 512, 512, 512, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
+        },
+        'linear_reuse_avx': {
+            # total elements (float), check, warm
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
         # 'omp_histogram_avx': {
         #     'medium': [str(x) for x in [1 * 1024 * 1024 / 4]],
@@ -114,10 +155,16 @@ class GemForgeMicroBenchmark(Benchmark):
 
         self.is_variant_input = False
         self.variant_input_sizes = None
-        for prefix in GemForgeMicroBenchmark.INPUT_SIZE:
-            if self.benchmark_name.startswith(prefix):
+        for stem in GemForgeMicroBenchmark.INPUT_SIZE:
+            if stem in self.benchmark_name:
                 self.is_variant_input = True
-                self.variant_input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[prefix]
+                self.variant_input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[stem]
+                self.stem = stem
+
+        self.work_items = -1
+        if self.benchmark_name == 'omp_page_rank':
+            # One iteration, two kernels.
+            self.work_items = 2
 
         # Create the result dir out of the source tree.
         self.work_path = os.path.join(
@@ -150,17 +197,17 @@ class GemForgeMicroBenchmark(Benchmark):
         return []
 
     def get_args(self, input_name):
+        args = list()
         if self.is_omp or self.is_variant_input:
-            args = [str(self.n_thread)]
+            args.append(str(self.n_thread))
             if self.is_graph:
                 graphs = os.path.join(os.getenv('BENCHMARK_PATH'), 'graphs')
                 suffix = 'wbin' if self.benchmark_name.startswith(
                     'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
                     i=input_name, s=suffix)))
-            args += self.get_sim_input_args(input_name)
-            return args
-        return None
+        args += self.get_sim_input_args(input_name)
+        return args
 
     def get_extra_compile_flags(self):
         flags = list()
@@ -193,11 +240,14 @@ class GemForgeMicroBenchmark(Benchmark):
         'omp_bfs_queue': [''],
         'omp_page_rank': ['', '.1'],
         'omp_sssp_bellman': [''],
+        'omp_dwt2d53': ['', '.7', '.8', '.9'],
+        'omp_dwt2d53_avx': ['', '.7', '.8', '.9'],
+        # 'omp_mm_inner_avx': ['', '.7'],
     }
 
     def get_trace_func(self):
         if self.is_omp:
-            if self.is_graph:
+            if self.benchmark_name in GemForgeMicroBenchmark.OMP_GRAPH_FUNC_SUFFIX:
                 suffixes = GemForgeMicroBenchmark.OMP_GRAPH_FUNC_SUFFIX[self.benchmark_name]
                 return Benchmark.ROI_FUNC_SEPARATOR.join(
                     ['.omp_outlined.' + suffix for suffix in suffixes])
@@ -233,6 +283,8 @@ class GemForgeMicroBenchmark(Benchmark):
             '-stream-specialize',
             '-mllvm',
             '-loop-unswitch-threshold=1',
+            # '-mllvm',
+            # '-opt-bisect-limit=763',
             '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
         ] + self.get_extra_compile_flags()
         no_unroll_workloads = [
@@ -241,6 +293,14 @@ class GemForgeMicroBenchmark(Benchmark):
             'omp_array_sum_avx',
             'omp_dot_prod_avx',
             'omp_vec_add_avx',
+            'omp_stencil1d_avx',
+            'omp_gaussian_elim',
+            'gaussian_elim',
+            'dwt2d53',
+            'omp_dwt2d53',
+            'mm_outer',
+            'omp_mm_outer_avx',
+            'omp_mm_inner_avx',
         ]
         for prefix in no_unroll_workloads:
             if self.benchmark_name.startswith(prefix):
@@ -298,7 +358,6 @@ class GemForgeMicroBenchmark(Benchmark):
         return ret
 
     def trace(self):
-        print('what?')
         os.chdir(self.work_path)
         self.build_trace(
             trace_reachable_only=False,
@@ -343,29 +402,16 @@ class GemForgeMicroBenchmark(Benchmark):
         to ensure that we simualte for the same amount of work.
         """
         flags = list()
-        work_items = -1
-        if self.benchmark_name == 'omp_page_rank':
-            # One iteration, two kernels.
-            work_items = 2
-        if self.benchmark_name == 'omp_bfs':
-            # Try to finish them?
-            work_items = -1
-        if work_items != -1:
+        if self.stem == 'mm_outer' and input_name == 'large':
+            # It takes for ever to finish large
+            self.work_items = 2
+        if self.work_items != -1:
             flags.append(
-                '--work-end-exit-count={v}'.format(v=work_items),
+                '--work-end-exit-count={v}'.format(v=self.work_items),
             )
         if self.is_variant_input:
             flags.append(
                 '--cpu-yield-lat=4000ns',
-            )
-        if self.benchmark_name == 'omp_indirect_sum':
-            # Disable deadlock check for this workload as we are offloading long indirect access.
-            flags.append(
-                '--gem-forge-cpu-deadlock-interval=0ns',
-            )
-        if self.benchmark_name.startswith('omp_dot_prod_avx'):
-            flags.append(
-                '--gem-forge-cpu-deadlock-interval=0ns',
             )
         return flags
 

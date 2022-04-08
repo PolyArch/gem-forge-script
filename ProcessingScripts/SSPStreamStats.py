@@ -17,13 +17,13 @@ class SingleStreamStat(object):
                 self.stats[field] = list()
             self.stats[field].append(float(value))
 
-    def get_avg(self, field):
+    def print_field(self, field):
         if field not in self.stats:
             print(f'{field} not in stream {self.name}')
             assert(False)
         values = self.stats[field]
         print(values)
-        print(f'min {min(values)} avg {sum(values) / len(values)}')
+        print(f'min {min(values)} max {max(values)} sum {sum(values)} avg {sum(values) / len(values)}')
         return sum(values) / len(values)
 
 class AllStreamStat(object):
@@ -44,13 +44,12 @@ class AllStreamStat(object):
                         self.stream_stats[stream_name] = SingleStreamStat(stream_name)
                     current_stat = self.stream_stats[stream_name]
 
-    def print_stream_avg(self, stream_name, field):
+    def print_stream_field(self, stream_name, field):
         if stream_name not in self.stream_stats:
             print(f'{stream_name} not found')
             assert(False)
         stream_stat = self.stream_stats[stream_name]
-        avg_value = stream_stat.get_avg(field)
-        print(f'{stream_name} avg {field} {avg_value}')
+        stream_stat.print_field(field)
 
 def main():
     core_id = 0
@@ -62,7 +61,7 @@ def main():
             break
         all_stat.add_file(stream_stats_fn)
 
-    all_stat.print_stream_avg('gap.pr_push.atomic.out_v.ld', 'avgNumDynStreams')
+    all_stat.print_stream_field('gap.pr_push.atomic.out_begin.ld', 'numMemIssueSlice')
         
 
 if __name__ == '__main__':

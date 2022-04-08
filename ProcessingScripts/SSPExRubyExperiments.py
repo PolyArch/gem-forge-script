@@ -268,6 +268,7 @@ class TileStatsParser(object):
             ('data', 'Request::STREAM_FORWARD'),
             ('strm', 'Request::STREAM_COMMIT'),
             ('strm', 'Request::STREAM_NDC'),
+            ('strm', 'Request::STREAM_PUM_DATA'),
         ]
         msg_type_resp_category = [
             ('ctrl', 'Response::MEMORY_ACK'),
