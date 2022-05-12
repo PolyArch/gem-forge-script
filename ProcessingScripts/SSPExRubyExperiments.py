@@ -204,6 +204,22 @@ class TileStatsParser(object):
                 'system.mem_ctrls{tile_id}.bw_write::total'),
             'mem_bw_total': self.format_re(
                 'system.mem_ctrls{tile_id}.bw_total::total'),
+            'pum_total_cycle': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumTotalCycles'),
+            'pum_compile_cycle': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumCompileCycles'),
+            'pum_reduce_cycle': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumReduceCycles'),
+            'pum_mix_cycle': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumMixCycles'),
+            'pum_compute_cycle': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumComputeCycles'),
+            'pum_move_cycle': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumDataMoveCycles'),
+            'pum_compute_cmds': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumComputeCmds'),
+            'pum_compute_ops': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumComputeOps'),
         }
         for addr in ['Affine', 'Indirect', 'PointerChase', 'MultiAffine']:
             for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
@@ -536,6 +552,9 @@ def print_stats(tile_stats):
         f='num mem bytes writes    {v}')
     print('num core microops       {v}'.format(
         v=sum(value_or_zero(ts, 'core_committed_microops') for ts in tile_stats)
+    ))
+    print('pum mix cycle           {v}'.format(
+        v=value_or_zero(tile_stats[0], 'pum_mix_cycle'),
     ))
 
     total_stream_data_traffic_fix = sum(value_or_zero(ts, 'stream_data_traffic_fix') for ts in tile_stats)

@@ -82,74 +82,107 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'stencil1d': {
             # total elements (float, 3 array), check, warm
+            'small': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 1]],
+            'small-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 0]],
+            'medium': [str(x) for x in [4 * 1024 * 1024 / 4, 0, 1]],
+            'medium-cold': [str(x) for x in [4 * 1024 * 1024 / 4, 0, 0]],
             'large': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 1]],
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 0]],
         },
         'stencil2d': {
             # M, N, (float, 3 array), check, warm
+            'small': [str(x) for x in [512, 512 , 0, 1]],
+            'small-cold': [str(x) for x in [512, 512 , 0, 0]],
+            'medium': [str(x) for x in [1 * 1024, 1 * 1024 , 0, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024, 1 * 1024 , 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 0]],
         },
         'stencil3d': {
             # M, N, L, (float, 3 array), check, warm
+            'small': [str(x) for x in [128, 128, 8, 0, 1]],
+            'small-cold': [str(x) for x in [128, 128, 8, 0, 0]],
+            'medium': [str(x) for x in [256, 256, 16, 0, 1]],
+            'medium-cold': [str(x) for x in [256, 256, 16, 0, 0]],
             'large': [str(x) for x in [512, 512, 16, 0, 1]],
             'large-cold': [str(x) for x in [512, 512, 16, 0, 0]],
         },
         'gaussian_elim': {
             # M, N, P, (float, 1 array), check, warm
-            'small-cold': [str(x) for x in [512, 512, 64, 0, 0]],
             'small': [str(x) for x in [512, 512, 64, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 64, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 64, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 64, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 64, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 64, 0, 0]],
         },
         'dwt2d53': {
             # M, N, (float, 1 array), check, warm
-            'small-cold': [str(x) for x in [512, 512, 0, 0]],
             'small': [str(x) for x in [512, 512, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
         },
         'mm_outer': {
             # L, M, N, (float, 3 array), check, warm
-            'small-cold': [str(x) for x in [512, 512, 512, 0, 0]],
             'small': [str(x) for x in [512, 512, 512, 0, 1]],
-            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
+            'small-cold': [str(x) for x in [512, 512, 512, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 1024, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
         },
         'mm_inner': {
             # L, M, N, P, (float, 4 array), check, warm
             'tiny': [str(x) for x in [128, 128, 128, 128, 1, 1]],
             'small': [str(x) for x in [512, 512, 512, 512, 0, 1]],
-            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
+            'small-cold': [str(x) for x in [512, 512, 512, 512, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 1024, 64, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 1024, 64, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
         },
         'conv2d': {
             # M, N, (float, 2 array), check, warm
             'tiny': [str(x) for x in [128, 128, 1, 1]],
             'small': [str(x) for x in [512, 512, 0, 1]],
-            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
+            'small-cold': [str(x) for x in [512, 512, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
-        },
-        'conv3d_zxy_inner': {
-            # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
-            'tiny': [str(x) for x in [64, 64, 16, 1, 3, 3, 0, 1]],
-            'small': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 1]],
-            'large-cold': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 0]],
-            'large': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
         },
         'conv3d_xyz_ioyx_outer': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
             'tiny': [str(x) for x in [64, 64, 16, 1, 3, 3, 0, 1]],
             'small': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 1]],
-            'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
+            'small-cold': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 0]],
+            'medium': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 1]],
+            'medium-cold': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
         },
         'conv3d_zxy_oyxi_outer_tile': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
             'tiny': [str(x) for x in [64, 64, 16, 1, 3, 3, 0, 1]],
             'small': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 1]],
-            'large-cold': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 0]],
+            'small-cold': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 0]],
+            'medium': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 1]],
+            'medium-cold': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 0]],
+        },
+        'conv3d_zxy_inner': {
+            # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'tiny': [str(x) for x in [64, 64, 16, 1, 3, 3, 0, 1]],
+            'small': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 1]],
+            'small-cold': [str(x) for x in [128, 128, 16, 16, 3, 3, 0, 0]],
+            'medium': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 1]],
+            'medium-cold': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 0]],
+            'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 0]],
         },
         'linear_reuse_avx': {
             # total elements (float), check, warm

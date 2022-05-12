@@ -448,26 +448,33 @@ def getConfigureations(subset):
                 ],
             })
 
-    if subset in ['pum']:
-        for suite, benchmark, tdg_folder, pum_benchmark, pum_tdg_folder in [
-            ('gfm', 'omp_stencil1d_avx', 'fake.0.tdg.thread64-large', 'stencil1d_avx', 'fake.0.tdg.thread64-large'),
-            ('gfm', 'omp_stencil2d_avx', 'fake.0.tdg.thread64-large', 'stencil2d_avx', 'fake.0.tdg.thread64-large'),
-            ('gfm', 'omp_stencil3d_avx', 'fake.0.tdg.thread64-large', 'stencil3d_avx', 'fake.0.tdg.thread64-large'),
-            ('gfm', 'omp_dwt2d53_avx', 'fake.0.tdg.thread64-large', 'dwt2d53', 'fake.0.tdg.thread64-large'),
-            ('gfm', 'omp_mm_outer_avx', 'fake.0.tdg.thread64-large', 'mm_outer', 'fake.0.tdg.thread64-large'),
+    if subset in ['pum-large', 'pum-medium', 'pum-small']:
+        input_size = subset[len('pum-'):]
+        tdg_folder = f'fake.0.tdg.thread64-{input_size}'
+        pum_tdg_folder = f'fake.0.tdg.thread64-{input_size}'
+        for suite, benchmark, pum_benchmark in [
+            ('gfm', 'omp_stencil1d_avx',     'stencil1d_avx'),
+            ('gfm', 'omp_stencil2d_avx',     'stencil2d_avx'),
+            ('gfm', 'omp_stencil3d_avx',     'stencil3d_avx'),
+            ('gfm', 'omp_dwt2d53_avx',       'dwt2d53'),
+            ('gfm', 'omp_gaussian_elim_avx', 'gaussian_elim'),
+            ('gfm', 'omp_mm_inner_avx',      'mm_inner'),
+            ('gfm', 'omp_mm_outer_avx',      'mm_outer'),
+            ('gfm', 'omp_conv2d_avx',        'conv2d'),
+            ('gfm', 'omp_conv3d_zxy_oyxi_outer_tile_avx', 'conv3d_xyz_ioyx_outer'),
         ]:
             configurations.append({
                 'suite': suite,
                 'benchmark': benchmark,
                 'tdg_folder': tdg_folder,
                 'transforms': [
-                    # {
-                    #     'transform': 'valid.ex',
-                    #     'simulations': [
-                    #         'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B',
-                    #         'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
-                    #     ]
-                    # },
+                    {
+                        'transform': 'valid.ex',
+                        'simulations': [
+                            'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B',
+                            'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
+                        ]
+                    },
                     {
                         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                         'simulations': [
@@ -485,8 +492,21 @@ def getConfigureations(subset):
                     {
                         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                         'simulations': [
-                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum-nuca1-iace0x1x1x1',
-                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum-nuca1-iace1x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-real-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-notile-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nocompile-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-softcompile-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nodfg-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-real-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-notile-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nocompile-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-softcompile-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nodfg-nuca1-iace0x1x1x1',
+                            # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum-nuca1-iace1x1x1x1',
                         ]
                     }
                 ],
@@ -507,8 +527,10 @@ def addSumDefaultZeroResult(result, tile_stats, v, vn=None):
         vn = v
     result[vn] = vs
 
-def addDefaultZeroResult(result, tile, v, vn):
+def addDefaultZeroResult(result, tile, v, vn=None):
     vs = (tile.__dict__[v] if hasattr(tile, v) else 0.0)
+    if vn is None:
+        vn = v
     result[vn] = vs
 
 def addCycleResult(result, tile_stats):
@@ -606,6 +628,17 @@ def addComputeResult(result, tile_stats):
     addSumDefaultZeroResult(result, tile_stats, 'llc_stream_real_xaw_conflict_atomics')
     addSumDefaultZeroResult(result, tile_stats, 'llc_stream_deadlock_atomics')
 
+def addPUMResult(result, tile_stats):
+    main_tile = tile_stats[0]
+    mid_tile = tile_stats[len(tile_stats) // 2]
+    addDefaultZeroResult(result, main_tile, 'pum_total_cycle')
+    addDefaultZeroResult(result, main_tile, 'pum_compile_cycle')
+    addDefaultZeroResult(result, main_tile, 'pum_reduce_cycle')
+    addDefaultZeroResult(result, main_tile, 'pum_mix_cycle')
+    addDefaultZeroResult(result, mid_tile, 'pum_compute_cycle')
+    addDefaultZeroResult(result, mid_tile, 'pum_move_cycle')
+    addSumDefaultZeroResult(result, tile_stats, 'pum_compute_ops')
+
 def addIdeaDataTraffic(result, tile_stats):
     # Idea data traffic if we can distribute computation.
     addSumDefaultZeroResult(result, tile_stats, "stream_data_traffic_fix")
@@ -665,6 +698,7 @@ def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg
             addComputeResult(result, tile_stats)
             addLLCReqStats(result, tile_stats)
             addMemResult(result, tile_stats)
+            addPUMResult(result, tile_stats)
             # Collect energy results.
             collectEnergy(result, stats_fn)
     except Exception as e:
@@ -809,7 +843,7 @@ def main(subset):
 
     if failed:
         return
-    conference = 'micro22-submit'
+    conference = 'asplos22-submit'
     fn = '{conf}.{subset}.json'.format(
         conf=conference, subset=subset_name)
     with open(fn, 'w') as f:
