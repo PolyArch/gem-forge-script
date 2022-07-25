@@ -21,7 +21,7 @@ class SPEC2017Benchmark(Benchmark):
         self.spec = os.environ.get('SPEC2017_SUITE_PATH')
         if self.spec is None:
             print(
-                'Unable to find SPEC2017_SUITE_PATH env var. Please source shrc before using this script')
+                'Unable to find SPEC2017_SUITE_PATH env var. Please set it before using this script')
             sys.exit()
 
         self.work_load = params['name']
@@ -44,10 +44,10 @@ class SPEC2017Benchmark(Benchmark):
 
         # Finally use specinvoke to get the arguments.
         os.chdir(self.get_exe_path())
-        self.args = self.find_args(subprocess.check_output([
+        self.args = self.find_args(subprocess.getoutput(' '.join([
             'specinvoke',
             '-n'
-        ]))
+        ])))
         print('{name} has arguments {args}'.format(
             name=self.get_name(), args=self.args))
         os.chdir(self.cwd)
@@ -517,7 +517,7 @@ class SPEC2017Benchmarks:
         self.spec = os.environ.get('SPEC')
         if self.spec is None:
             print(
-                'Unable to find SPEC env var. Please source shrc before using this script')
+                'Unable to find SPEC env var. Please source shrc in SPEC folder before using this script')
             sys.exit()
 
         # Remember to setup gllvm.

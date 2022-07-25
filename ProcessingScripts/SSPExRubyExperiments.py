@@ -206,6 +206,8 @@ class TileStatsParser(object):
                 'system.mem_ctrls{tile_id}.bw_total::total'),
             'pum_total_cycle': self.format_re(
                 'system.ruby.l1_cntrl{tile_id}.pumTotalCycles'),
+            'pum_prefetch_cycle': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumPrefetchCycles'),
             'pum_compile_cycle': self.format_re(
                 'system.ruby.l1_cntrl{tile_id}.pumCompileCycles'),
             'pum_reduce_cycle': self.format_re(
@@ -315,8 +317,8 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            if __print_traffic__ and self.tile_stats.tile_id == 0:
-                print(f'{msg_name} {flits[i]}')
+            # if __print_traffic__ and self.tile_stats.tile_id == 0:
+                # print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':

@@ -564,6 +564,8 @@ if __name__ == '__main__':
                       dest='simulations', callback=parse_simulate_configurations)
     parser.add_option('--perf-command', action='store_true',
                       dest='perf_command', default=False)
+    parser.add_option('--perf-heap', action='store_true',
+                      dest='perf_heap', default=False)
     parser.add_option('--region-simpoint', action='store_true',
                       dest='region_simpoint', default=False)
     parser.add_option('--fake-trace', action='store_true',

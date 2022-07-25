@@ -56,7 +56,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': [str(x) for x in [8 * 1024 * 1024 // 64, 4 * 1024 * 1024 // 8, 8, 0]],
             'mix': [str(x) for x in [512 * 1024 * 1024 // 64, 4 * 1024 * 1024 // 8, 8, 0]],
         },
-        'omp_array_sum_avx': {
+        'array_sum': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4, 1, 1]],
             'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 0]],
@@ -81,34 +81,42 @@ class GemForgeMicroBenchmark(Benchmark):
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
         'stencil1d': {
-            # total elements (float, 3 array), check, warm
-            'small': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 1]],
-            'small-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 0]],
-            'medium': [str(x) for x in [4 * 1024 * 1024 / 4, 0, 1]],
-            'medium-cold': [str(x) for x in [4 * 1024 * 1024 / 4, 0, 0]],
-            'large': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 1]],
-            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 0]],
+            # total elements (float, 3 array), rounds, check, warm
+            'tiny': [str(x) for x in [256 * 1024 / 4, 10, 0, 1]],
+            'tiny-cold': [str(x) for x in [256 * 1024 / 4, 10, 0, 0]],
+            'small': [str(x) for x in [1 * 1024 * 1024 / 4, 10, 0, 1]],
+            'small-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 10, 0, 0]],
+            'medium': [str(x) for x in [4 * 1024 * 1024 / 4, 1, 0, 1]],
+            'medium-cold': [str(x) for x in [4 * 1024 * 1024 / 4, 1, 0, 0]],
+            'large': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 1]],
+            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 0]],
         },
         'stencil2d': {
-            # M, N, (float, 3 array), check, warm
-            'small': [str(x) for x in [512, 512 , 0, 1]],
-            'small-cold': [str(x) for x in [512, 512 , 0, 0]],
-            'medium': [str(x) for x in [1 * 1024, 1 * 1024 , 0, 1]],
-            'medium-cold': [str(x) for x in [1 * 1024, 1 * 1024 , 0, 0]],
-            'large': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 1]],
-            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024 , 0, 0]],
+            # M, N, (float, 3 array), rounds, check, warm
+            'tiny': [str(x) for x in [256, 256, 10, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 10, 0, 0]],
+            'small': [str(x) for x in [512, 512, 10, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 10, 0, 0]],
+            'medium': [str(x) for x in [1 * 1024, 1 * 1024, 1, 0, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024, 1 * 1024, 1, 0, 0]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 0]],
         },
         'stencil3d': {
-            # M, N, L, (float, 3 array), check, warm
-            'small': [str(x) for x in [128, 128, 8, 0, 1]],
-            'small-cold': [str(x) for x in [128, 128, 8, 0, 0]],
-            'medium': [str(x) for x in [256, 256, 16, 0, 1]],
-            'medium-cold': [str(x) for x in [256, 256, 16, 0, 0]],
-            'large': [str(x) for x in [512, 512, 16, 0, 1]],
-            'large-cold': [str(x) for x in [512, 512, 16, 0, 0]],
+            # M, N, L, (float, 3 array), rounds, check, warm
+            'tiny': [str(x) for x in [64, 64, 8, 10, 0, 1]],
+            'tiny-cold': [str(x) for x in [64, 64, 8, 10, 0, 0]],
+            'small': [str(x) for x in [128, 128, 8, 10, 0, 1]],
+            'small-cold': [str(x) for x in [128, 128, 8, 10, 0, 0]],
+            'medium': [str(x) for x in [256, 256, 16, 1, 0, 1]],
+            'medium-cold': [str(x) for x in [256, 256, 16, 1, 0, 0]],
+            'large': [str(x) for x in [512, 512, 16, 1, 0, 1]],
+            'large-cold': [str(x) for x in [512, 512, 16, 1, 0, 0]],
         },
         'gaussian_elim': {
             # M, N, P, (float, 1 array), check, warm
+            'tiny': [str(x) for x in [256, 256, 64, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 64, 0, 0]],
             'small': [str(x) for x in [512, 512, 64, 0, 1]],
             'small-cold': [str(x) for x in [512, 512, 64, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 64, 0, 1]],
@@ -118,6 +126,8 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'dwt2d53': {
             # M, N, (float, 1 array), check, warm
+            'tiny': [str(x) for x in [256, 256, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 0, 0]],
             'small': [str(x) for x in [512, 512, 0, 1]],
             'small-cold': [str(x) for x in [512, 512, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 0, 1]],
@@ -127,6 +137,8 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'mm_outer': {
             # L, M, N, (float, 3 array), check, warm
+            'tiny': [str(x) for x in [256, 256, 256, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 256, 0, 0]],
             'small': [str(x) for x in [512, 512, 512, 0, 1]],
             'small-cold': [str(x) for x in [512, 512, 512, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 1024, 0, 1]],
@@ -136,9 +148,10 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'mm_inner': {
             # L, M, N, P, (float, 4 array), check, warm
-            'tiny': [str(x) for x in [128, 128, 128, 128, 1, 1]],
-            'small': [str(x) for x in [512, 512, 512, 512, 0, 1]],
-            'small-cold': [str(x) for x in [512, 512, 512, 512, 0, 0]],
+            'tiny': [str(x) for x in [256, 256, 256, 64, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 256, 64, 0, 0]],
+            'small': [str(x) for x in [512, 512, 512, 64, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 512, 64, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 1024, 64, 0, 1]],
             'medium-cold': [str(x) for x in [1024, 1024, 1024, 64, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
@@ -146,7 +159,8 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'conv2d': {
             # M, N, (float, 2 array), check, warm
-            'tiny': [str(x) for x in [128, 128, 1, 1]],
+            'tiny': [str(x) for x in [256, 256, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 0, 0]],
             'small': [str(x) for x in [512, 512, 0, 1]],
             'small-cold': [str(x) for x in [512, 512, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 0, 1]],
@@ -462,9 +476,11 @@ class GemForgeMicroBenchmark(Benchmark):
         to ensure that we simualte for the same amount of work.
         """
         flags = list()
-        if self.stem == 'mm_outer' and input_name == 'large':
-            # It takes for ever to finish large
-            self.work_items = 2
+        if self.stem == 'mm_outer':
+            for prefix in ['large', 'medium', 'small', 'tiny']:
+                if input_name.startswith(prefix):
+                    # It takes for ever to finish large
+                    self.work_items = 2
         if self.work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=self.work_items),

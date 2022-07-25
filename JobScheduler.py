@@ -195,15 +195,22 @@ class JobScheduler:
         status = job.status
         if status == JobScheduler.STATE_INIT:
             return f'INIT'
-        if status == JobScheduler.STATE_FAILED:
-            return f'{job.end_time - job.start_time} FAILED'
-        if status == JobScheduler.STATE_STARTED:
-            return f'{datetime.datetime.now() - job.start_time} STARTED'
-        if status == JobScheduler.STATE_FINISHED:
-            return f'{job.end_time - job.start_time} FINISHED'
         if status == JobScheduler.STATE_TIMEOUTED:
             return 'TIMEOUTED'
-        return 'UNKNOWN'
+        diff = None
+        if status == JobScheduler.STATE_FAILED:
+            diff = job.end_time - job.start_time
+            msg = 'FAILED'
+        if status == JobScheduler.STATE_STARTED:
+            diff = datetime.datetime.now() - job.start_time
+            msg = 'STARTED'
+        if status == JobScheduler.STATE_FINISHED:
+            diff = job.end_time - job.start_time
+            msg = 'FINISHED'
+        if diff is None:
+            return 'UNKNOWN'
+        d = datetime.timedelta(days=diff.days, seconds=diff.seconds)
+        return f'{d} {msg}'
 
     def dump(self, f):
         stack = list()

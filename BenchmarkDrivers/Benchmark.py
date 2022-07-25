@@ -514,7 +514,7 @@ class Benchmark(object):
             'perf.data',
         ])
         perf_cmd = [
-            'perf',
+            C.PERF_BIN,
             'record',
             '-m',
             '4',
@@ -529,7 +529,7 @@ class Benchmark(object):
         Util.call_helper(perf_cmd)
         # So far let's just dump the perf to file.
         with open('perf.txt', 'w') as f:
-            Util.call_helper(['perf', 'report'], stdout=f)
+            Util.call_helper([C.PERF_BIN, 'report'], stdout=f)
         # Move perf result to run_path.
         if self.get_exe_path() == self.get_run_path():
             return
@@ -620,6 +620,8 @@ class Benchmark(object):
     """
 
     def run_profile(self):
+        # We need libunwind.so for profiling.
+        os.putenv('LD_LIBRARY_PATH', os.path.join(C.LLVM_PATH, 'lib'))
         # Remember to set the environment for profile.
         # By default it will profile all dynamic instructions.
         # Derived class can set LLVM_TDG_TRACE_ROI to override this behavior.
@@ -819,7 +821,7 @@ class Benchmark(object):
             assert(False)
         opt_cmd = self.add_transform_debug(opt_cmd)
         if self.options.perf_command:
-            opt_cmd = ['perf', 'record'] + opt_cmd
+            opt_cmd = [C.PERF_BIN, 'record'] + opt_cmd
         print('# Processing trace...')
         Util.call_helper(opt_cmd)
         if tdg_detail == 'integrated':
@@ -1079,7 +1081,12 @@ class Benchmark(object):
         cwd = os.getcwd()
         os.chdir(self.get_sim_exe_path())
         if self.options.perf_command:
-            gem5_args = ['perf', 'record', '-g'] + gem5_args
+            gem5_args = [C.PERF_BIN, 'record', '-g'] + gem5_args
+        elif self.options.perf_heap:
+            gem5_args = [
+                'env',
+                'HEAPPROFILE=/benchmarks/heap.p',
+            ] + gem5_args
         Util.call_helper(gem5_args)
         os.chdir(cwd)
 
@@ -1113,7 +1120,7 @@ class Benchmark(object):
             '--llvm-trace-file={trace_file}'.format(trace_file=tdg)
         )
         if self.options.perf_command:
-            gem5_args = ['perf', 'record'] + gem5_args
+            gem5_args = [C.PERF_BIN, 'record'] + gem5_args
         Util.call_helper(gem5_args)
 
     """

@@ -25,6 +25,10 @@ LLVM_BIN_PATH = os.path.join(LLVM_PATH, 'bin')
 LLVM_DEBUG_PATH = os.getenv('LLVM_DEBUG_INSTALL_PATH')
 LLVM_DEBUG_BIN_PATH = os.path.join(LLVM_DEBUG_PATH, 'bin')
 
+PERF_BIN = os.getenv('PERF_BIN')
+if PERF_BIN is None:
+    PERF_BIN = 'perf'
+
 """
 GEM5_PATH
 """

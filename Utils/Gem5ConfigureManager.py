@@ -500,6 +500,7 @@ class Gem5ReplayConfigureManager(object):
         'ddr4-no-xor': [
             "--mem-type=DRAMsim3",
             f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200_Stream.ini",
+            # "--mem-type=DDR4_2400_8x8",
             "--mem-channel-xor-low-bit=0",
             "--sys-clock=1GHz",
         ],

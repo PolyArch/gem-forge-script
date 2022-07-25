@@ -33,8 +33,7 @@
         "--gem-forge-enable-stream-float-indirect-reduction",
         "--gem-forge-stream-engine-llc-neighbor-stream-threshold={neighbor_stream_threshold}",
         "--gem-forge-stream-engine-llc-neighbor-migration-delay={neighbor_migration_delay}",
-        "--gem-forge-enable-stream-nuca={nuca}",
-        "--gem-forge-enable-stream-strand=0"
+        "--gem-forge-enable-stream-nuca={nuca}"
     ],
     "snippts": [
         "o8.tlb",
