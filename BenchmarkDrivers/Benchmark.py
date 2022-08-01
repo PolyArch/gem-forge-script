@@ -686,6 +686,8 @@ class Benchmark(object):
             # Remember to set the environment for trace.
             os.putenv('LLVM_TDG_TRACE_FOLDER', self.get_trace_folder_abs())
             os.putenv('LLVM_TDG_INST_UID_FILE', self.get_trace_inst_uid())
+            # We need libunwind.so for profiling.
+            os.putenv('LD_LIBRARY_PATH', os.path.join(C.LLVM_PATH, 'lib'))
             run_cmd = [
                 './' + self.get_trace_bin(),
             ]
@@ -1111,6 +1113,7 @@ class Benchmark(object):
         gem5_args = self.get_gem5_simulate_command(
             transform_config=transform_config,
             simulation_config=simulation_config,
+            sim_input=sim_input,
             binary=self.get_replay_exe(transform_config, trace, 'exe'),
             outdir=gem5_out_dir,
             standalone=self.standalone

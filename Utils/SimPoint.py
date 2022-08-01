@@ -62,7 +62,7 @@ class SimPointBuilder:
         self.profile = ProfileMessage_pb2.Profile()
         print(fn)
         try:
-            with open(fn) as f:
+            with open(fn, 'rb') as f:
                 self.profile.ParseFromString(f.read())
         except IOError:
             print('Failed to open profile file {fn}.'.format(fn=fn))

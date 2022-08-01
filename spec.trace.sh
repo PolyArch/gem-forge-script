@@ -15,9 +15,7 @@ Benchmark='-b spec.619.lbm_s'
 # python Driver.py $Benchmark --build
 
 # Run the binary for a long time to get the profile.
-python Driver.py $Benchmark --profile
-
-# Below are not tested yet.
+# python Driver.py $Benchmark --profile
 
 SimTrace='--simpoint-mode=region'
 
@@ -30,9 +28,11 @@ SimTrace='--simpoint-mode=region'
 # Process the trace (do thing)
 # python Driver.py $Benchmark $SimTrace -t replay -d
 
+# Below are not tested yet.
+
 Threads=1
 Parallel=40
 o8=replay/o8
 sim_replay=$o8
-# python Driver.py $Benchmark $SimTrace -t replay --sim-input-size $SimInputSize \
-#     --sim-configs $sim_replay --input-threads $Threads -j $Parallel -s 
+python Driver.py $Benchmark $SimTrace -t replay --sim-input-size $SimInputSize \
+    --sim-configs $sim_replay --input-threads $Threads -j $Parallel -s --trace-id 0 --gem5-debug GemForgeCPUDump

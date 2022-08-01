@@ -65,7 +65,8 @@ class SPEC2017Benchmark(Benchmark):
     def get_links(self):
         return self.links
 
-    def get_args(self):
+    def get_args(self, sim_input):
+        # Ignore sim_input.
         return self.args
 
     def get_trace_func(self):
@@ -77,6 +78,9 @@ class SPEC2017Benchmark(Benchmark):
     def get_perf_frequency(self):
         # Spec are so long, perf at a low frequency.
         return 1
+
+    def get_extra_compile_flags(self):
+        return list()
 
     def get_build_label(self):
         return 'LLVM_TDG_{build_system}'.format(
