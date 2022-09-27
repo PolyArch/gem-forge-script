@@ -450,65 +450,71 @@ def getConfigureations(subset):
 
     if subset in ['pum-large', 'pum-medium', 'pum-small', 'pum-tiny']:
         input_size = subset[len('pum-'):]
-        tdg_folder = f'fake.0.tdg.thread64-{input_size}'
+        tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
         tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
         for suite, benchmark, pum_benchmark in [
-            ('gfm', 'omp_stencil1d_avx',     'stencil1d'),
-            ('gfm', 'omp_stencil2d_avx',     'stencil2d'),
-            ('gfm', 'omp_stencil3d_avx',     'stencil3d'),
-            ('gfm', 'omp_dwt2d53_avx',       'dwt2d53'),
-            ('gfm', 'omp_gaussian_elim_avx', 'gaussian_elim'),
-            ('gfm', 'omp_mm_inner_avx',      'mm_inner'),
-            ('gfm', 'omp_mm_outer_avx',      'mm_outer'),
-            ('gfm', 'omp_conv2d_avx',        'conv2d'),
-            # ('gfm', 'omp_conv3d_zxy_oyxi_outer_tile_avx', 'conv3d_xyz_ioyx_outer'),
+            ('gfm', 'omp_stencil1d_avx',                  'stencil1d'),
+            ('gfm', 'omp_stencil2d_avx',                  'stencil2d'),
+            ('gfm', 'omp_stencil3d_avx',                  'stencil3d'),
+            ('gfm', 'omp_dwt2d53_avx',                    'dwt2d53'),
+            ('gfm', 'omp_gaussian_elim_avx',              'gaussian_elim'),
+            ('gfm', 'omp_mm_inner_tile8x8x256_avx',       'mm_inner_pum_tile64'),
+            ('gfm', 'omp_mm_outer_avx',                   'mm_outer'),
+            ('gfm', 'omp_conv2d_avx',                     'conv2d'),
+            ('gfm', 'omp_kmeans_avx',                     'kmeans_cp_pum_avx'),
+            ('gfm', 'omp_kmeans_outer_split_avx',         'kmeans_outer_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_inner_avx',       'pointnet_inner_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_outer_avx',       'pointnet_outer_pum_avx'),
+            ('gfm', 'omp_conv3d_zxy_oyxi_outer_tile_avx', 'conv3d_xyz_ioyx_outer'),
         ]:
             strnd_benchmark = pum_benchmark
-            configurations.append({
-                'suite': suite,
-                'benchmark': benchmark,
-                'tdg_folder': tdg_folder,
-                'transforms': [
-                    {
-                        'transform': 'valid.ex',
-                        'simulations': [
-                            'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B',
-                            'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
-                        ]
-                    },
-                    # {
-                    #     'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                    #     'simulations': [
-                    #         'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-nuca0-iace1x1x1x1',
-                    #     ]
-                    # }
-                ],
-            })
-            configurations.append({
-                'suite': suite,
-                'benchmark': strnd_benchmark,
-                'tdg_folder': tdg_folder,
-                'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
-                'transforms': [
-                    {
-                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                        'simulations': [
-                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd-nuca0-iace1x1x1x1',
-                        ]
-                    }
-                ],
-            })
+            for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'valid.ex',
+                            'simulations': [
+                                'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B',
+                                'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
+                            ]
+                        },
+                        # {
+                        #     'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        #     'simulations': [
+                        #         'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-nuca0-iace1x1x1x1',
+                        #     ]
+                        # }
+                    ],
+                })
+            # configurations.append({
+            #     'suite': suite,
+            #     'benchmark': strnd_benchmark,
+            #     'tdg_folder': tdg_folder,
+            #     'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
+            #     'transforms': [
+            #         {
+            #             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+            #             'simulations': [
+            #                 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd-nuca0-iace1x1x1x1',
+            #             ]
+            #         }
+            #     ],
+            # })
             # Also add the cold folder.
             configurations.append({
                 'suite': suite,
                 'benchmark': pum_benchmark,
                 'tdg_folder': tdg_cold_folder,
-                'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
+                # 'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
                 'transforms': [
                     {
                         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                         'simulations': [
                             'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-int-nuca1-iace0x1x1x1',
                         ]
                     }
                 ],
@@ -517,8 +523,8 @@ def getConfigureations(subset):
             configurations.append({
                 'suite': suite,
                 'benchmark': pum_benchmark,
-                'tdg_folder': tdg_folder,
-                'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
+                'tdg_folder': tdg_warm_folder,
+                # 'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
                 'transforms': [
                     {
                         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
@@ -532,6 +538,7 @@ def getConfigureations(subset):
                             # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nodfg-nuca1-iace0x1x1x1',
                             # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-nuca1-iace0x1x1x1',
                             'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                            'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-int-nuca1-iace0x1x1x1',
                             # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-real-nuca1-iace0x1x1x1',
                             # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-notile-nuca1-iace0x1x1x1',
                             # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nocompile-nuca1-iace0x1x1x1',
@@ -662,6 +669,7 @@ def addComputeResult(result, tile_stats):
 def addPUMResult(result, tile_stats):
     main_tile = tile_stats[0]
     mid_tile = tile_stats[len(tile_stats) // 2]
+    addDefaultZeroResult(result, main_tile, 'pum_jit_us')
     addDefaultZeroResult(result, main_tile, 'pum_total_cycle')
     addDefaultZeroResult(result, main_tile, 'pum_prefetch_cycle')
     addDefaultZeroResult(result, main_tile, 'pum_compile_cycle')
@@ -712,6 +720,7 @@ def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg
     try:
         with open(stats_fn) as f:
             tile_stats = ssp.process(f)
+            ssp.getPUMJitterRuntime(result_path, tile_stats)
             result = initResult(
                 suite=suite,
                 benchmark=renamed_benchmark,

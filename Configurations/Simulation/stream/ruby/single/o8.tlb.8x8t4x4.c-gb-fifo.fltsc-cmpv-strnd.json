@@ -51,7 +51,7 @@
         "neighbor_stream_threshold": [2],
         "neighbor_migration_delay": [100],
         "nuca": [0],
-        "idea_ack": [1],
+        "idea_ack": [0],
         "idea_end": [1],
         "idea_flow": [1],
         "partial_config": [1]

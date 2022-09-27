@@ -1,11 +1,17 @@
 """
 Simple process script to process stats for multi-core configurations.
-Assume MinorCPU.
 """
 
 import re
 
-__print_traffic__ = True
+import os
+import sys
+script_dir = os.path.dirname(__file__)
+sys.path.append(script_dir)
+
+import PUMJitterExperiments
+
+__print_traffic__ = False
 
 class TileStats(object):
     def __init__(self, tile_id):
@@ -317,8 +323,8 @@ class TileStatsParser(object):
             if type_in_category >= len(msg_type_category):
                 continue
             msg_type, msg_name = msg_type_category[type_in_category]
-            # if __print_traffic__ and self.tile_stats.tile_id == 0:
-                # print(f'{msg_name} {flits[i]}')
+            if __print_traffic__ and self.tile_stats.tile_id == 0:
+                print(f'{msg_name} {flits[i]}')
             if msg_type == 'ctrl':
                 control_flits += flits[i]
             elif msg_type == 'data':
@@ -381,6 +387,7 @@ def print_if_non_zero(v, f):
 
 def print_stats(tile_stats):
     ticks_per_cycle = 500
+    ticks_per_us = 1000000
     def sum_or_nan(vs):
         s = sum(vs)
         if s == 0:
@@ -514,6 +521,12 @@ def print_stats(tile_stats):
         v=sum(value_or_zero(ts, 'llc_core_requests') for ts in tile_stats)
     ))
     print_if_non_zero(
+        v=main_ts.sim_ticks / ticks_per_us,
+        f='main cpu us             {v}')
+    print_if_non_zero(
+        v=main_ts.pum_jit_us,
+        f='pum jit us              {v}')
+    print_if_non_zero(
         v=sum(value_or_zero(ts, 'llc_core_stream_requests') for ts in tile_stats),
         f='num llc core stream req {v}')
     print_if_non_zero(
@@ -614,9 +627,18 @@ def print_stats(tile_stats):
         atomics_deadlock = value_or_zero(ts, 'llc_stream_deadlock_atomics')
         print(f'Tile {ts.tile_id} Atomic {atomics} Commit {atomics_committed} Lock {atomics_locked} Unlock {atomics_unlocked} Line {atomics_line_conflict} Real {atomics_real_conflict} Deadlock {atomics_deadlock}')
 
+def getPUMJitterRuntime(sim_out_folder, tile_stats):
+    total_runtime = PUMJitterExperiments.getPUMJitTimeMicroSecond(sim_out_folder)
+    for ts in tile_stats:
+        # Set the fields for all tile_stats
+        ts.__dict__['pum_jit_us'] = total_runtime
+
 
 if __name__ == '__main__':
-    import sys
+    if 'traffic' in sys.argv:
+        __print_traffic__ = True
     with open(sys.argv[1]) as f:
         tile_stats = process(f)
-        print_stats(tile_stats)
+    sim_out_folder = os.path.dirname(sys.argv[1])
+    getPUMJitterRuntime(sim_out_folder, tile_stats)
+    print_stats(tile_stats)

@@ -28,6 +28,6 @@
         "--gem-forge-adfa-ideal-mem=1"
     ],
     "support-transform-ids": [
-        "replay"
+        "adfa"
     ]
 }

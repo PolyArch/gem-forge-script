@@ -203,24 +203,43 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
+        'kmeans': {
+            # points (float), dims, centers, check, warm
+            'large': [str(x) for x in [32768, 128, 128, 0, 1]],
+            'large-cold': [str(x) for x in [32768, 128, 128, 0, 0]],
+            'small': [str(x) for x in [2048, 128, 128, 0, 1]],
+            'small-cold': [str(x) for x in [2048, 128, 128, 0, 0]],
+            'tiny': [str(x) for x in [1024, 128, 128, 0, 1]],
+            'tiny-cold': [str(x) for x in [1024, 128, 128, 0, 0]],
+        },
+        'pointnet': {
+            # points (float), dims, features, layers, check, warm
+            'large': [str(x) for x in [32768, 128, 4096, 3, 0, 1]],
+            'large-cold': [str(x) for x in [32768, 128, 4096, 3, 0, 0]],
+            'small': [str(x) for x in [2048, 128, 4096, 3, 0, 1]],
+            'small-cold': [str(x) for x in [2048, 128, 4096, 3, 0]],
+        },
         # 'omp_histogram_avx': {
         #     'medium': [str(x) for x in [1 * 1024 * 1024 / 4]],
         #     'large': [str(x) for x in [48 * 1024 * 1024 / 4]],
         # }
     }
 
-    def __init__(self, benchmark_args, src_path):
+    def __init__(self, benchmark_args, benchmark_name, src_path):
         self.cwd = os.getcwd()
         self.src_path = src_path
         self.suite_path = src_path
         while os.path.basename(self.suite_path) != 'GemForgeMicroSuite':
             self.suite_path = os.path.dirname(self.suite_path)
-        self.benchmark_name = os.path.basename(self.src_path)
-        self.source = self.benchmark_name + '.c'
+        self.benchmark_name = benchmark_name
+        self.source = f'{os.path.basename(src_path)}.c'
         self.graph_utils_source = '../gfm_graph_utils.c'
         self.stream_whitelist_fn = os.path.join(
             self.src_path, 'stream_whitelist.txt')
 
+        self.value_type = 'VALUE_TYPE_FLOAT'
+        if '_int' in self.benchmark_name:
+            self.value_type = 'VALUE_TYPE_INT'
         self.is_omp = self.benchmark_name.startswith('omp_')
         self.is_avx512 = 'avx' in self.benchmark_name
         self.is_graph = os.path.basename(
@@ -297,6 +316,7 @@ class GemForgeMicroBenchmark(Benchmark):
         ]
         if self.benchmark_name in avx512_workloads or self.is_avx512:
             flags.append('-mavx512f')
+            flags.append('-ffast-math')
         if self.benchmark_name.endswith('histogram_avx'):
             flags.append('-mavx512dq')
             flags.append('-mavx512vl')
@@ -314,20 +334,42 @@ class GemForgeMicroBenchmark(Benchmark):
         'omp_bfs_queue': [''],
         'omp_page_rank': ['', '.1'],
         'omp_sssp_bellman': [''],
-        'omp_dwt2d53': ['', '.7', '.8', '.9'],
-        'omp_dwt2d53_avx': ['', '.7', '.8', '.9'],
+        'omp_dwt2d53': ['', '.10', '.8', '.9'],
+        'omp_dwt2d53_avx': ['', '.10', '.8', '.9'],
         # 'omp_mm_inner_avx': ['', '.7'],
     }
 
     def get_trace_func(self):
-        if self.is_omp:
+        funcs = []
+        if 'kmeans_cp' in self.benchmark_name:
+            funcs = ['accCenter', 'rdcCenter', 'normCenter']
+            funcs.append('.omp_outlined.' if self.is_omp else 'computeDist')
+        if 'kmeans_outer' in self.benchmark_name:
+            funcs = ['accCenter', 'rdcCenter', 'normCenter']
+            funcs.append('.omp_outlined.' if self.is_omp else 'computeDist')
+            funcs.append('.omp_outlined..8' if self.is_omp else 'findMinCenter')
+
+        elif self.benchmark_name.find('pointnet') != -1:
+            if self.benchmark_name.find('pointnet_fused') == -1:
+                assert(not self.is_omp)
+                if self.benchmark_name.find('outer') != -1:
+                    funcs = ['gather', 'layer_outer']
+                elif self.benchmark_name.find('inner') != -1:
+                    funcs = ['gather', 'layer_inner']
+                else:
+                    funcs = ['gather']
+            else:
+                # Fused.
+                funcs = ['gather', 'mlp', 'writeback']
+        elif self.is_omp:
             if self.benchmark_name in GemForgeMicroBenchmark.OMP_GRAPH_FUNC_SUFFIX:
                 suffixes = GemForgeMicroBenchmark.OMP_GRAPH_FUNC_SUFFIX[self.benchmark_name]
-                return Benchmark.ROI_FUNC_SEPARATOR.join(
-                    ['.omp_outlined.' + suffix for suffix in suffixes])
-            return '.omp_outlined.'
+                funcs = ['.omp_outlined.' + suffix for suffix in suffixes]
+            else:
+                funcs = ['.omp_outlined.']
         else:
-            return 'foo'
+            funcs = ['foo']
+        return Benchmark.ROI_FUNC_SEPARATOR.join(funcs)
 
     def get_lang(self):
         return 'C'
@@ -348,11 +390,10 @@ class GemForgeMicroBenchmark(Benchmark):
         # Disable the loop unswitch to test for fault_stream.
         # Default no AVX512
         flags = [
+            f'-DVALUE_TYPE={self.value_type}',
             # '-fno-unroll-loops',
             # '-fno-vectorize',
             # '-fno-slp-vectorize',
-            # '-mavx512f',
-            # '-ffast-math',
             # '-ffp-contract=off',
             '-stream-specialize',
             '-mllvm',
@@ -499,6 +540,16 @@ class GemForgeMicroBenchmark(Benchmark):
 
 class GemForgeMicroSuite:
 
+    def tryAddBenchmark(self, benchmark_args, benchmark_name, abs_path):
+        suite_benchmark_name = f'gfm.{benchmark_name}'
+        if benchmark_args.options.benchmark:
+            if suite_benchmark_name not in benchmark_args.options.benchmark:
+                # Ignore benchmark not required.
+                return
+        print(f'Add {suite_benchmark_name}')
+        self.benchmarks.append(
+            GemForgeMicroBenchmark(benchmark_args, benchmark_name, abs_path))
+
     def searchBenchmarks(self, benchmark_args, folder):
         # Every folder in the suite is a benchmark.
         items = os.listdir(folder)
@@ -511,13 +562,11 @@ class GemForgeMicroSuite:
             abs_source_path = os.path.join(abs_path, item + '.c')
             if os.path.isdir(abs_path):
                 if os.path.isfile(abs_source_path):
-                    benchmark_name = 'gfm.{b}'.format(b=item)
-                    if benchmark_args.options.benchmark:
-                        if benchmark_name not in benchmark_args.options.benchmark:
-                            # Ignore benchmark not required.
-                            continue
-                    self.benchmarks.append(
-                        GemForgeMicroBenchmark(benchmark_args, abs_path))
+                    benchmark_name = f'{item}'
+                    self.tryAddBenchmark(benchmark_args, benchmark_name, abs_path)
+                    # Also try int value type version.
+                    int_benchmark_name = f'{item}_int'
+                    self.tryAddBenchmark(benchmark_args, int_benchmark_name, abs_path)
                 else:
                     # Recursive search for deeper benchmarks:
                     self.searchBenchmarks(benchmark_args, abs_path)
