@@ -11,6 +11,7 @@ sys.path.append(script_dir)
 
 import PUMJitterExperiments
 
+PUMJitterExperiments.__print_us__ = False
 __print_traffic__ = False
 
 class TileStats(object):
@@ -110,6 +111,8 @@ class TileStatsParser(object):
                 'system.future_cpus{tile_id}.accelManager.se.numStoreElementsStepped'),
             'num_floated': self.format_re(
                 'system.future_cpus{tile_id}.accelManager.se.numFloated'),
+            'mlc_stream_cycles': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.mlcStreamCycles'),
             'llc_sent_slice': self.format_re(
                 'system.future_cpus{tile_id}.accelManager.se.numLLCSentSlice'),
             'llc_migrated': self.format_re(

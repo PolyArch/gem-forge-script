@@ -90,6 +90,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [4 * 1024 * 1024 / 4, 1, 0, 0]],
             'large': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 1]],
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 0]],
+            'large2x': [str(x) for x in [32 * 1024 * 1024 / 4, 1, 0, 1]],
+            'large2x-cold': [str(x) for x in [32 * 1024 * 1024 / 4, 1, 0, 0]],
         },
         'stencil2d': {
             # M, N, (float, 3 array), rounds, check, warm
@@ -101,6 +103,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1 * 1024, 1 * 1024, 1, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 0]],
+            'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 1, 0, 1]],
+            'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 1, 0, 0]],
         },
         'stencil3d': {
             # M, N, L, (float, 3 array), rounds, check, warm
@@ -112,6 +116,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [256, 256, 16, 1, 0, 0]],
             'large': [str(x) for x in [512, 512, 16, 1, 0, 1]],
             'large-cold': [str(x) for x in [512, 512, 16, 1, 0, 0]],
+            'large2x': [str(x) for x in [512, 512, 32, 1, 0, 1]],
+            'large2x-cold': [str(x) for x in [512, 512, 32, 1, 0, 0]],
         },
         'gaussian_elim': {
             # M, N, P, (float, 1 array), check, warm
@@ -123,6 +129,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1024, 1024, 64, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 64, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 64, 0, 0]],
+            'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 64, 0, 1]],
+            'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 64, 0, 0]],
         },
         'dwt2d53': {
             # M, N, (float, 1 array), check, warm
@@ -134,6 +142,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
+            'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 0, 1]],
+            'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 0, 0]],
         },
         'mm_outer': {
             # L, M, N, (float, 3 array), check, warm
@@ -145,6 +155,12 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1024, 1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
+            'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 2 * 1024, 0, 1]],
+            'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
+            'largeM': [str(x) for x in [32 * 1024, 128, 128, 0, 1]],
+            'largeM-cold': [str(x) for x in [32 * 1024, 128, 128, 0, 0]],
+            'largeN': [str(x) for x in [128, 128, 32 * 1024, 0, 1]],
+            'largeN-cold': [str(x) for x in [128, 128, 32 * 1024, 0, 0]],
         },
         'mm_inner': {
             # L, M, N, P, (float, 4 array), check, warm
@@ -154,8 +170,25 @@ class GemForgeMicroBenchmark(Benchmark):
             'small-cold': [str(x) for x in [512, 512, 512, 64, 0, 0]],
             'medium': [str(x) for x in [1024, 1024, 1024, 64, 0, 1]],
             'medium-cold': [str(x) for x in [1024, 1024, 1024, 64, 0, 0]],
+            'strnd': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 2, 0, 1]],
+            'strnd-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 2, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
+            'large2x': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 1]],
+            'large2x-cold': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 0]],
+        },
+        'mm_lmn': {
+            # L, M, N, P, (float, 4 array), check, warm
+            'tiny': [str(x) for x in [256, 256, 256, 64, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 256, 64, 0, 0]],
+            'small': [str(x) for x in [512, 512, 512, 64, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 512, 64, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 1024, 64, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 1024, 64, 0, 0]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
+            'large2x': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 1]],
+            'large2x-cold': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 0]],
         },
         'conv2d': {
             # M, N, (float, 2 array), check, warm
@@ -167,6 +200,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1024, 1024, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 0, 0]],
+            'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 0, 1]],
+            'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 0, 0]],
         },
         'conv3d_xyz_ioyx_outer': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
@@ -177,6 +212,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
             'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
+            'large2x': [str(x) for x in [512, 256, 64, 64, 3, 3, 0, 1]],
+            'large2x-cold': [str(x) for x in [512, 256, 64, 64, 3, 3, 0, 0]],
         },
         'conv3d_zxy_oyxi_outer_tile': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
@@ -187,6 +224,21 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [256, 256, 32, 32, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 1]],
             'large-cold': [str(x) for x in [256, 256, 64, 16, 3, 3, 0, 0]],
+        },
+        'conv3d_zxy_obybxyxi_outer': {
+            # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
+        },
+        'conv3d_zxy_byboxyxi_outer': {
+            # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
+        },
+        'conv3d_zxy_fbybx_oxyxi_outer': {
+            # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
+            'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
         },
         'conv3d_zxy_inner': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
@@ -211,13 +263,17 @@ class GemForgeMicroBenchmark(Benchmark):
             'small-cold': [str(x) for x in [2048, 128, 128, 0, 0]],
             'tiny': [str(x) for x in [1024, 128, 128, 0, 1]],
             'tiny-cold': [str(x) for x in [1024, 128, 128, 0, 0]],
+            'large2x': [str(x) for x in [64 * 1024, 128, 128, 0, 1]],
+            'large2x-cold': [str(x) for x in [64 * 1024, 128, 128, 0, 0]],
         },
         'pointnet': {
             # points (float), dims, features, layers, check, warm
-            'large': [str(x) for x in [32768, 128, 4096, 3, 0, 1]],
-            'large-cold': [str(x) for x in [32768, 128, 4096, 3, 0, 0]],
             'small': [str(x) for x in [2048, 128, 4096, 3, 0, 1]],
             'small-cold': [str(x) for x in [2048, 128, 4096, 3, 0]],
+            'large': [str(x) for x in [32768, 128, 4096, 3, 0, 1]],
+            'large-cold': [str(x) for x in [32768, 128, 4096, 3, 0, 0]],
+            'large2x': [str(x) for x in [64 * 1024, 128, 8192, 3, 0, 1]],
+            'large2x-cold': [str(x) for x in [64* 1024, 128, 8192, 3, 0, 0]],
         },
         # 'omp_histogram_avx': {
         #     'medium': [str(x) for x in [1 * 1024 * 1024 / 4]],
@@ -344,10 +400,12 @@ class GemForgeMicroBenchmark(Benchmark):
         if 'kmeans_cp' in self.benchmark_name:
             funcs = ['accCenter', 'rdcCenter', 'normCenter']
             funcs.append('.omp_outlined.' if self.is_omp else 'computeDist')
-        if 'kmeans_outer' in self.benchmark_name:
+        elif 'kmeans_outer' in self.benchmark_name:
             funcs = ['accCenter', 'rdcCenter', 'normCenter']
             funcs.append('.omp_outlined.' if self.is_omp else 'computeDist')
             funcs.append('.omp_outlined..8' if self.is_omp else 'findMinCenter')
+            if 'trans' in self.benchmark_name:
+                funcs.append('transpose_row')
 
         elif self.benchmark_name.find('pointnet') != -1:
             if self.benchmark_name.find('pointnet_fused') == -1:
@@ -358,6 +416,8 @@ class GemForgeMicroBenchmark(Benchmark):
                     funcs = ['gather', 'layer_inner']
                 else:
                     funcs = ['gather']
+                if 'trans' in self.benchmark_name:
+                    funcs += ['transpose_row', 'transpose_col']
             else:
                 # Fused.
                 funcs = ['gather', 'mlp', 'writeback']
@@ -518,10 +578,8 @@ class GemForgeMicroBenchmark(Benchmark):
         """
         flags = list()
         if self.stem == 'mm_outer':
-            for prefix in ['large', 'medium', 'small', 'tiny']:
-                if input_name.startswith(prefix):
-                    # It takes for ever to finish large
-                    self.work_items = 2
+            # It takes for ever to finish mm_outer
+            self.work_items = 2
         if self.work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=self.work_items),

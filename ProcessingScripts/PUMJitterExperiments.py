@@ -8,6 +8,8 @@ import subprocess
 
 import argparse
 
+__print_us__ = True
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get PUM Jit time.')
     parser.add_argument('--folder', action='store', default='.',
@@ -36,7 +38,8 @@ def invokePUMJitter(pum_jitter, tdfg, is_debug=False):
             Format:
             >> CompileTime shiftRhs2D 12.239313 us
             """
-            print(line)
+            if __print_us__:
+                print(line)
             fields = line.split()
             t = float(fields[3])
             total_runtime += t
