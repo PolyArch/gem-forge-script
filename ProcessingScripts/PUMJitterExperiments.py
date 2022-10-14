@@ -72,8 +72,15 @@ def getPUMJitTimeMicroSecond(sim_out_folder, debug_tdfg=None):
     # Iterate all json file.
     total_runtime = 0.0
     tdfg_idx = 0
+    found_before_lowering = False
+    for fn in os.listdir(tdfg_folder):
+        if fn.endswith('.json') and fn.startswith('tdfg-before-lowering'):
+            found_before_lowering = True
+            break
     for fn in os.listdir(tdfg_folder):
         if not fn.endswith('.json'):
+            continue
+        if found_before_lowering and not fn.startswith('tdfg-before-lowering'):
             continue
         tdfg = os.path.join(tdfg_folder, fn)
         is_debug = False

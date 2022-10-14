@@ -231,6 +231,24 @@ class TileStatsParser(object):
                 'system.ruby.l2_cntrl{tile_id}.pumComputeCmds'),
             'pum_compute_ops': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.pumComputeOps'),
+            'pum_sync_cmds': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumSyncCmds'),
+            'pum_inter_bank_bits': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumInterBankShiftBits'),
+            'pum_inter_bank_reuse_bits': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumInterBankShiftReuseBits'),
+            'pum_inter_array_cmds': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumInterArrayCmds'),
+            'pum_inter_array_bits': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumInterArrayShiftBits'),
+            'pum_inter_array_bit_hops': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumInterArrayShiftBitHops'),
+            'pum_intra_array_cmds': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumIntraArrayCmds'),
+            'pum_intra_array_bits': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumIntraArrayShiftBits'),
+            'pum_intra_array_bit_hops': self.format_re(
+                'system.ruby.l2_cntrl{tile_id}.pumIntraArrayShiftBitHops'),
         }
         for addr in ['Affine', 'Indirect', 'PointerChase', 'MultiAffine']:
             for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
@@ -260,15 +278,17 @@ class TileStatsParser(object):
                     self.tile_stats.__dict__[k] = float(fields[1])
                     break
         if fields[0] == 'system.ruby.network.flit_types_injected':
-            ctrl, data, strm = self.parse_flit_type_breakdown(fields)
+            ctrl, data, strm, msg_breakdown = self.parse_flit_type_breakdown(fields)
             self.tile_stats.control_flits += ctrl
             self.tile_stats.data_flits += data
             self.tile_stats.stream_flits += strm
+            self.tile_stats.msg_flits = msg_breakdown
         if fields[0] == 'system.ruby.network.total_hop_types':
-            ctrl, data, strm = self.parse_flit_type_breakdown(fields)
+            ctrl, data, strm, msg_breakdown = self.parse_flit_type_breakdown(fields)
             self.tile_stats.control_hops += ctrl
             self.tile_stats.data_hops += data
             self.tile_stats.stream_hops += strm
+            self.tile_stats.msg_hops = msg_breakdown
         self.parse_l2_stream_transition(fields)
 
     def parse_flit_type_breakdown(self, fields):
@@ -319,6 +339,15 @@ class TileStatsParser(object):
         control_flits = 0
         data_flits = 0
         stream_flits = 0
+
+        def getMsgKey(msg_name):
+            # Split by '::' and get the message
+            return msg_name.split('::')[-1].lower()
+        msg_flit_breakdown = dict()
+        for _, msg_name in msg_type_req_category + msg_type_resp_category:
+            msg_key = getMsgKey(msg_name)
+            msg_flit_breakdown[msg_key] = 0
+
         for i in range(n_types):
             category = i // n_types_per_category
             type_in_category = i % n_types_per_category
@@ -335,7 +364,11 @@ class TileStatsParser(object):
                 data_flits += flits[i]
             elif msg_type == 'strm':
                 stream_flits += flits[i]
-        return (control_flits, data_flits, stream_flits)
+
+            msg_key = getMsgKey(msg_name)
+            msg_flit_breakdown[msg_key] += flits[i]
+
+        return (control_flits, data_flits, stream_flits, msg_flit_breakdown)
 
     def parse_l2_stream_transition(self, fields):
         match_obj = self.l2_transition_re.match(fields[0])

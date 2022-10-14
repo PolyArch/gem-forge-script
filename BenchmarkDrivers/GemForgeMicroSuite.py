@@ -58,21 +58,33 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'array_sum': {
             # total elements (float), check, warm
-            'medium': [str(x) for x in [1 * 1024 * 1024 / 4, 1, 1]],
-            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4, 0, 0]],
-            'large': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 1]],
-            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 0, 0]],
+            'teeny': [str(x) for x in [16 * 1024, 0, 1]],
+            'teeny-cold': [str(x) for x in [16 * 1024, 0, 0]],
+            'tiny': [str(x) for x in [64 * 1024, 0, 1]],
+            'tiny-cold': [str(x) for x in [64 * 1024, 0, 0]],
+            'small': [str(x) for x in [256 * 1024, 0, 1]],
+            'small-cold': [str(x) for x in [256 * 1024, 0, 0]],
+            'medium': [str(x) for x in [1 * 1024 * 1024, 0, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024, 0, 0]],
+            'large': [str(x) for x in [4 * 1024 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [4 * 1024 * 1024, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4, 0, 0]],
         },
-        'omp_dot_prod_avx': {
+        'vec_add': {
             # total elements (float), check, warm
-            'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
-            'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
-            'large': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 1]],
-            'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4 / 2, 0, 0]],
+            'teeny': [str(x) for x in [16 * 1024, 0, 1]],
+            'teeny-cold': [str(x) for x in [16 * 1024, 0, 0]],
+            'tiny': [str(x) for x in [64 * 1024, 0, 1]],
+            'tiny-cold': [str(x) for x in [64 * 1024, 0, 0]],
+            'small': [str(x) for x in [256 * 1024, 0, 1]],
+            'small-cold': [str(x) for x in [256 * 1024, 0, 0]],
+            'medium': [str(x) for x in [1 * 1024 * 1024, 0, 1]],
+            'medium-cold': [str(x) for x in [1 * 1024 * 1024, 0, 0]],
+            'large': [str(x) for x in [4 * 1024 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [4 * 1024 * 1024, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
-        'vec_add_avx': {
+        'omp_dot_prod_avx': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
             'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
@@ -227,16 +239,22 @@ class GemForgeMicroBenchmark(Benchmark):
         },
         'conv3d_zxy_obybxyxi_outer': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'small': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 1]],
+            'small-cold': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
             'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
         },
         'conv3d_zxy_byboxyxi_outer': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'small': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 1]],
+            'small-cold': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
             'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
         },
         'conv3d_zxy_fbybx_oxyxi_outer': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
+            'small': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 1]],
+            'small-cold': [str(x) for x in [64, 64, 64, 64, 3, 3, 0, 0]],
             'large': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 1]],
             'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
         },
@@ -294,8 +312,12 @@ class GemForgeMicroBenchmark(Benchmark):
             self.src_path, 'stream_whitelist.txt')
 
         self.value_type = 'VALUE_TYPE_FLOAT'
-        if '_int' in self.benchmark_name:
-            self.value_type = 'VALUE_TYPE_INT'
+        if '_int32' in self.benchmark_name:
+            self.value_type = 'VALUE_TYPE_INT32'
+        elif '_int16' in self.benchmark_name:
+            self.value_type = 'VALUE_TYPE_INT16'
+        elif '_int8' in self.benchmark_name:
+            self.value_type = 'VALUE_TYPE_INT8'
         self.is_omp = self.benchmark_name.startswith('omp_')
         self.is_avx512 = 'avx' in self.benchmark_name
         self.is_graph = os.path.basename(
@@ -373,6 +395,8 @@ class GemForgeMicroBenchmark(Benchmark):
         if self.benchmark_name in avx512_workloads or self.is_avx512:
             flags.append('-mavx512f')
             flags.append('-ffast-math')
+            if self.value_type in ['VALUE_TYPE_INT16', 'VALUE_TYPE_INT8']:
+                flags.append('-mavx512bw')
         if self.benchmark_name.endswith('histogram_avx'):
             flags.append('-mavx512dq')
             flags.append('-mavx512vl')
@@ -459,7 +483,7 @@ class GemForgeMicroBenchmark(Benchmark):
             '-mllvm',
             '-loop-unswitch-threshold=1',
             # '-mllvm',
-            # '-opt-bisect-limit=763',
+            # '-opt-bisect-limit=235',
             '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
         ] + self.get_extra_compile_flags()
         no_unroll_workloads = [
@@ -623,8 +647,10 @@ class GemForgeMicroSuite:
                     benchmark_name = f'{item}'
                     self.tryAddBenchmark(benchmark_args, benchmark_name, abs_path)
                     # Also try int value type version.
-                    int_benchmark_name = f'{item}_int'
-                    self.tryAddBenchmark(benchmark_args, int_benchmark_name, abs_path)
+                    for value_type in ['int32', 'int16', 'int8', 'fp16']:
+                        variant_benchmark_name = f'{item}_{value_type}'
+                        self.tryAddBenchmark(
+                            benchmark_args, variant_benchmark_name, abs_path)
                 else:
                     # Recursive search for deeper benchmarks:
                     self.searchBenchmarks(benchmark_args, abs_path)
