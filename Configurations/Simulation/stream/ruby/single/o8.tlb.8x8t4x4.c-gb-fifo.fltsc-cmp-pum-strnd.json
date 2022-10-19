@@ -58,7 +58,7 @@
         "idea_flow": [1],
         "partial_config": [1],
         "pum_mode": [1],
-        "sram_size": [512]
+        "sram_size": [256]
     },
     "support-transform-ids": [
         "stream.ex.static.so.store.cmp",
