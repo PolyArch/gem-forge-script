@@ -15,7 +15,7 @@ import importlib
 # disable printing out traffic.
 ssp.__print_traffic__ = False
 
-def getConfigureations(subset):
+def getConfigurations(subset):
     # Same across all benchmarks.
     fix_transforms = [
         {
@@ -932,6 +932,8 @@ def addPUMResult(result, tile_stats):
     addDefaultZeroResult(result, main_tile, 'pum_compile_cycle')
     addDefaultZeroResult(result, main_tile, 'pum_reduce_cycle')
     addDefaultZeroResult(result, main_tile, 'pum_mix_cycle')
+    addDefaultZeroResult(result, main_tile, 'pum_compute_read_bits')
+    addDefaultZeroResult(result, main_tile, 'pum_compute_write_bits')
     addDefaultZeroResult(result, mid_tile, 'pum_compute_cycle')
     addDefaultZeroResult(result, mid_tile, 'pum_move_cycle')
     addSumDefaultZeroResult(result, tile_stats, 'pum_compute_ops')
@@ -979,6 +981,65 @@ def collectEnergy(result, stats_fn):
     result['core_static_power']   = mcpat_parsed.core[0].get_static_power()
     result['system_dyn_power']    = mcpat_parsed.get_system_dynamic_power()
     result['system_static_power'] = mcpat_parsed.get_system_static_power()
+
+    # Crude method to detect PUM run.
+    if 'stream.ex.static.so.store.cmp-bnd-elim-nst' in stats_fn:
+        # Results from CACTI
+        read_energy_access = 0.0111033 * 1e-9 # nJ->J
+
+        # est_num_bitline = 230 # bits
+        est_num_bitline = 64 * 8 # cache line (bits)
+        read_energy_bit = read_energy_access / est_num_bitline
+
+        write_energy_bit = \
+            read_energy_bit # McPAT doesn't report the correct write energy 
+                           # (should be similar according to CACTI 5.1 
+                           # documentation)
+
+        read_htree_energy_access = 0.144178 * 1e-9 # nJ->J
+
+        # htree_est_num_access = 920 # bits
+        htree_est_num_bitline = 64 * 8 # cache line (bits)
+        read_htree_energy_bit = read_htree_energy_access / htree_est_num_bitline
+
+        write_htree_energy_bit = read_htree_energy_bit
+
+        # Calculate energy for compute.
+        energy_compute = result['pum_compute_read_bits'] * read_energy_bit \
+                + result['pum_compute_write_bits'] * write_energy_bit
+
+        # Calculate energy for move.
+        energy_intra_array = result['pum_intra_array_bits'] \
+                * (read_energy_bit + write_energy_bit)
+        energy_inter_array = result['pum_inter_array_bits'] \
+                * (read_htree_energy_bit + write_htree_energy_bit)
+        energy_inter_bank = result['pum_inter_bank_bits'] \
+                * (read_htree_energy_bit + write_htree_energy_bit)
+        energy_move = energy_intra_array + energy_inter_array + energy_inter_bank
+
+        energy_pum = energy_compute + energy_move
+        power_pum = energy_pum / (result['cycles'] / 2e9)
+
+        power_compute = energy_compute / (result['cycles'] / 2e9)
+        power_intra_array = energy_intra_array / (result['cycles'] / 2e9)
+        power_inter_array = energy_inter_array / (result['cycles'] / 2e9)
+        power_inter_bank = energy_inter_bank / (result['cycles'] / 2e9)
+        print(f"{stats_fn}\n" + 
+              f"Power {result['l3_dyn_power']} => {power_pum} Watts\n" + 
+              f"  > Compute           : {power_compute} Watts\n" + 
+              f"    > read : {int(result['pum_compute_read_bits'])} bits\n" +
+              f"    > write: {int(result['pum_compute_write_bits'])} bits\n" +
+              f"  > Move (intra array): {power_intra_array} Watts\n" + 
+              f"    > read : {int(result['pum_intra_array_bits'])} bits\n" +
+              f"    > write: {int(result['pum_intra_array_bits'])} bits\n" +
+              f"  > Move (inter array): {power_inter_array} Watts\n" +
+              f"    > read : {int(result['pum_inter_array_bits'])} bits\n" +
+              f"    > write: {int(result['pum_inter_array_bits'])} bits\n" +
+              f"  > Move (inter bank) : {power_inter_bank} Watts\n" +
+              f"    > read : {int(result['pum_inter_bank_bits'])} bits\n" +
+              f"    > write: {int(result['pum_inter_bank_bits'])} bits")
+
+        result['l3_dyn_power'] = power_pum
 
 def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg_folder, weight):
     result_path = os.path.join(C.GEM_FORGE_RESULT_PATH, suite, benchmark, transform_name, simulation, tdg_folder)
@@ -1138,7 +1199,7 @@ def main(subset):
 
     subset_name, isInSubset = getSubset(subset)
 
-    configurations = getConfigureations(subset)
+    configurations = getConfigurations(subset)
 
     for config in configurations:
         suite = config['suite']

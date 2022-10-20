@@ -223,6 +223,10 @@ class TileStatsParser(object):
                 'system.ruby.l1_cntrl{tile_id}.pumReduceCycles'),
             'pum_mix_cycle': self.format_re(
                 'system.ruby.l1_cntrl{tile_id}.pumMixCycles'),
+            'pum_compute_read_bits': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumComputeReadBits'),
+            'pum_compute_write_bits': self.format_re(
+                'system.ruby.l1_cntrl{tile_id}.pumComputeWriteBits'),
             'pum_compute_cycle': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.pumComputeCycles'),
             'pum_move_cycle': self.format_re(
