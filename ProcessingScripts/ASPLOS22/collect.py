@@ -483,8 +483,8 @@ def getConfigurations(subset):
                             {
                                 'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                                 'simulations': [
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
                                     'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
                                 ]
                             }
                         ],
@@ -529,61 +529,68 @@ def getConfigurations(subset):
                             {
                                 'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                                 'simulations': [
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
                                     'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-int-nuca1-iace0x1x1x1',
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-inner-iace0x1x1x1',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
                                 ]
                             }
                         ],
                     })
 
-
-                # configurations.append({
-                #     'suite': suite,
-                #     'benchmark': pum_benchmark,
-                #     'tdg_folder': tdg_warm_folder,
-                #     # 'renamed_benchmark': benchmark, # Rename the benchmark back to OpenMP name
-                #     'transforms': [
-                #         {
-                #             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                #             'simulations': [
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-real-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-notile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nocompile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-softcompile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nodfg-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-nuca1-iace0x1x1x1',
-                #                 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
-                #                 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-int-nuca1-iace0x1x1x1',
-                #                 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-real-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-notile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nocompile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-softcompile-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nodfg-nuca1-iace0x1x1x1',
-                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum-nuca1-iace1x1x1x1',
-                #             ]
-                #         }
-                #     ],
-                # })
-
-    if subset in ['pum-mm-tile-large']:
+    if subset in ['pum-energy-large']:
         input_size = subset.split('-')[-1]
         tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
         tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
         for suite, benchmark, nsc_benchmark, pum_benchmark in [
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile16'),
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile32'),
+            ('gfm', 'omp_stencil1d_avx',                          None,                                    'stencil1d'),
+            ('gfm', 'omp_stencil2d_avx',                          None,                                    'stencil2d'),
+            ('gfm', 'omp_stencil3d_avx',                          None,                                    'stencil3d'),
+            ('gfm', 'omp_dwt2d53_avx',                            None,                                    'dwt2d53'),
+            ('gfm', 'omp_gaussian_elim_avx',                      None,                                    'gaussian_elim'),
+            ('gfm', 'omp_conv2d_avx',                             None,                                    'conv2d'),
+            ('gfm', 'omp_conv3d_zxy_fbybx_oxyxi_outer_32x32_avx', None,                                    'conv3d_xyz_ioyx_outer'),
             ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile64'),
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile128'),
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile256'),
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile512'),
+            ('gfm', 'omp_mm_outer_avx',                           None,                                    'mm_outer'),
+            ('gfm', 'omp_kmeans_avx',                             None,                                    'kmeans_cp_pum_avx'),
+            ('gfm', 'omp_kmeans_outer_split_avx',                 'kmeans_outer_split_trans_pum_avx',      'kmeans_outer_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_inner_avx',               None,                                    'pointnet_inner_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_outer_avx',               'pointnet_outer_transrr_pum_avx',        'pointnet_outer_pum_avx'),
         ]:
 
+            if nsc_benchmark is None:
+                nsc_benchmark = pum_benchmark
+
             for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                # configurations.append({
+                #     'suite': suite,
+                #     'benchmark': benchmark,
+                #     'tdg_folder': tdg_folder,
+                #     'transforms': [
+                #         {
+                #             'transform': 'valid.ex',
+                #             'simulations': [
+                #                 # 'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
+                #                 'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B-llc2MB.bingo-l2pf16',
+                #             ]
+                #         },
+                #     ],
+                # })
+                # NSC
+                # configurations.append({
+                #     'suite': suite,
+                #     'benchmark': nsc_benchmark,
+                #     'tdg_folder': tdg_folder,
+                #     'transforms': [
+                #         {
+                #             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                #             'simulations': [
+                #                 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x0x1x1x0',
+                #                 # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x0x1x1x0',
+                #             ]
+                #         }
+                #     ],
+                # })
                 # PUM
                 configurations.append({
                     'suite': suite,
@@ -593,7 +600,93 @@ def getConfigurations(subset):
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                             'simulations': [
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['pum-energy2-large']:
+        input_size = subset.split('-')[-1]
+        tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
+        tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
+        for suite, benchmark, nsc_benchmark, pum_benchmark in [
+            ('gfm', 'omp_stencil1d_avx',                          None,                                    'stencil1d'),
+            ('gfm', 'omp_stencil2d_avx',                          None,                                    'stencil2d'),
+            ('gfm', 'omp_stencil3d_avx',                          None,                                    'stencil3d'),
+            ('gfm', 'omp_dwt2d53_avx',                            None,                                    'dwt2d53'),
+            ('gfm', 'omp_gaussian_elim_avx',                      None,                                    'gaussian_elim'),
+            ('gfm', 'omp_conv2d_avx',                             None,                                    'conv2d'),
+            ('gfm', 'omp_conv3d_zxy_fbybx_oxyxi_outer_32x32_avx', None,                                    'conv3d_xyz_ioyx_outer'),
+            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner_pum_tile64'),
+            ('gfm', 'omp_mm_outer_avx',                           None,                                    'mm_outer'),
+            ('gfm', 'omp_kmeans_avx',                             None,                                    'kmeans_cp_pum_avx'),
+            ('gfm', 'omp_kmeans_outer_split_avx',                 'kmeans_outer_split_trans_pum_avx',      'kmeans_outer_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_inner_avx',               None,                                    'pointnet_inner_pum_avx'),
+            ('gfm', 'omp_pointnet_fused_outer_avx',               'pointnet_outer_transrr_pum_avx',        'pointnet_outer_pum_avx'),
+        ]:
+
+            if nsc_benchmark is None:
+                nsc_benchmark = pum_benchmark
+
+            for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'valid.ex',
+                            'simulations': [
+                                # 'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
+                                'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B-llc2MB.bingo-l2pf16',
+                            ]
+                        },
+                    ],
+                })
+                # NSC
+                # Covn3d large cold is still running...
+                if nsc_benchmark.startswith('conv3d_') and tdg_folder == tdg_cold_folder:
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': nsc_benchmark,
+                        # Fake with warm folder.
+                        'tdg_folder': (tdg_warm_folder, tdg_cold_folder),
+                        'transforms': [
+                            {
+                                'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                'simulations': [
+                                    # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x0x1x1x0',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x1x1x1x1',
+                                ]
+                            }
+                        ],
+                    })
+                else:
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': nsc_benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transforms': [
+                            {
+                                'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                'simulations': [
+                                    # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x0x1x1x0',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x1x1x1x1',
+                                ]
+                            }
+                        ],
+                    })
+                # PUM
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': pum_benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
                             ]
                         }
                     ],
@@ -603,20 +696,36 @@ def getConfigurations(subset):
         input_size = subset.split('-')[-1]
         tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
         tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
-        for suite, benchmark, nsc_benchmark, pum_benchmark in [
-            ('gfm', 'omp_stencil2d_avx',                          None,                                    'stencil2d'),
-            ('gfm', 'omp_dwt2d53_avx',                            None,                                    'dwt2d53'),
-            ('gfm', 'omp_gaussian_elim_avx',                      None,                                    'gaussian_elim'),
-            ('gfm', 'omp_conv2d_avx',                             None,                                    'conv2d'),
-            ('gfm', 'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner'),
-            ('gfm', 'omp_mm_outer_avx',                           None,                                    'mm_outer'),
-            ('gfm', 'omp_kmeans_avx',                             None,                                    'kmeans_cp_pum_avx'),
-            ('gfm', 'omp_kmeans_outer_split_avx',                 'kmeans_outer_split_trans_pum_avx',      'kmeans_outer_pum_avx'),
-            ('gfm', 'omp_pointnet_fused_inner_avx',               None,                                    'pointnet_inner_pum_avx'),
-            ('gfm', 'omp_pointnet_fused_outer_avx',               'pointnet_outer_transrr_pum_avx',        'pointnet_outer_pum_avx'),
+        for suite, no_tile1, benchmark, nsc_benchmark, pum_benchmark in [
+            ('gfm', False, 'omp_stencil2d_avx',                          None,                                    'stencil2d'),
+            ('gfm', False, 'omp_dwt2d53_avx',                            None,                                    'dwt2d53'),
+            ('gfm', False, 'omp_gaussian_elim_avx',                      None,                                    'gaussian_elim'),
+            ('gfm', False, 'omp_conv2d_avx',                             None,                                    'conv2d'),
+            ('gfm', True,  'omp_mm_inner_tile8x8x256_avx',               None,                                    'mm_inner'),
+            ('gfm', False, 'omp_mm_outer_avx',                           None,                                    'mm_outer'),
+            ('gfm', True,  'omp_kmeans_avx',                             None,                                    'kmeans_cp_pum_avx'),
+            ('gfm', True,  'omp_kmeans_outer_split_avx',                 'kmeans_outer_split_trans_pum_avx',      'kmeans_outer_pum_avx'),
+            ('gfm', True,  'omp_pointnet_fused_inner_avx',               None,                                    'pointnet_inner_pum_avx'),
+            ('gfm', True,  'omp_pointnet_fused_outer_avx',               'pointnet_outer_transrr_pum_avx',        'pointnet_outer_pum_avx'),
         ]:
 
             for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                simulations = list()
+                for tile_size in [1, 2, 4, 8, 16, 32, 64, 128, 256]:
+                    renamed_simulation = f'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-tile{tile_size}-iace0x1x1x1'
+                    if tile_size == 1 and no_tile1:
+                        # Use tile_size 2
+                        simulation = f'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-tile2-iace0x1x1x1'
+                    else:
+                        simulation = renamed_simulation
+                    simulations.append((simulation, renamed_simulation))
+
+                # Add the final Inf-S configuration.
+                simulations.append((
+                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
+                ))
+
                 # PUM
                 configurations.append({
                     'suite': suite,
@@ -625,17 +734,7 @@ def getConfigurations(subset):
                     'transforms': [
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                            'simulations': [
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile4-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile8-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile16-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile32-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile64-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile128-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile256-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile512-iace0x1x1x1',
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
-                            ]
+                            'simulations': simulations,
                         }
                     ],
                 })
@@ -649,14 +748,16 @@ def getConfigurations(subset):
             ('gfm', 'omp_conv3d_zxy_fbybx_oxyxi_outer_32x32_avx', None,                                    'conv3d_xyz_ioyx_outer'),
         ]:
             target_benchmark = pum_benchmark.split('_')[0]
-            tile_sizes = PUMTilingGen.gen(target_benchmark)
+            sram_size = 256
+            tile_sizes = PUMTilingGen.gen(target_benchmark, sram_size)
 
             for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
 
                 simulations = list()
                 for xx, yy, zz in tile_sizes:
                     simulations.append(
-                        f'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-tile2d{xx}x{yy}-iace0x1x1x1',
+                        # f'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum{sram_size}-strnd-nuca1-tile2d{xx}x{yy}-iace0x1x1x1',
+                        f'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum{sram_size}-strnd-nuca1-tile2d{xx}x{yy}-iace0x1x1x1',
                     )
 
                 # PUM
@@ -691,7 +792,6 @@ def getConfigurations(subset):
             ('gfm', 'omp_mm_outer_avx_int8',                            None,  'mm_outer_int8'),
         ]:
             target_benchmark = pum_benchmark.split('_')[0]
-            tile_sizes = PUMTilingGen.gen(target_benchmark)
 
             def add_default_fp32_suffix(b):
                 valid_suffix = ['int32', 'int16', 'int8']
@@ -725,28 +825,38 @@ def getConfigurations(subset):
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                             'simulations': [
-                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                                # 'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                                'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
                             ]
                         }
                     ],
                 },
                 ]
 
-    if subset in ['pum-sizes']:
-        for input_size in ['teeny', 'tiny', 'small', 'medium', 'large']:
-            tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
-            tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
-            for suite, benchmark, nsc_benchmark, pum_benchmark in [
-                ('gfm', 'omp_vec_add_avx',                            None,                                    'vec_add_avx'),
-                ('gfm', 'omp_array_sum_avx',                          None,                                    'array_sum'),
-            ]:
+    if subset in ['pum-intro-sizes']:
+        for suite, benchmark, benchmark_base, pum_benchmark in [
+            ('gfm', 'omp_vec_add_avx',     'vec_add',   'vec_add_avx'),
+            ('gfm', 'omp_array_sum_avx',   'array_sum', 'array_sum_split2d'),
+        ]:
+            for input_size, input_size_txt in [
+                    ('teeny', '16k'),
+                    ('tiny', '64k'),
+                    ('small', '256k'),
+                    ('medium', '1M'),
+                    ('large', '4M'),
+                ]:
+                tdg_warm_folder = f'fake.0.tdg.thread64-{input_size}'
+                tdg_cold_folder = f'fake.0.tdg.thread64-{input_size}-cold'
 
-                if nsc_benchmark is None:
-                    nsc_benchmark = pum_benchmark
+                tdg_thread1_warm_folder = f'fake.0.tdg.thread1-{input_size}'
+                tdg_thread1_cold_folder = f'fake.0.tdg.thread1-{input_size}-cold'
 
-                renamed_benchmark = f'{pum_benchmark}/{input_size}'
+                nsc_benchmark = pum_benchmark
 
-                for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                renamed_benchmark = f'{benchmark_base}/{input_size_txt}'
+
+                for tdg_folder in [tdg_thread1_warm_folder, tdg_thread1_cold_folder]:
+                    # Baseline with 1 threads
                     configurations.append({
                         'suite': suite,
                         'benchmark': benchmark,
@@ -756,7 +866,22 @@ def getConfigurations(subset):
                             {
                                 'transform': 'valid.ex',
                                 'simulations': [
-                                    'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B',
+                                    'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
+                                ]
+                            },
+                        ],
+                    })
+                for tdg_folder in [tdg_warm_folder, tdg_cold_folder]:
+                    # Baseline with 64 threads
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'renamed_benchmark': renamed_benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transforms': [
+                            {
+                                'transform': 'valid.ex',
+                                'simulations': [
                                     'replay.ruby.single.o8.tlb.8x8t4x4-l256-s64B-ch64B.bingo-l2pf16',
                                 ]
                             },
@@ -772,8 +897,8 @@ def getConfigurations(subset):
                             {
                                 'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                                 'simulations': [
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd1-nuca0-fiace0x0x1x1x0',
                                     'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x0x1x1x0',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmpv-strnd128-brd8-nuca0-fiace0x1x1x1x1',
                                 ]
                             }
                         ],
@@ -788,7 +913,7 @@ def getConfigurations(subset):
                             {
                                 'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                                 'simulations': [
-                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-pum512-strnd-nuca1-iace0x1x1x1',
+                                    'stream.ruby.single.o8.tlb.8x8t4x4-l256-s1kB-ch4kB-llc2MB.f2048-c-gb.fltsc-cmp-pum256-strnd-nuca1-iace0x1x1x1',
                                 ]
                             }
                         ],
@@ -981,6 +1106,7 @@ def collectEnergy(result, stats_fn):
     result['core_static_power']   = mcpat_parsed.core[0].get_static_power()
     result['system_dyn_power']    = mcpat_parsed.get_system_dynamic_power()
     result['system_static_power'] = mcpat_parsed.get_system_static_power()
+    result['l3_pum_dyn_power']    = 0.0
 
     # Crude method to detect PUM run.
     if 'stream.ex.static.so.store.cmp-bnd-elim-nst' in stats_fn:
@@ -1039,9 +1165,17 @@ def collectEnergy(result, stats_fn):
               f"    > read : {int(result['pum_inter_bank_bits'])} bits\n" +
               f"    > write: {int(result['pum_inter_bank_bits'])} bits")
 
-        result['l3_dyn_power'] = power_pum
+        result['l3_pum_dyn_power'] = power_pum
 
 def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg_folder, weight):
+    if type(simulation) is tuple:
+        simulation, renamed_simulation = simulation
+    else:
+        renamed_simulation = simulation
+    if type(tdg_folder) is tuple:
+        tdg_folder, renamed_tdg_folder = tdg_folder
+    else:
+        renamed_tdg_folder = tdg_folder
     result_path = os.path.join(C.GEM_FORGE_RESULT_PATH, suite, benchmark, transform_name, simulation, tdg_folder)
     stats_fn = os.path.join(result_path, 'stats.txt')
     result = None
@@ -1053,8 +1187,8 @@ def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg
                 suite=suite,
                 benchmark=renamed_benchmark,
                 transform=transform_name,
-                simulation=simulation,
-                tdg_folder=tdg_folder,
+                simulation=renamed_simulation,
+                tdg_folder=renamed_tdg_folder,
                 weight=weight)
             addCycleResult(result, tile_stats)
             addDynInstOpStats(result, tile_stats)

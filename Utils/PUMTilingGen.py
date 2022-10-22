@@ -15,17 +15,19 @@ def generate3DTileSize(x, y, z, bitlines):
 
     return ret
 
-def gen(benchmark):
+def gen(benchmark, sram_size):
     if benchmark == 'conv3d':
-        return generate3DTileSize(256, 256, 64, 512)
+        return generate3DTileSize(256, 256, 64, sram_size)
     elif benchmark == 'stencil3d':
-        return generate3DTileSize(512, 512, 16, 512)
+        return generate3DTileSize(512, 512, 16, sram_size)
 
 if __name__ == '__main__':
-    print('conv3d')
-    ret = generate3DTileSize(256, 256, 64, 512)
-    print(','.join([f'"{xx}x{yy}"' for xx, yy, zz in ret]))
-    print('stencil3d')
-    ret = generate3DTileSize(512, 512, 16, 512)
-    print(','.join([f'"{xx}x{yy}"' for xx, yy, zz in ret]))
+    for sram_size in [256, 512]:
+        print(f'{sram_size}')
+        print('conv3d')
+        ret = generate3DTileSize(256, 256, 64, sram_size)
+        print(','.join([f'"{xx}x{yy}"' for xx, yy, zz in ret]))
+        print('stencil3d')
+        ret = generate3DTileSize(512, 512, 16, sram_size)
+        print(','.join([f'"{xx}x{yy}"' for xx, yy, zz in ret]))
 
