@@ -39,7 +39,7 @@ class TileStatsParser(object):
     def __init__(self, tile_stats):
         self.tile_stats = tile_stats
         self.re = {
-            'sim_ticks': self.format_re('sim_ticks'),
+            'sim_ticks': self.format_re('simTicks'),
             'num_cycles': self.format_re(
                 'system.future_cpus{tile_id}.numCycles'),
             'num_dyn_ops': self.format_re(
@@ -51,29 +51,29 @@ class TileStatsParser(object):
             'load_blocked_ratio': self.format_re(
                 'system.future_cpus{tile_id}.loadBlockedCyclesPercen*'),
             'l1d_access': self.format_re(
-                'system.ruby.l0_cntrl{tile_id}.Dcache.demand_accesses'),
+                'system.ruby.l0_cntrl{tile_id}.Dcache.m_demand_accesses'),
             'l1d_misses': self.format_re(
-                'system.ruby.l0_cntrl{tile_id}.Dcache.demand_misses'),
+                'system.ruby.l0_cntrl{tile_id}.Dcache.m_demand_misses'),
             'l2_access': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.demand_accesses'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_demand_accesses'),
             'l2_misses': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.demand_misses'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_demand_misses'),
             'l2_evicts': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated'),
             'l2_evicts_noreuse': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated_no_reuse'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated_no_reuse'),
             'l2_evicts_noreuse_stream': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated_no_reuse_stream'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated_no_reuse_stream'),
             'l2_evicts_noreuse_ctrl_pkts': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated_no_reuse_noc_ctrl_msg'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated_no_reuse_noc_ctrl_msg'),
             'l2_evicts_noreuse_ctrl_evict_pkts': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated_no_reuse_noc_ctrl_evict_msg'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated_no_reuse_noc_ctrl_evict_msg'),
             'l2_evicts_noreuse_data_pkts': self.format_re(
-                'system.ruby.l1_cntrl{tile_id}.cache.deallocated_no_reuse_noc_data_msg'),
+                'system.ruby.l1_cntrl{tile_id}.cache.m_deallocated_no_reuse_noc_data_msg'),
             'l3_access': self.format_re(
-                'system.ruby.l2_cntrl{tile_id}.L2cache.demand_accesses'),
+                'system.ruby.l2_cntrl{tile_id}.L2cache.m_demand_accesses'),
             'l3_misses': self.format_re(
-                'system.ruby.l2_cntrl{tile_id}.L2cache.demand_misses'),
+                'system.ruby.l2_cntrl{tile_id}.L2cache.m_demand_misses'),
             'l1tlb_access': self.format_re(
                 'system.future_cpus{tile_id}.dtb.l1Accesses'),
             'l1tlb_misses': self.format_re(
@@ -170,7 +170,7 @@ class TileStatsParser(object):
             'core_data_traffic_cached_ignored': self.format_re(
                 'system.future_cpus{tile_id}.statCoreCachedDataHopsIgnored'),
             'core_committed_microops': self.format_re(
-                'system.future_cpus{tile_id}.statCoreCommitMicroOps'),
+                'system.future_cpus{tile_id}.commit.opsCommitted'),
             'core_committed_microops_ignored': self.format_re(
                 'system.future_cpus{tile_id}.statCoreCommitMicroOpsIgnored'),
             'core_committed_microops_gem_forge': self.format_re(
@@ -404,8 +404,8 @@ def findTileId(x):
             return tileId
     return -1
 
-def process(f):
-    tile_stats = [TileStats(i) for i in range(64)]
+def process(f, banks=64):
+    tile_stats = [TileStats(i) for i in range(banks)]
     tile_stats_parser = [TileStatsParser(ts) for ts in tile_stats]
     for line in f:
         if line.find('End Simulation Statistics') != -1:
@@ -677,8 +677,13 @@ def getPUMJitterRuntime(sim_out_folder, tile_stats):
 if __name__ == '__main__':
     if 'traffic' in sys.argv:
         __print_traffic__ = True
+    banks = 64
+    for x in sys.argv:
+        if x.startswith('banks='):
+            banks = int(x.split('=')[1])
+            print(f'banks = {banks}')
     with open(sys.argv[1]) as f:
-        tile_stats = process(f)
+        tile_stats = process(f, banks)
     sim_out_folder = os.path.dirname(sys.argv[1])
     getPUMJitterRuntime(sim_out_folder, tile_stats)
     print_stats(tile_stats)

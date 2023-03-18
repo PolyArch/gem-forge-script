@@ -15,7 +15,7 @@
         "--numa-high-bit={log2Byte(ch_intrlv) + 1}",
         "--gem-forge-stream-engine-enable-fine-grained-near-data-computing",
         "--gem-forge-stream-engine-enable-float-subline",
-        "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
+        "--gem-forge-stream-engine-llc-stream-max-infly-request=32",
         "--gem-forge-stream-engine-llc-stream-engine-issue-width=1",
         "--gem-forge-stream-engine-llc-access-core-simd-delay=4",
         "--gem-forge-stream-engine-llc-max-infly-computation=4"

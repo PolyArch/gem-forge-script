@@ -13,7 +13,7 @@
         "--gem-forge-stream-engine-throttling=global",
         "--gem-forge-stream-engine-enable-fine-grained-near-data-computing",
         "--gem-forge-stream-engine-enable-float-subline",
-        "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
+        "--gem-forge-stream-engine-llc-stream-max-infly-request=32",
         "--llc-select-low-bit={log2Byte(llc_intrlv)}",
         "--numa-high-bit={log2Byte(ch_intrlv) + 1}",
         "--gem-forge-stream-engine-llc-stream-engine-issue-width=1",

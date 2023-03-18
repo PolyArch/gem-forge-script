@@ -8,6 +8,9 @@ GEM_FORGE_TRANSFORM_BUILD_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'build')
 GEM_FORGE_DRIVER_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, '../driver')
 GEM_FORGE_BENCHMARK_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'benchmark')
 
+AFFINITY_ALLOC_INC_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'src/affinity_alloc')
+AFFINITY_ALLOC_LIB_PATH = os.path.join(GEM_FORGE_TRANSFORM_BUILD_PATH, 'src/affinity_alloc')
+
 # Where to store the llvm_bc and traces.
 EXPERIMENTS = 'stream'
 # EXPERIMENTS = 'fractal'
@@ -22,6 +25,7 @@ Normal llvm install path.
 LLVM_PATH = os.getenv('LLVM_RELEASE_INSTALL_PATH')
 assert(LLVM_PATH is not None)
 LLVM_BIN_PATH = os.path.join(LLVM_PATH, 'bin')
+LLVM_LIB_PATH = os.path.join(LLVM_PATH, 'lib')
 LLVM_DEBUG_PATH = os.getenv('LLVM_DEBUG_INSTALL_PATH')
 LLVM_DEBUG_BIN_PATH = os.path.join(LLVM_DEBUG_PATH, 'bin')
 

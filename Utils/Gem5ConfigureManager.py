@@ -220,21 +220,31 @@ class Gem5ReplayConfigureManager(object):
         '--l2_size=256kB',
         '--l2_assoc=16',
         '--l3_lat=20',
+        '--recycle-latency=1',
     ]
     LLC_1MB = [
         '--l2_size=1MB',
         '--l2_assoc=16',
         '--l3_lat=20',
+        '--recycle-latency=1',
+    ]
+    LLC_1MB_LAT1 = [
+        '--l2_size=1MB',
+        '--l2_assoc=16',
+        '--l3_lat=1',
+        '--recycle-latency=1',
     ]
     LLC_2MB = [
         '--l2_size=2MB',
         '--l2_assoc=16',
         '--l3_lat=20',
+        '--recycle-latency=1',
     ]
     LLC_4MB = [
         '--l2_size=4MB',
         '--l2_assoc=16',
         '--l3_lat=20',
+        '--recycle-latency=1',
     ]
     LLC_SELECT_4kB = [
         '--llc-select-low-bit=12',
@@ -285,6 +295,12 @@ class Gem5ReplayConfigureManager(object):
         '--l1_5d_mshrs=16',
         '--l2_lat=16',
     ]
+    MLC_32kB = [
+        '--l1_5d_size=32kB',
+        '--l1_5d_assoc=16',
+        '--l1_5d_mshrs=16',
+        '--l2_lat=16',
+    ]
     MLC_32MB = [
         '--l1_5d_size=32MB',
         '--l1_5d_assoc=16',
@@ -294,7 +310,7 @@ class Gem5ReplayConfigureManager(object):
     RUBY_L3_BASE = [
         "--ruby",
         "--access-backing-store",
-        "--network=garnet2.0",
+        "--network=garnet",
         "--garnet-enable-multicast",
         "--router-latency=2",
         "--link-latency=1",
@@ -395,12 +411,54 @@ class Gem5ReplayConfigureManager(object):
             "--num-l2caches=32",
             "--mesh-rows=4",
         ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB,
+        '8x8.dir_corner.l2_32kB.l3_1MB_s0.ruby': [
+            "--num-cpus=64",
+            "--num-dirs=4",
+            "--num-l2caches=64",
+            "--mesh-rows=8",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_32kB + LLC_1MB,
+        '2x2.dir_corner.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=4",
+            "--num-dirs=4",
+            "--num-l2caches=4",
+            "--mesh-rows=2",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB,
+        '2x2.dir_corner.l2_256kB.l3_1MB_lat1_s0.ruby': [
+            "--num-cpus=4",
+            "--num-dirs=4",
+            "--num-l2caches=4",
+            "--mesh-rows=2",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB_LAT1,
+        '4x4.dir_corner.l2_256kB.l3_1MB_s0.ruby': [
+            "--num-cpus=16",
+            "--num-dirs=4",
+            "--num-l2caches=16",
+            "--mesh-rows=4",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB,
+        '4x4.dir_corner.l2_256kB.l3_1MB_lat1_s0.ruby': [
+            "--num-cpus=16",
+            "--num-dirs=4",
+            "--num-l2caches=16",
+            "--mesh-rows=4",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB_LAT1,
         '8x8.dir_corner.l2_256kB.l3_1MB_s0.ruby': [
             "--num-cpus=64",
             "--num-dirs=4",
             "--num-l2caches=64",
             "--mesh-rows=8",
         ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB,
+        '8x8.dir_corner.l2_256kB.l3_1MB_lat1_s0.ruby': [
+            "--num-cpus=64",
+            "--num-dirs=4",
+            "--num-l2caches=64",
+            "--mesh-rows=8",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_1MB_LAT1,
+        '8x8.dir_corner.l2_256kB.l3_2MB_s0.ruby': [
+            "--num-cpus=64",
+            "--num-dirs=4",
+            "--num-l2caches=64",
+            "--mesh-rows=8",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_2MB,
         '8x8.dir_middle4x4.l2_256kB.l3_1MB_s0.ruby': [
             "--num-cpus=64",
             "--num-dirs=16",
@@ -425,6 +483,18 @@ class Gem5ReplayConfigureManager(object):
             "--num-l2caches=64",
             "--mesh-rows=8",
         ] + RUBY_L3_DIR_TILE + L0_32kB + MLC_256kB + LLC_4MB,
+        '6x3.dir_c2x2.l2_256kB.l3_2MB_s0.ruby': [
+            "--num-cpus=18",
+            "--num-dirs=4",
+            "--num-l2caches=18",
+            "--mesh-rows=6",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_2MB,
+        '6x3.dir_c1x2.l2_256kB.l3_2MB_s0.ruby': [
+            "--num-cpus=18",
+            "--num-dirs=2",
+            "--num-l2caches=18",
+            "--mesh-rows=6",
+        ] + RUBY_L3_DIR_CORNER + L0_32kB + MLC_256kB + LLC_2MB,
         '4x4.dir_middle2x2.l2_256kB.l3_1MB_s0.ruby': [
             "--num-cpus=16",
             "--num-dirs=4",
@@ -467,6 +537,7 @@ class Gem5ReplayConfigureManager(object):
             "--cpu-type=DerivO3CPU",
             "--llvm-issue-width=8",
             "--gem-forge-enable-func-acc-tick",
+            "--gem-forge-enable-func-trace",
             "--prog-interval=10000", # Hz
             "--tlb-timing-se",
         ] + L2_TLB,
@@ -512,6 +583,12 @@ class Gem5ReplayConfigureManager(object):
             "--mem-type=DRAMsim3",
             f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_3200_Stream.ini",
             # "--mem-type=DDR4_2400_8x8",
+            "--mem-channel-xor-low-bit=0",
+            "--sys-clock=1GHz",
+        ],
+        'ddr4-2133-no-xor': [
+            "--mem-type=DRAMsim3",
+            f"--dramsim3-ini={DRAMSim3ConfigPath}/DDR4_8Gb_x8_2133_Stream.ini",
             "--mem-channel-xor-low-bit=0",
             "--sys-clock=1GHz",
         ],

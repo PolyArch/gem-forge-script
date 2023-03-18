@@ -14,7 +14,7 @@
         "--gem-forge-stream-engine-mlc-stream-buffer-init-num-entries=32",
         "--gem-forge-stream-engine-float-policy=smart",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
-        "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
+        "--gem-forge-stream-engine-llc-stream-max-infly-request=32",
         "--llc-select-low-bit={log2Byte(llc_intrlv)}"
     ],
     "snippts": [

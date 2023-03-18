@@ -18,7 +18,7 @@
         "--gem-forge-stream-engine-enable-float-indirect",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
         "--gem-forge-stream-engine-enable-float-subline",
-        "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
+        "--gem-forge-stream-engine-llc-stream-max-infly-request=32",
         "--llc-select-low-bit={log2Byte(llc_intrlv)}",
         "--gem-forge-stream-engine-enable-float-multicast",
         "--gem-forge-stream-engine-llc-stream-engine-issue-width=1",

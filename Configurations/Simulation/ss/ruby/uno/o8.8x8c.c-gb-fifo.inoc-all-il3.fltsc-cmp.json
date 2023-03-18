@@ -23,7 +23,7 @@
         "--gem-forge-stream-engine-enable-float-indirect",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
         "--gem-forge-stream-engine-enable-float-subline",
-        "--gem-forge-stream-engine-llc-stream-max-infly-request=16",
+        "--gem-forge-stream-engine-llc-stream-max-infly-request=32",
         "--llc-select-low-bit={log2Byte(llc_intrlv)}",
         "--numa-high-bit={log2Byte(ch_intrlv) + 1}",
         "--gem-forge-stream-engine-enable-float-multicast",
@@ -57,11 +57,11 @@
         "neighbor_migration_delay": [100],
         "inoc": [0],
         "mlc_fifo": [32],
-        "nest": [8, 16, 32, 64],
+        "nest": [4, 8],
         "idea_ack": [1],
-        "idea_end": [0],
-        "idea_flow": [0],
-        "partial_config": [0]
+        "idea_end": [1],
+        "idea_flow": [1],
+        "partial_config": [1]
     },
     "support-transform-ids": [
         "stream.ex.static.so.store.cmp",

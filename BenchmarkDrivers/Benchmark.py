@@ -880,7 +880,6 @@ class Benchmark(object):
         # Link them into code.
         transformed_exe = self.get_replay_exe(transform_config, trace, 'exe')
         link_cmd = C.get_sim_linker() + [
-            '-static',
             '-o',
             transformed_exe,
             transformed_obj,
@@ -934,18 +933,19 @@ class Benchmark(object):
             outdir,
             standalone):
         hoffman2 = False
+        gem5_env_fn = os.path.join(C.GEM_FORGE_DRIVER_PATH, 'Utils', 'Gem5Env.sh')
         gem5_args = [
             # C.GEM5_X86 if not hoffman2 else C.HOFFMAN2_GEM5_X86,
             C.get_gem5(),
-            '--outdir={outdir}'.format(outdir=outdir),
+            f'--outdir={outdir}',
             # Always dump all stats.
             '--stats-file=text://stats.txt?dumpAll=False',
             '--listener-mode=off',
             C.GEM5_LLVM_TRACE_SE_CONFIG if not hoffman2 else C.HOFFMAN2_GEM5_LLVM_TRACE_SE_CONFIG,
-            '--cmd={cmd}'.format(cmd=binary),
-            '--llvm-store-queue-size={STORE_QUEUE_SIZE}'.format(
-                STORE_QUEUE_SIZE=C.STORE_QUEUE_SIZE),
-            '--llvm-mcpat={use_mcpat}'.format(use_mcpat=C.GEM5_USE_MCPAT),
+            f'--env={gem5_env_fn}',
+            f'--cmd={binary}',
+            f'--llvm-store-queue-size={C.STORE_QUEUE_SIZE}',
+            f'--llvm-mcpat={C.GEM5_USE_MCPAT}',
             '--caches',
             '--l2cache',
         ]
@@ -1083,7 +1083,13 @@ class Benchmark(object):
         cwd = os.getcwd()
         os.chdir(self.get_sim_exe_path())
         if self.options.perf_command:
-            gem5_args = [C.PERF_BIN, 'record', '-g'] + gem5_args
+            gem5_args = [
+                C.PERF_BIN,
+                'record',
+                # '-g',
+                '-F',
+                str(self.get_perf_frequency()),
+                ] + gem5_args
         elif self.options.perf_heap:
             gem5_args = [
                 'env',

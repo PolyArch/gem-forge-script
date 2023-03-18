@@ -75,10 +75,10 @@ def getConfigureations(subset):
 
     benchmarks = [
         ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
-        ('rodinia', 'srad_v2-avx512-fix', 'fake.0.tdg.large-thread64'),
+        ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
         ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
         ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
-        ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
+        ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64-large'),
         ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
         ('mine', 'svm', 'fake.0.tdg.large-thread64'),
         ('gap', 'bfs_push', 'fake.0.tdg.krn18-k16-thread64'),
@@ -92,12 +92,29 @@ def getConfigureations(subset):
         ('gfm', 'omp_hash_join', 'fake.0.tdg.thread64-large'),
     ]
 
-    benchmarks_no_check = [
+    benchmarks_check = [
         ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
-        ('rodinia', 'srad_v2-avx512-fix', 'fake.0.tdg.large-thread64'),
+        ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
         ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
         ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
-        ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64'),
+        ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64-large'),
+        ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
+        ('mine', 'svm', 'fake.0.tdg.large-thread64'),
+        ('gap', 'bfs_push_check', 'fake.0.tdg.krn18-k16-thread64'),
+        ('gap', 'pr_push', 'fake.0.tdg.krn18-k16-thread64'),
+        ('gap', 'sssp_check', 'fake.0.tdg.krn18-k16-thread64'),
+        ('gap', 'bfs_pull_shuffle', 'fake.0.tdg.krn18-k16-thread64'),
+        ('gap', 'pr_pull_shuffle', 'fake.0.tdg.krn18-k16-thread64'),
+        ('gfm', 'omp_binary_tree', 'fake.0.tdg.thread64-large'),
+        ('gfm', 'omp_hash_join', 'fake.0.tdg.thread64-large'),
+    ]
+
+    benchmarks_no_check = [
+        ('rodinia', 'pathfinder-avx512-nounroll', 'fake.0.tdg.large-thread64'),
+        ('rodinia', 'srad_v2-avx512-fix-dyn', 'fake.0.tdg.large-thread64'),
+        ('rodinia', 'hotspot-avx512-fix', 'fake.0.tdg.large-thread64'),
+        ('rodinia', 'hotspot3D-avx512-fix-fuse', 'fake.0.tdg.large-thread64'),
+        ('gfm', 'omp_histogram_avx', 'fake.0.tdg.thread64-large'),
         ('rodinia', 'streamcluster', 'fake.0.tdg.large-thread64'),
         ('mine', 'svm', 'fake.0.tdg.large-thread64'),
         ('gap', 'bfs_push', 'fake.0.tdg.krn18-k16-thread64'),
@@ -110,7 +127,7 @@ def getConfigureations(subset):
     ]
 
     if subset in ['cmp']:
-        for suite, benchmark, tdg_folder in benchmarks:
+        for suite, benchmark, tdg_folder in benchmarks_check:
             configurations.append({
                 'suite': suite,
                 'benchmark': benchmark,
@@ -118,42 +135,50 @@ def getConfigureations(subset):
                 'transforms': [{
                     'transform': 'valid.ex',
                     'simulations': [
-                        'replay.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B',
-                        'replay.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
-                        'replay.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B',
-                        'replay.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
+                        # 'replay.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B',
+                        # 'replay.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
+                        # 'replay.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B',
+                        # 'replay.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
                         'replay.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B',
                         'replay.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.bingo-l2pf16',
                     ]}, {
                     'transform': 'stream.ex.static.so.store',
                     'simulations': [
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.f256-c',
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.flts-mc2',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.f1024-c-gb',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.flts-mc2',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.f256-c',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.flts-mc2',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.f1024-c-gb',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.flts-mc2',
                         'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb',
                         'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.flts-mc2',
-                    ]}, {
+                    ],},
+                ]
+            })
+        for suite, benchmark, tdg_folder in benchmarks_no_check:
+            configurations.append({
+                'suite': suite,
+                'benchmark': benchmark,
+                'tdg_folder': tdg_folder,
+                'transforms': [{
                     'transform': 'stream.ex.static.so.store.cmp',
                     'simulations': [
-                        'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb-traffic',
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.ndc',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.ndc',
-                        'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.ndc',
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.f256-c-cmp',
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp',
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp-sync',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.f1024-c-gb-cmp',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp-sync',
-                        'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb-cmp',
+                        # 'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb-traffic',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.ndc',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.ndc',
+                        # 'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.ndc',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s64B-ch64B.f256-c-cmp',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp-sync',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s64B-ch64B.f1024-c-gb-cmp',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp-sync',
+                        # 'stream.ruby.single.o8.tlb.8x8c-l256-s64B-ch64B.f2048-c-gb-cmp',
                         'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp',
                         'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp-sync',
                     ]}, {
                     'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                     'simulations': [
-                        'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp',
-                        'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp',
+                        # 'stream.ruby.single.i4.tlb.8x8c-l256-s1kB-ch4kB.f256-c.fltsc-cmp',
+                        # 'stream.ruby.single.o4.tlb.8x8c-l256-s1kB-ch4kB.f1024-c-gb.fltsc-cmp',
                         'stream.ruby.single.o8.tlb.8x8c-l256-s1kB-ch4kB.f2048-c-gb.fltsc-cmp',
                     ],},
                 ]

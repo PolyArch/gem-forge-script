@@ -34,10 +34,13 @@ class GAPGraphBenchmark(Benchmark):
 
     def get_links(self):
         return [
-            '-lomp',
-            '-lpthread',
-            '-Wl,--no-as-needed',
-            '-ldl',
+            '-fopenmp',
+            f'-L{C.AFFINITY_ALLOC_LIB_PATH}',
+            f'-lAffinityAllocGemForge',
+            # '-lomp',
+            # '-lpthread',
+            # '-Wl,--no-as-needed',
+            # '-ldl',
         ]
 
     def get_args(self, input_name):
@@ -45,7 +48,10 @@ class GAPGraphBenchmark(Benchmark):
         suffix = '.sg'
         if self.benchmark_name.startswith('sssp'):
             suffix = '.wsg'
-        graph_fn = os.path.join(graphs, input_name + suffix)
+        if input_name.endswith('-cold'):
+            graph_fn = os.path.join(graphs, input_name[:-len('-cold')] + suffix)
+        else:
+            graph_fn = os.path.join(graphs, input_name + suffix)
         args = [
             '-f', graph_fn,
             '-p', str(self.n_thread),
@@ -77,6 +83,15 @@ class GAPGraphBenchmark(Benchmark):
                     f'{c}',
                 ]
                 break
+            if input_name.endswith('-cold'):
+                """
+                Specifically disable warming.
+                """
+                args += [
+                    '-c',
+                    '0',
+                ]
+                break
         # SSSP need specific delta for some graphs to be able to finish.
         sssp_delta = {
             'road-great-britain-osm': 200,
@@ -95,14 +110,20 @@ class GAPGraphBenchmark(Benchmark):
     def get_sim_input_name(self, sim_input):
         return f'{sim_input}-thread{self.n_thread}'
 
-    PR_PUSH_KERNEL_1 = '.omp_outlined..26'
-    PR_PUSH_KERNEL_2 = '.omp_outlined..27'
-    PR_PULL_KERNEL_1 = '.omp_outlined..27'
-    PR_PULL_KERNEL_2 = '.omp_outlined..28'
+    PR_PUSH_KERNEL_1 = '.omp_outlined..15'
+    PR_PUSH_KERNEL_2 = '.omp_outlined..28'
+    PR_PUSH_ADJ_KERNEL_1 = '.omp_outlined..16'
+    PR_PUSH_ADJ_KERNEL_2 = '.omp_outlined..28'
+    PR_PULL_KERNEL_1 = '.omp_outlined..28'
+    PR_PULL_KERNEL_2 = '.omp_outlined..29'
     BFS_PUSH_KERNEL = '.omp_outlined..15'
+    BFS_PUSH_ADJ_KERNEL = '.omp_outlined..15'
     BFS_PULL_KERNEL_1 = '.omp_outlined..15'
     BFS_PULL_KERNEL_2 = '.omp_outlined..16'
     SSSP_KERNEL = '.omp_outlined..22'
+    SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
+    SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..26'
+    SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..25'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
@@ -111,6 +132,14 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push': [BFS_PUSH_KERNEL],
         'bfs_push_check': [BFS_PUSH_KERNEL],
         'bfs_push_offset': [BFS_PUSH_KERNEL],
+        'bfs_push_spatial': [BFS_PUSH_KERNEL, 'gf_warm_impl'],
+        'bfs_push_spatial_dyn128': [BFS_PUSH_KERNEL],
+        'bfs_push_spatial_dyn256': [BFS_PUSH_KERNEL],
+        'bfs_push_spatial_dyn512': [BFS_PUSH_KERNEL],
+        'bfs_push_spatial_guided': [BFS_PUSH_KERNEL],
+        'bfs_push_sf': [BFS_PUSH_KERNEL, 'gf_warm_impl'],
+        'bfs_push_adj_rnd_spatial': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
+        'bfs_push_adj_rnd_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
@@ -118,6 +147,9 @@ class GAPGraphBenchmark(Benchmark):
         'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
         'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
         'pr_push':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_adj_rnd':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
+        'pr_push_adj_lnr':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
+        'pr_push_adj_aff':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
         'pr_push_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
@@ -130,9 +162,27 @@ class GAPGraphBenchmark(Benchmark):
         'pr_push_atomic_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
         'pr_push_atomic_double_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
         'pr_push_swap':  [PR_PUSH_KERNEL_1],  # One kernel.
-        'sssp': ['RelaxEdges'],
+        'sssp_outline': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
-        'sssp_inline': [SSSP_KERNEL],
+        'sssp': [SSSP_KERNEL],
+        'sssp_sq_delta1': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sq_delta2': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sq_delta4': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sq_delta8': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sq_delta16': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sq_delta32': [SSSP_SPATIAL_KERNEL, 'copySpatialQueueToGlobalFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta1': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta2': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta4': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta8': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta16': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_sf_delta32': [SSSP_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta1': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta2': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta4': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta8': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_rnd_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
     }
@@ -196,7 +246,8 @@ class GAPGraphBenchmark(Benchmark):
             ] + flags + [
                 '-emit-llvm',
                 '-gline-tables-only',
-                '-I{INCLUDE}'.format(INCLUDE=C.GEM5_INCLUDE_DIR),
+                f'-I{C.GEM5_INCLUDE_DIR}',
+                f'-I{C.AFFINITY_ALLOC_INC_PATH}',
                 '-o',
                 bytecode,
             ]
@@ -238,6 +289,10 @@ class GAPGraphBenchmark(Benchmark):
         additional_options = [
             "--cpu-yield-lat=4000ns",
         ]
+        if self.benchmark_name.startswith('sssp'):
+            additional_options.append(
+                "--gem-forge-stream-engine-enable-float-history=0"
+            )
         work_items = -1
         if self.benchmark_name.startswith('pr'):
             # Two kernels, two iteration.

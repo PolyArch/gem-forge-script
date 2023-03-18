@@ -48,6 +48,7 @@ class RodiniaBenchmark(Benchmark):
             'test':   ['64', '64', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'medium': ['512', '512', '2', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large':  ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large-cold': ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
             'mix':    ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'mix-cold': ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
@@ -276,10 +277,10 @@ class RodiniaBenchmark(Benchmark):
 
     def break_input_name(self, input_name):
         """
-        The input name is defined in "size-length"
+        The input name is defined in "size/cold-length"
         """
         fields = [input_name]
-        if '-' in input_name:
+        if '-' in input_name and not input_name.endswith('-cold'):
             fields = input_name.split('-')
         while len(fields) < 3:
             fields.append(None)
