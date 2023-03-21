@@ -8,8 +8,9 @@ GEM_FORGE_TRANSFORM_BUILD_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'build')
 GEM_FORGE_DRIVER_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, '../driver')
 GEM_FORGE_BENCHMARK_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'benchmark')
 
-AFFINITY_ALLOC_INC_PATH = os.path.join(GEM_FORGE_TRANSFORM_PATH, 'src/affinity_alloc')
-AFFINITY_ALLOC_LIB_PATH = os.path.join(GEM_FORGE_TRANSFORM_BUILD_PATH, 'src/affinity_alloc')
+GEM_FORGE_TOP_PATH = os.getenv('GEM_FORGE_TOP')
+AFFINITY_ALLOC_INC_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'lib/affinity_alloc')
+AFFINITY_ALLOC_LIB_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'lib/affinity_alloc/build')
 
 # Where to store the llvm_bc and traces.
 EXPERIMENTS = 'stream'

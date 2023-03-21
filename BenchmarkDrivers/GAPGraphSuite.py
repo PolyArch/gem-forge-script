@@ -33,25 +33,34 @@ class GAPGraphBenchmark(Benchmark):
         return 'gap.{b}'.format(b=self.benchmark_name)
 
     def get_links(self):
+        """
+        Dynamic link still not work.
+        """
         return [
-            '-fopenmp',
+            # '-fopenmp',
+            # f'-L{C.AFFINITY_ALLOC_LIB_PATH}',
+            # f'-lAffinityAllocGemForge',
+            '-lomp',
+            '-lpthread',
+            '-Wl,--no-as-needed',
+            '-ldl',
             f'-L{C.AFFINITY_ALLOC_LIB_PATH}',
-            f'-lAffinityAllocGemForge',
-            # '-lomp',
-            # '-lpthread',
-            # '-Wl,--no-as-needed',
-            # '-ldl',
+            f'-lAffinityAllocGemForgeStatic',
         ]
+
+    def decompose_input_name(self, input_name):
+        fields = input_name.split('.')
+        assert(len(fields) > 0)
+        graph_name = fields[0]
+        return (graph_name, fields[1:])
 
     def get_args(self, input_name):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
+        graph_name, input_options = self.decompose_input_name(input_name)
         if self.benchmark_name.startswith('sssp'):
             suffix = '.wsg'
-        if input_name.endswith('-cold'):
-            graph_fn = os.path.join(graphs, input_name[:-len('-cold')] + suffix)
-        else:
-            graph_fn = os.path.join(graphs, input_name + suffix)
+        graph_fn = os.path.join(graphs, graph_name + suffix)
         args = [
             '-f', graph_fn,
             '-p', str(self.n_thread),
@@ -70,7 +79,7 @@ class GAPGraphBenchmark(Benchmark):
             ('soc-pokec-relationships', 0),
         ]
         for i, c in cold_inputs:
-            if input_name.startswith(i):
+            if graph_name == i:
                 """
                 This should be mix-level offloading, only warm up with
                 specific level:
@@ -83,7 +92,7 @@ class GAPGraphBenchmark(Benchmark):
                     f'{c}',
                 ]
                 break
-            if input_name.endswith('-cold'):
+            if 'cold' in input_options:
                 """
                 Specifically disable warming.
                 """
@@ -96,8 +105,8 @@ class GAPGraphBenchmark(Benchmark):
         sssp_delta = {
             'road-great-britain-osm': 200,
         }
-        if self.benchmark_name.startswith('sssp') and input_name in sssp_delta:
-            delta = sssp_delta[input_name]
+        if self.benchmark_name.startswith('sssp') and graph_name in sssp_delta:
+            delta = sssp_delta[graph_name]
             args += [
                 '-d',
                 f'{delta}',
@@ -108,7 +117,7 @@ class GAPGraphBenchmark(Benchmark):
         return list()
 
     def get_sim_input_name(self, sim_input):
-        return f'{sim_input}-thread{self.n_thread}'
+        return f'{sim_input}.thread{self.n_thread}'
 
     PR_PUSH_KERNEL_1 = '.omp_outlined..15'
     PR_PUSH_KERNEL_2 = '.omp_outlined..28'
@@ -123,7 +132,7 @@ class GAPGraphBenchmark(Benchmark):
     SSSP_KERNEL = '.omp_outlined..22'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
     SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..26'
-    SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..25'
+    SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..26'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
@@ -140,6 +149,7 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push_sf': [BFS_PUSH_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_spatial': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
+        'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
@@ -183,6 +193,12 @@ class GAPGraphBenchmark(Benchmark):
         'sssp_adj_rnd_sf_delta8': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_rnd_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_rnd_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta1': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta2': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta4': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta8': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
     }
@@ -281,12 +297,39 @@ class GAPGraphBenchmark(Benchmark):
         os.chdir(self.cwd)
 
     def get_additional_gem5_simulate_command(self, transform_config, simulation_config, input_name):
+
+        additional_options = list()
+
+        graph_name, input_options = self.decompose_input_name(input_name)
+        affinity_alloc_envs = {
+            'aff-min-hops': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_HOPS'),
+            ],
+            'aff-min-load': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_LOAD'),
+            ],
+            'aff-random': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'RANDOM'),
+            ],
+            'aff-hybrid': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'HYBRID'),
+            ],
+        }
+        for aff_env in affinity_alloc_envs:
+            if aff_env in input_options:
+                env_vars = affinity_alloc_envs[aff_env]
+                env_fn = self.generate_gem5_env_file(env_vars)
+                additional_options += [
+                    f'--env={env_fn}',
+                ]
+                break
+
         """
         To reduce simulation time, here I charge 4000ns yield latency.
         Some benchmarks takes too long to finish, so we use work item
         to ensure that we simualte for the same amount of work.
         """
-        additional_options = [
+        additional_options += [
             "--cpu-yield-lat=4000ns",
         ]
         if self.benchmark_name.startswith('sssp'):

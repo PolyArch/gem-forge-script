@@ -459,7 +459,12 @@ def generateGem5Env():
 
 def main(options):
 
-    generateGem5Env()
+    """
+    I tried to add this to support dynamic linked binary.
+    However, it causes simulation failure in gem5 and we switched
+    back to static linked binary.
+    """
+    # generateGem5Env()
     driver = Driver(options)
     if options.analyze != '':
         driver.load_simulation_results()

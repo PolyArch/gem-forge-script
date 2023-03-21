@@ -880,6 +880,7 @@ class Benchmark(object):
         # Link them into code.
         transformed_exe = self.get_replay_exe(transform_config, trace, 'exe')
         link_cmd = C.get_sim_linker() + [
+            '-static',
             '-o',
             transformed_exe,
             transformed_obj,
@@ -920,6 +921,20 @@ class Benchmark(object):
         transform_config, simulation_config, input_name):
         return []
 
+    def generate_gem5_env_file(self, env_vars):
+        """
+        Helper function to generate a random named gem5 env file.
+        """
+        import tempfile
+        with tempfile.NamedTemporaryFile(
+            mode='wt',
+            prefix='gem5_env.',
+            suffix='.{n}'.format(n=self.get_name()),
+            delete=False) as f:
+            for env_var in env_vars:
+                f.write(f'{env_var[0]}={env_var[1]}\n')
+            return f.name
+
     """
     Prepare the gem5 simulate command without the trace file.
     """
@@ -942,7 +957,6 @@ class Benchmark(object):
             '--stats-file=text://stats.txt?dumpAll=False',
             '--listener-mode=off',
             C.GEM5_LLVM_TRACE_SE_CONFIG if not hoffman2 else C.HOFFMAN2_GEM5_LLVM_TRACE_SE_CONFIG,
-            f'--env={gem5_env_fn}',
             f'--cmd={binary}',
             f'--llvm-store-queue-size={C.STORE_QUEUE_SIZE}',
             f'--llvm-mcpat={C.GEM5_USE_MCPAT}',
