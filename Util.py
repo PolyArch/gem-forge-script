@@ -29,7 +29,7 @@ def mkdir_f(path):
 
 
 def mkdir_chain(path):
-    if os.path.isdir(path):
+    if os.path.isdir(path) or not path:
         return
     parent, child = os.path.split(path)
     mkdir_chain(parent)

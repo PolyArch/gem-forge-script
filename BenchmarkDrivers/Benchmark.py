@@ -921,6 +921,15 @@ class Benchmark(object):
         transform_config, simulation_config, input_name):
         return []
 
+    def decompose_input_name(self, input_name):
+        """
+        Helper function to decompose input_name by '.'
+        """
+        fields = input_name.split('.')
+        assert(len(fields) > 0)
+        base_name = fields[0]
+        return (base_name, fields[1:])
+
     def generate_gem5_env_file(self, env_vars):
         """
         Helper function to generate a random named gem5 env file.
@@ -934,6 +943,40 @@ class Benchmark(object):
             for env_var in env_vars:
                 f.write(f'{env_var[0]}={env_var[1]}\n')
             return f.name
+
+    def get_gem5_env_option(self, input_name):
+        """
+        So far we only care about the affinity alloc env.
+        """
+        _, input_options = self.decompose_input_name(input_name)
+        affinity_alloc_envs = {
+            'aff-min-hops': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_HOPS'),
+            ],
+            'aff-min-load': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_LOAD'),
+            ],
+            'aff-random': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'RANDOM'),
+            ],
+            'aff-hybrid': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'HYBRID'),
+            ],
+            'aff-delta': [
+                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'DELTA'),
+            ],
+        }
+
+        env_options = list()
+        for aff_env in affinity_alloc_envs:
+            if aff_env in input_options:
+                env_vars = affinity_alloc_envs[aff_env]
+                env_fn = self.generate_gem5_env_file(env_vars)
+                env_options += [
+                    f'--env={env_fn}',
+                ]
+                break
+        return env_options 
 
     """
     Prepare the gem5 simulate command without the trace file.
@@ -963,6 +1006,7 @@ class Benchmark(object):
             '--caches',
             '--l2cache',
         ]
+        gem5_args += self.get_gem5_env_option(input_name=sim_input)
         if self.options.simpoint_mode == 'region' and self.options.fake_trace:
             # We are doing region simpoint with execution simulation.
             gem5_args.append(

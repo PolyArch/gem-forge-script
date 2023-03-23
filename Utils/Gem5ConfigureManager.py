@@ -537,7 +537,7 @@ class Gem5ReplayConfigureManager(object):
             "--cpu-type=DerivO3CPU",
             "--llvm-issue-width=8",
             "--gem-forge-enable-func-acc-tick",
-            "--gem-forge-enable-func-trace",
+            # "--gem-forge-enable-func-trace",
             "--prog-interval=10000", # Hz
             "--tlb-timing-se",
         ] + L2_TLB,

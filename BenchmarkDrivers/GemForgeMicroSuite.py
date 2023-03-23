@@ -385,25 +385,31 @@ class GemForgeMicroBenchmark(Benchmark):
         return 'gfm.{b}'.format(b=self.benchmark_name)
 
     def get_sim_input_args(self, input_name):
+        base_input, _ = self.decompose_input_name(input_name)
         if self.is_variant_input:
             input_sizes = self.variant_input_sizes
-            if input_name not in input_sizes:
-                print(f'{self.benchmark_name} Missing Input Size {input_name}')
+            if base_input not in input_sizes:
+                print(f'{self.benchmark_name} Missing Input Size {input_name} {base_input}')
                 assert(False)
-            return input_sizes[input_name]
+            return input_sizes[base_input]
         return list()
 
     def get_links(self):
+        links = [
+            f'-L{C.AFFINITY_ALLOC_LIB_PATH}',
+            f'-lAffinityAllocGemForgeStatic',
+        ]
         if self.is_omp:
-            return [
+            links += [
                 '-lomp',
                 '-lpthread',
                 '-Wl,--no-as-needed',
                 '-ldl',
             ]
-        return []
+        return links
 
     def get_args(self, input_name):
+        base_input, _ = self.decompose_input_name(input_name)
         args = list()
         if self.is_omp or self.is_variant_input:
             args.append(str(self.n_thread))
@@ -412,7 +418,7 @@ class GemForgeMicroBenchmark(Benchmark):
                 suffix = 'wbin' if self.benchmark_name.startswith(
                     'omp_sssp_') else 'bin'
                 args.append(os.path.join(graphs, '{i}.{s}'.format(
-                    i=input_name, s=suffix)))
+                    i=base_input, s=suffix)))
         args += self.get_sim_input_args(input_name)
         return args
 
@@ -446,7 +452,7 @@ class GemForgeMicroBenchmark(Benchmark):
         # Only these workloads has sim_input_name.
         sim_name = f'thread{self.n_thread}'
         if self.is_graph or self.is_variant_input:
-            sim_name = f'{sim_name}-{sim_input}'
+            sim_name = f'{sim_input}.{sim_name}'
         return sim_name
 
     OMP_GRAPH_FUNC_SUFFIX = {
@@ -606,7 +612,8 @@ class GemForgeMicroBenchmark(Benchmark):
                 '-emit-llvm',
                 '-std=c11',
                 '-gline-tables-only',
-                '-I{INCLUDE}'.format(INCLUDE=C.GEM5_INCLUDE_DIR),
+                f'-I{C.GEM5_INCLUDE_DIR}',
+                f'-I{C.AFFINITY_ALLOC_INC_PATH}',
                 '-mllvm',
                 '-enable-load-pre=true',
                 '-o',

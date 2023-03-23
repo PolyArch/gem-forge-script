@@ -48,12 +48,6 @@ class GAPGraphBenchmark(Benchmark):
             f'-lAffinityAllocGemForgeStatic',
         ]
 
-    def decompose_input_name(self, input_name):
-        fields = input_name.split('.')
-        assert(len(fields) > 0)
-        graph_name = fields[0]
-        return (graph_name, fields[1:])
-
     def get_args(self, input_name):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
@@ -123,16 +117,19 @@ class GAPGraphBenchmark(Benchmark):
     PR_PUSH_KERNEL_2 = '.omp_outlined..28'
     PR_PUSH_ADJ_KERNEL_1 = '.omp_outlined..16'
     PR_PUSH_ADJ_KERNEL_2 = '.omp_outlined..28'
+    PR_PUSH_ADJ_WARM = '.omp_outlined..38'
     PR_PULL_KERNEL_1 = '.omp_outlined..28'
     PR_PULL_KERNEL_2 = '.omp_outlined..29'
     BFS_PUSH_KERNEL = '.omp_outlined..15'
     BFS_PUSH_ADJ_KERNEL = '.omp_outlined..15'
+    BFS_PUSH_ADJ_WARM = '.omp_outlined..39'
     BFS_PULL_KERNEL_1 = '.omp_outlined..15'
     BFS_PULL_KERNEL_2 = '.omp_outlined..16'
     SSSP_KERNEL = '.omp_outlined..22'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
     SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..26'
     SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..26'
+    SSSP_ADJ_SPATIAL_SF_WARM = '.omp_outlined..36'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
@@ -149,7 +146,7 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push_sf': [BFS_PUSH_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_spatial': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
-        'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
+        'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, BFS_PUSH_ADJ_WARM, 'gf_warm_impl'],
         'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
@@ -159,7 +156,7 @@ class GAPGraphBenchmark(Benchmark):
         'pr_push':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_adj_rnd':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
         'pr_push_adj_lnr':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
-        'pr_push_adj_aff':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
+        'pr_push_adj_aff':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
         'pr_push_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
@@ -193,12 +190,12 @@ class GAPGraphBenchmark(Benchmark):
         'sssp_adj_rnd_sf_delta8': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_rnd_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_rnd_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta1': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta2': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta4': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta8': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
-        'sssp_adj_aff_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta1':  [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta2':  [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta4':  [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta8':  [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_aff_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
     }
@@ -300,30 +297,6 @@ class GAPGraphBenchmark(Benchmark):
 
         additional_options = list()
 
-        graph_name, input_options = self.decompose_input_name(input_name)
-        affinity_alloc_envs = {
-            'aff-min-hops': [
-                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_HOPS'),
-            ],
-            'aff-min-load': [
-                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'MIN_LOAD'),
-            ],
-            'aff-random': [
-                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'RANDOM'),
-            ],
-            'aff-hybrid': [
-                ('AFFINITY_ALLOCATOR_ALLOC_POLICY', 'HYBRID'),
-            ],
-        }
-        for aff_env in affinity_alloc_envs:
-            if aff_env in input_options:
-                env_vars = affinity_alloc_envs[aff_env]
-                env_fn = self.generate_gem5_env_file(env_vars)
-                additional_options += [
-                    f'--env={env_fn}',
-                ]
-                break
-
         """
         To reduce simulation time, here I charge 4000ns yield latency.
         Some benchmarks takes too long to finish, so we use work item
@@ -340,12 +313,17 @@ class GAPGraphBenchmark(Benchmark):
         if self.benchmark_name.startswith('pr'):
             # Two kernels, two iteration.
             work_items = 4
+            _, input_options = self.decompose_input_name(input_name)
+            if 'iter=1' in input_options:
+                work_items = 2
+            elif 'iter=3' in input_options:
+                work_items = 6
             for single_kernel_prefix in [
                 'pr_push_atomic',
                 'pr_push_swap',
             ]:
                 if self.benchmark_name.startswith(single_kernel_prefix):
-                    work_items = 2
+                    work_items = work_items // 2
                     break
         """
         This takes too long to finish. So we limit some work items.

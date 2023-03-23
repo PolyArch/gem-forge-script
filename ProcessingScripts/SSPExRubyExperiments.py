@@ -38,7 +38,7 @@ class TileStats(object):
 class TileStatsParser(object):
     def __init__(self, tile_stats):
         self.tile_stats = tile_stats
-        self.re = {
+        self.key_to_gem5_stats_map = {
             'sim_ticks': self.format_re('simTicks'),
             'num_cycles': self.format_re(
                 'system.future_cpus{tile_id}.numCycles'),
@@ -90,13 +90,13 @@ class TileStatsParser(object):
             'avg_sequencer_hit_lat': ['system.ruby.hit_latency_hist_seqr::mean'],
             'total_hops': ['system.ruby.network.total_hops'],
             'crossbar_act': self.format_re(
-                'system.ruby.network.routers{tile_id}.crossbar_activity'),
+                'system.ruby.network.routers{tile_id}.crossbar_activity', pad_zero=True),
             'commit_op': self.format_re(
                 'system.future_cpus{tile_id}.committedOps'),
             'commit_inst': self.format_re(
                 'system.future_cpus{tile_id}.committedInsts'),
             'idea_cycles': self.format_re(
-                'system.future_cpus{tile_id}.ideaCycles$'),
+                'system.future_cpus{tile_id}.ideaCycles'),
             'idea_cycles_no_fu': self.format_re(
                 'system.future_cpus{tile_id}.ideaCyclesNoFUTiming'),
             'idea_cycles_no_ld': self.format_re(
@@ -258,29 +258,38 @@ class TileStatsParser(object):
             for cmp in ['LoadCompute', 'StoreCompute', 'AtomicCompute', 'Update', 'Reduce']:
                 core_microops = f'core_se_microps_{addr}_{cmp}'
                 core_stats = f'numCompleted{addr}{cmp}MicroOps'
-                self.re[core_microops] = self.format_re(
+                self.key_to_gem5_stats_map[core_microops] = self.format_re(
                     'system.cpu{tile_id}.accelManager.se.' + core_stats)
                 llc_microops = f'llc_se_microps_{addr}_{cmp}'
                 llc_stats = f'llcScheduledStream{addr}{cmp}MicroOps'
-                self.re[llc_microops] = self.format_re(
+                self.key_to_gem5_stats_map[llc_microops] = self.format_re(
                     'system.ruby.l2_cntrl{tile_id}.' + llc_stats)
+
         self.l2_transition_re = re.compile('system\.ruby\.L2Cache_Controller\.[A-Z_]+\.[A-Z0-9_]+::total')
 
-    def format_re(self, expression):
-        # Return two possible cases.
-        return [
-            expression.format(tile_id='{x}'.format(x=self.tile_stats.tile_id)),
-            expression.format(tile_id='0{x}'.format(x=self.tile_stats.tile_id)),
+        self.transpose_key_to_gem5_stats_map()
+
+    def format_re(self, expression, pad_zero=False):
+        res = [
+            expression.format(tile_id=self.tile_stats.tile_id),
         ]
+        if pad_zero:
+            res.append(expression.format(tile_id=f'0{self.tile_stats.tile_id}'))
+        return res
+
+    def transpose_key_to_gem5_stats_map(self):
+        self.gem5_stats_to_key_map = dict()
+        for k in self.key_to_gem5_stats_map:
+            for s in self.key_to_gem5_stats_map[k]:
+                self.gem5_stats_to_key_map[s] = k
 
     def parse(self, fields):
         if len(fields) < 2:
             return
-        for k in self.re:
-            for s in self.re[k]:
-                if fields[0] == s:
-                    self.tile_stats.__dict__[k] = float(fields[1])
-                    break
+        if fields[0] in self.gem5_stats_to_key_map:
+            k = self.gem5_stats_to_key_map[fields[0]]
+            self.tile_stats.__dict__[k] = float(fields[1])
+
         if fields[0] == 'system.ruby.network.flit_types_injected':
             ctrl, data, strm, msg_breakdown = self.parse_flit_type_breakdown(fields)
             self.tile_stats.control_flits += ctrl
@@ -397,6 +406,7 @@ def findTileId(x):
         'system.ruby.l0_cntrl',
         'system.ruby.l1_cntrl',
         'system.ruby.l2_cntrl',
+        'system.mem_ctrls',
     ]
     for p in prefix:
         tileId = findTileIdForPrefix(x, p)

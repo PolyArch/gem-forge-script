@@ -77,6 +77,7 @@ def configureDerivO3CPU(self, cpu):
 
 def setStatsDerivO3CPU(self, cpu):
     core = self.xml.sys.core[cpu.cpu_id]
+    print(cpu.path)
     def scalar(stat): return self.getScalarStats(cpu.path + '.' + stat)
     def vector(stat): return self.getVecStatsTotal(cpu.path + '.' + stat)
 

@@ -142,7 +142,7 @@ class Gem5McPAT(object):
         cpuType = cpu.type
         if cpuType == 'LLVMTraceCPU':
             gfcpu.configureGemForgeCPU(self, cpu)
-        elif cpuType == 'DerivO3CPU':
+        elif cpuType == 'BaseO3CPU':
             o3cpu.configureDerivO3CPU(self, cpu)
         elif cpuType == 'MinorCPU':
             incpu.configureMinorCPU(self, cpu)
@@ -230,7 +230,7 @@ class Gem5McPAT(object):
 
     def setStatsSystem(self):
         sys = self.xml.sys
-        ticks = self.stats['sim_ticks']
+        ticks = self.stats['simTicks']
         cycles = ticks / self.getCPUClockDomain()
         print('Cycles {c}'.format(c=cycles))
         sys.total_cycles = cycles 
@@ -250,7 +250,7 @@ class Gem5McPAT(object):
         cpuType = cpu.type
         if cpuType == 'LLVMTraceCPU':
             gfcpu.setStatsGemForgeCPU(self, cpu)
-        elif cpuType == 'DerivO3CPU':
+        elif cpuType == 'BaseO3CPU':
             o3cpu.setStatsDerivO3CPU(self, cpu)
         elif cpuType == 'MinorCPU':
             incpu.setStatsMinorCPU(self, cpu)
