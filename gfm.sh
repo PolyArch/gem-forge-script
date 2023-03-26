@@ -17,13 +17,13 @@ SimInput=large
 Threads=64
 
 SimTrace='--fake-trace'
-# python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
 
 BaseTrans=valid.ex
 # python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
-# RubyConfig=8x8c
-RubyConfig=8x8t4x4
+RubyConfig=8x8c
+# RubyConfig=8x8t4x4
 Parallel=100
 sim_replay_prefix=replay/ruby/single
 i4=$sim_replay_prefix/i4.tlb.${RubyConfig}
@@ -35,10 +35,10 @@ sim_replay=$o8,$o8.bingo-l2pf
 #     --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel 
     # --gem5-debug DRAMsim3 --gem5-debug-start 15502083420 | tee gfm.log
 
-# StreamTransform=stream/ex/static/so.store
+StreamTransform=stream/ex/static/so.store
 # StreamTransform=stream/ex/static/so.store.cmp
-StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
-# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+# StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
+python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
 #     --transform-debug StreamLoopEliminator
 
 run_ssp () {
@@ -47,14 +47,14 @@ run_ssp () {
     local input=$3
     local threads=$4
     local parallel=$5
-    local i4=stream/ruby/single/i4.tlb.$rubyc.c
-    local o4=stream/ruby/single/o4.tlb.$rubyc.c-gb-fifo
-    local o8=stream/ruby/single/o8.tlb.$rubyc.c-gb-fifo
+    local i4=ss/ruby/uno/i4.$rubyc.c
+    local o4=ss/ruby/uno/o4.$rubyc.c-gb-fifo
+    local o8=ss/ruby/uno/o8.$rubyc.c-gb-fifo
     # local all_sim=$o8
     # local all_sim=$o8-cmp
-    # local all_sim=$o8.fltsc-cmp-iack
+    local all_sim=$o8.flts
     # local all_sim=$o8.fltsc-cmp-strnd
-    local all_sim=$o8.fltsc-cmp-pum
+    # local all_sim=$o8.fltsc-cmp-pum
     # local all_sim=$o8.fltsc-cmp-pum-strnd
     # local all_sim=$o8.fltsc-cmp-pum,$o8.fltsc-cmp-pum-strnd
     # local all_sim=$o8.fltsc-cmp-pumm
