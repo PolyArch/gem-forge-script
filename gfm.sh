@@ -57,14 +57,14 @@ SimInput=large
 Threads=64
 
 SimTrace='--fake-trace'
-# python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
 
 BaseTrans=valid.ex
 # python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
 RubyConfig=8x8c
-# RubyConfig=2400MHz.6x3c1x2
-Parallel=80
+# RubyConfig=8x8t4x4
+Parallel=100
 sim_replay_prefix=replay/ruby/single
 i4=$sim_replay_prefix/i4.tlb.${RubyConfig}
 o4=$sim_replay_prefix/o4.tlb.${RubyConfig}
@@ -79,8 +79,8 @@ sim_replay=$o8.bingo-l2pf
 StreamTransform=stream/ex/static/so.store
 # StreamTransform=stream/ex/static/so.store.cmp
 # StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
-# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
-#     --transform-debug StaticStreamRegionAnalyzer,StaticIndVarStream 2>&1 | tee /benchmarks/gfm-new.log
+python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+#     --transform-debug StreamLoopEliminator
 
 run_ssp () {
     local trans=$1
