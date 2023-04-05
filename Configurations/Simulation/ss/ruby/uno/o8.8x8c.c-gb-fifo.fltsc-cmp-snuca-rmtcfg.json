@@ -63,7 +63,7 @@
         "inoc": [0],
         "mlc_fifo": [32],
         "nest": [4, 8, 16],
-        "nuca_ind": [64],
+        "nuca_ind": [0],
         "nuca_ind_rebalance": [0.2],
         "csr_reorder": [1],
         "strand": [0],

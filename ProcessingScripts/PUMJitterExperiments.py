@@ -83,7 +83,7 @@ def getPUMJitTimeMicroSecond(sim_out_folder, debug_tdfg=None):
         if found_before_lowering and not fn.startswith('tdfg-before-lowering'):
             continue
         tdfg = os.path.join(tdfg_folder, fn)
-        is_debug = False
+        is_debug = True 
         if debug_tdfg == tdfg_idx:
             is_debug = True
         total_runtime += invokePUMJitter(pum_jitter, tdfg, is_debug=is_debug)

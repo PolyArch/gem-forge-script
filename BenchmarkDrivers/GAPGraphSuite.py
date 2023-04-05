@@ -52,7 +52,7 @@ class GAPGraphBenchmark(Benchmark):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
         graph_name, input_options = self.decompose_input_name(input_name)
-        if self.benchmark_name.startswith('sssp'):
+        if self.benchmark_name.startswith('sssp') or self.benchmark_name.startswith('warm_weight'):
             suffix = '.wsg'
         graph_fn = os.path.join(graphs, graph_name + suffix)
         args = [
@@ -113,21 +113,25 @@ class GAPGraphBenchmark(Benchmark):
     def get_sim_input_name(self, sim_input):
         return f'{sim_input}.thread{self.n_thread}'
 
-    PR_PUSH_KERNEL_1 = '.omp_outlined..15'
-    PR_PUSH_KERNEL_2 = '.omp_outlined..28'
-    PR_PUSH_ADJ_KERNEL_1 = '.omp_outlined..16'
-    PR_PUSH_ADJ_KERNEL_2 = '.omp_outlined..28'
-    PR_PUSH_ADJ_WARM = '.omp_outlined..38'
-    PR_PULL_KERNEL_1 = '.omp_outlined..28'
-    PR_PULL_KERNEL_2 = '.omp_outlined..29'
+    PR_PUSH_KERNEL_1_CSR = '.omp_outlined..15'
+    PR_PUSH_KERNEL_1_ADJ = '.omp_outlined..16'
+    PR_PUSH_KERNEL_2 = '.omp_outlined..17'
+    PR_PUSH_ADJ_WARM = '.omp_outlined..50'
+    PR_PULL_KERNEL_1 = '.omp_outlined..18'
+    PR_PULL_KERNEL_2_CSR = '.omp_outlined..19'
+    PR_PULL_KERNEL_2_ADJ = '.omp_outlined..21'
+    PR_PULL_ADJ_WARM = '.omp_outlined..51'
+
     BFS_PUSH_KERNEL = '.omp_outlined..15'
     BFS_PUSH_ADJ_KERNEL = '.omp_outlined..15'
-    BFS_PUSH_ADJ_WARM = '.omp_outlined..39'
-    BFS_PULL_KERNEL_1 = '.omp_outlined..15'
-    BFS_PULL_KERNEL_2 = '.omp_outlined..16'
+    BFS_PUSH_ADJ_WARM = '.omp_outlined..44'
+    BFS_PULL_KERNEL_1 = '.omp_outlined..16'
+    BFS_PULL_KERNEL_2 = '.omp_outlined..17'
+    BFS_PULL_KERNEL_1_ADJ = '.omp_outlined..18'
+
     SSSP_KERNEL = '.omp_outlined..22'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
-    SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..26'
+    SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..27'
     SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..26'
     SSSP_ADJ_SPATIAL_SF_WARM = '.omp_outlined..36'
 
@@ -147,28 +151,35 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push_adj_rnd_spatial': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, BFS_PUSH_ADJ_WARM, 'gf_warm_impl'],
-        'bfs_pull': ['.omp_outlined.', '.omp_outlined..10'],  # Two kernels.
+        'bfs_pull': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
+        'bfs_pull_nobrk': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
+        'bfs_pull_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
+        'bfs_pull_nobrk_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
-        'pr_pull':  ['.omp_outlined..12', '.omp_outlined..13'],  # Two kernels.
-        'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
-        'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2],  # Two kernels.
-        'pr_push':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_adj_rnd':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
-        'pr_push_adj_lnr':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2],  # Two kernels.
-        'pr_push_adj_aff':  [PR_PUSH_ADJ_KERNEL_1, PR_PUSH_ADJ_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
-        'pr_push_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_offset':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_offset_gap28kB':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_double':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_double_dyn':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_shuffle_double':  [PR_PUSH_KERNEL_1, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_atomic':  [PR_PUSH_KERNEL_1],  # One kernel.
-        'pr_push_atomic_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
-        'pr_push_atomic_double_dyn':  [PR_PUSH_KERNEL_1],  # One kernel.
-        'pr_push_swap':  [PR_PUSH_KERNEL_1],  # One kernel.
+
+        'pr_pull':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
+        'pr_pull_adj_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_ADJ, PR_PULL_ADJ_WARM],  # Two kernels.
+        'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
+        'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
+
+        'pr_push':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_adj_rnd':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
+        'pr_push_adj_lnr':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
+        'pr_push_adj_aff':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
+        'pr_push_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_offset_gap28kB':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_double':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_double_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_shuffle_double':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_atomic':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
+        'pr_push_atomic_dyn':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
+        'pr_push_atomic_double_dyn':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
+        'pr_push_swap':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
+
         'sssp_outline': ['RelaxEdges'],
         'sssp_check': ['RelaxEdges'],
         'sssp': [SSSP_KERNEL],
@@ -198,6 +209,11 @@ class GAPGraphBenchmark(Benchmark):
         'sssp_adj_aff_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
+
+        'warm_weight':       ['gf_warm_impl'],  
+        'warm_weight_adj':   ['gf_warm_impl', '.omp_outlined..38'],
+        'warm_unweight':     ['gf_warm_impl'],
+        'warm_unweight_adj': ['gf_warm_impl', '.omp_outlined..38'],
     }
 
     def get_trace_func(self):

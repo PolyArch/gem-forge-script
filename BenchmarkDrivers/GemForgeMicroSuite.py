@@ -73,7 +73,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4, 0, 0]],
         },
         'vec_add': {
-            # total elements (float), check, warm
+            # total elements (float), check, warm, offset_bytes
             'teeny': [str(x) for x in [16 * 1024, 0, 1]],
             'teeny-cold': [str(x) for x in [16 * 1024, 0, 0]],
             'tiny': [str(x) for x in [64 * 1024, 0, 1]],
@@ -85,6 +85,34 @@ class GemForgeMicroBenchmark(Benchmark):
             'large': [str(x) for x in [4 * 1024 * 1024, 0, 1]],
             'large-cold': [str(x) for x in [4 * 1024 * 1024, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
+            # Configuration for offset evaluation.
+            'offset-0kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 0 * 1024]],
+            'offset-4kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 4 * 1024]],
+            'offset-8kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 8 * 1024]],
+            'offset-12kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 12 * 1024]],
+            'offset-16kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 16 * 1024]],
+            'offset-20kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 20 * 1024]],
+            'offset-24kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 24 * 1024]],
+            'offset-28kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 28 * 1024]],
+            'offset-32kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 32 * 1024]],
+            'offset-36kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 36 * 1024]],
+            'offset-40kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 40 * 1024]],
+            'offset-44kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 44 * 1024]],
+            'offset-48kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 48 * 1024]],
+            'offset-52kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 52 * 1024]],
+            'offset-56kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 56 * 1024]],
+            'offset-60kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 60 * 1024]],
+            'offset-64kB': [str(x) for x in [4 * 1024 * 1024, 0, 1, 64 * 1024]],
+            'offset-random': [str(x) for x in [4 * 1024 * 1024, 0, 1, -1]],
+            # Baseline for SIMPLE
+            'simple-base-cold': [str(x) for x in [15 * 1024 * 1024, 0, 0]],
+        },
+        'fir': {
+            # total elements (float), weights, check, warm
+            'small': [str(x) for x in [256 * 1024, 16, 0, 1]],
+            'small-cold': [str(x) for x in [256 * 1024, 16, 0, 0]],
+            # Baseline for SIMPLE
+            'simple-base-cold': [str(x) for x in [7650 * 1024, 32, 0, 0]],
         },
         'omp_dot_prod_avx': {
             # total elements (float), check, warm
@@ -95,7 +123,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4 / 2, 0, 0]],
         },
         'stencil1d': {
-            # total elements (float, 3 array), rounds, check, warm
+            # total elements (float, 3 array), rounds, check, warm, offset
             'tiny': [str(x) for x in [256 * 1024 / 4, 10, 0, 1]],
             'tiny-cold': [str(x) for x in [256 * 1024 / 4, 10, 0, 0]],
             'small': [str(x) for x in [1 * 1024 * 1024 / 4, 10, 0, 1]],
@@ -104,11 +132,12 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [4 * 1024 * 1024 / 4, 1, 0, 0]],
             'large': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 1]],
             'large-cold': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 0]],
+            'large-random': [str(x) for x in [16 * 1024 * 1024 / 4, 1, 0, 1, -1]],
             'large2x': [str(x) for x in [32 * 1024 * 1024 / 4, 1, 0, 1]],
             'large2x-cold': [str(x) for x in [32 * 1024 * 1024 / 4, 1, 0, 0]],
         },
         'stencil2d': {
-            # M, N, (float, 3 array), rounds, check, warm
+            # M, N, (float, 3 array), rounds, check, warm, offset
             'tiny': [str(x) for x in [256, 256, 10, 0, 1]],
             'tiny-cold': [str(x) for x in [256, 256, 10, 0, 0]],
             'small': [str(x) for x in [512, 512, 10, 0, 1]],
@@ -117,13 +146,14 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [1 * 1024, 1 * 1024, 1, 0, 0]],
             'large': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 1]],
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 0]],
+            'large-random': [str(x) for x in [2 * 1024, 2 * 1024, 1, 0, 1, -1]],
             'large2x': [str(x) for x in [4 * 1024, 2 * 1024, 1, 0, 1]],
             'large2x-cold': [str(x) for x in [4 * 1024, 2 * 1024, 1, 0, 0]],
             'duality': [str(x) for x in [512, 512, 2, 0, 1]],
             'duality-cold': [str(x) for x in [512, 512, 2, 0, 0]],
         },
         'stencil3d': {
-            # M, N, L, (float, 3 array), rounds, check, warm
+            # M, N, L, (float, 3 array), rounds, check, warm, offset
             'tiny': [str(x) for x in [64, 64, 8, 10, 0, 1]],
             'tiny-cold': [str(x) for x in [64, 64, 8, 10, 0, 0]],
             'small': [str(x) for x in [128, 128, 8, 10, 0, 1]],
@@ -132,6 +162,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'medium-cold': [str(x) for x in [256, 256, 16, 1, 0, 0]],
             'large': [str(x) for x in [512, 512, 16, 1, 0, 1]],
             'large-cold': [str(x) for x in [512, 512, 16, 1, 0, 0]],
+            'large-random': [str(x) for x in [512, 512, 16, 1, 0, 1, -1]],
             'large2x': [str(x) for x in [512, 512, 32, 1, 0, 1]],
             'large2x-cold': [str(x) for x in [512, 512, 32, 1, 0, 0]],
             'duality': [str(x) for x in [512, 512, 8, 100, 0, 1]],
@@ -168,7 +199,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'duality-cold': [str(x) for x in [1024, 1024, 3, 0, 0]],
         },
         'mm_outer': {
-            # L, M, N, (float, 3 array), check, warm
+            # M, K, N, (float, 3 array), check, warm
             'tiny': [str(x) for x in [256, 256, 256, 0, 1]],
             'tiny-cold': [str(x) for x in [256, 256, 256, 0, 0]],
             'small': [str(x) for x in [512, 512, 512, 0, 1]],
@@ -183,9 +214,11 @@ class GemForgeMicroBenchmark(Benchmark):
             'largeM-cold': [str(x) for x in [32 * 1024, 128, 128, 0, 0]],
             'largeN': [str(x) for x in [128, 128, 32 * 1024, 0, 1]],
             'largeN-cold': [str(x) for x in [128, 128, 32 * 1024, 0, 0]],
+            # Baseline for SIMPLE M=16k, K=2k, N=2k
+            'simple-base-cold': [str(x) for x in [64 * 1024, 32, 32, 0, 0]],
         },
         'mm_inner': {
-            # L, M, N, P, (float, 4 array), check, warm
+            # M, K, N, P, (float, 4 array), check, warm
             'tiny': [str(x) for x in [256, 256, 256, 64, 0, 1]],
             'tiny-cold': [str(x) for x in [256, 256, 256, 64, 0, 0]],
             'small': [str(x) for x in [512, 512, 512, 64, 0, 1]],
@@ -198,6 +231,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
             'large2x': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 1]],
             'large2x-cold': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 0]],
+            # Baseline for SIMPLE M=16k, K=2k, N=32
+            'simple-base-cold': [str(x) for x in [32 * 1024, 2 * 1024, 2 * 1024, 1, 0, 0]],
         },
         'mm_lmn': {
             # L, M, N, P, (float, 4 array), check, warm
@@ -236,6 +271,8 @@ class GemForgeMicroBenchmark(Benchmark):
             'large-cold': [str(x) for x in [256, 256, 64, 64, 3, 3, 0, 0]],
             'large2x': [str(x) for x in [512, 256, 64, 64, 3, 3, 0, 1]],
             'large2x-cold': [str(x) for x in [512, 256, 64, 64, 3, 3, 0, 0]],
+            # Baseline for SIMPLE
+            'simple-base-cold': [str(x) for x in [16, 16, 256, 256, 3, 3, 0, 0]],
         },
         'conv3d_zxy_oyxi_outer_tile': {
             # Nx, Ny, Ni, Nn, Kx, Ky, (float, 3 array), check, warm
@@ -706,9 +743,12 @@ class GemForgeMicroBenchmark(Benchmark):
         return flags
 
     def get_gem5_mem_size(self):
+        mem_size = None
         if not self.is_omp:
-            return '128MB'
-        return None
+            mem_size = '128MB'
+        if self.stem == 'mm_inner':
+            mem_size = '512MB'
+        return mem_size
 
 
 class GemForgeMicroSuite:

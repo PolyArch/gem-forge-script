@@ -22,26 +22,136 @@ def getConfigurations(subset):
 
     configurations = list()
 
-    if subset in ['speedup']:
-        for suite, benchmark, tdg_folder in [
-            # ('gap', 'pr_push_adj_aff', 'fake.0.tdg.krn17-k16.aff-hybrid.thread64'),
-            ('gfm', 'omp_link_list_search_aff', 'fake.0.tdg.large.aff-hybrid.thread64'),
+    sim_prefix = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end'
+
+    if subset in ['adj-aff']:
+        for alloc in [
+            'random',
+            'min-load',
+            'min-hops',
+            'hybrid',
+            'delta',
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ]:
+                rename_tdg_folder = f'{alloc}.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                f'{sim_prefix}-nest4.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                f'{sim_prefix}-nest8.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                f'{sim_prefix}-nest16.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['idea-csr']:
+        for nest in [
+            16,
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_pull_nobrk', f'fake.0.tdg.krn17-k16.thread64'),
+            ]:
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x0',
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind64-b0.2-csr1-iacer1x1x1x1x0',
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind256-b0.2-csr1-iacer1x1x1x1x0',
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind1024-b0.2-csr1-iacer1x1x1x1x0',
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind4096-b0.2-csr1-iacer1x1x1x1x0',
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x1',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['idea-csr-mif']:
+        for nest in [
+            16,
+        ]:
+            for mlc_ind_fifo in [1, 2, 4, 8, 16, 32]:
+                for suite, benchmark, tdg_folder in [
+                    ('gap', 'pr_push', f'fake.0.tdg.krn17-k16.thread64'),
+                    ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16.thread64'),
+                    ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16.thread64'),
+                    ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16.thread64'),
+                    ('gap', 'bfs_pull_nobrk', f'fake.0.tdg.krn17-k16.thread64'),
+                ]:
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transforms': [
+                            {
+                                'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                'simulations': [
+                                    f'{sim_prefix}-nest{nest}.fltsc-cmp-mif{mlc_ind_fifo}-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x0',
+                                    f'{sim_prefix}-nest{nest}.fltsc-cmp-mif{mlc_ind_fifo}-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x1',
+                                ]
+                            }
+                        ],
+                    })
+
+    if subset in ['vec-add']:
+        for suite, benchmark in [
+            ('gfm', 'omp_vec_add_avx')
         ]:
             configurations.append({
                 'suite': suite,
                 'benchmark': benchmark,
-                'tdg_folder': tdg_folder,
+                'tdg_folder': 'fake.0.tdg.offset-random.thread64',
                 'transforms': [
                     {
-                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'transform': 'valid.ex',
                         'simulations': [
-                            'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end-nest4.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0',
-                            # 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end-nest8.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0',
-                            # 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end-nest16.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0',
+                            f'base.ruby.uno.o8.8x8c-l256-s64B-ch64B',
+                            f'base.ruby.uno.o8.8x8c-l256-s64B-ch64B.bingo-l2pf16',
                         ]
                     }
                 ],
             })
+            offsets = [f'{x}kB' for x in range(0, 65, 4)] + ['random']
+            nest = 4
+            mlc_ind_fifo = 1
+            for offset in offsets:
+                tdg_folder = f'fake.0.tdg.offset-{offset}.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                f'{sim_prefix}-nest{nest}.fltsc-cmp-mif{mlc_ind_fifo}-snuca0-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0',
+                            ]
+                        }
+                    ],
+                })
 
     return configurations
 

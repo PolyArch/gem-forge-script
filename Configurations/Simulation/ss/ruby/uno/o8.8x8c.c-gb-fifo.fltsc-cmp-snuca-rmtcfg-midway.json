@@ -64,7 +64,7 @@
         "inoc": [0],
         "mlc_fifo": [32],
         "nest": [4],
-        "midway_elem": [0, 1, 2, 3, 4, 5, 6],
+        "midway_elem": [8, 9, 10, 11, 12, 13, 14],
         "nuca_ind": [64],
         "nuca_ind_rebalance": [0.2],
         "csr_reorder": [1],

@@ -20,28 +20,35 @@ def getConfigurations(subset):
     sim_fmt = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0'
 
     if subset in ['float-trace']:
-        for suite, benchmark, abbrev, sim_input, keyword, nest, alloc_policy in [
-            # ('gap', 'pr_push_adj_aff', 'fake.0.tdg.krn17-k16.aff-hybrid.thread64'),
-            ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld', 16, 'hybrid'),
-            ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld', 16, 'min-hops'),
-            ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld', 16, 'min-load'),
-            ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld', 16, 'random'),
-            ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld', 16, 'hybrid'),
-            ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld', 16, 'min-hops'),
-            ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld', 16, 'min-load'),
-            ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld', 16, 'random'),
+        for nest in [
+            4,
+            8,
+            16,
         ]:
-            tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
-            out_fn = f'{result_prefix}/{conference}.{abbrev}.{alloc_policy}.nest{nest}'
-            configurations.append({
-                'suite': suite,
-                'benchmark': benchmark,
-                'tdg_folder': tdg_folder,
-                'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                'keyword': keyword,
-                'simulation': sim_fmt.format(nest=nest),
-                'out_fn': out_fn,
-            })
+            for suite, benchmark, abbrev, sim_input, keyword in [
+                # ('gap', 'pr_push_adj_aff', 'pr_push_adj', 'krn17-k16', 'score.at'),
+                # ('gap', 'bfs_push_adj_aff_sf', 'bfs_push_adj', 'krn17-k16', 'swap.at'),
+                ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld'),
+                # ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld'),
+            ]:
+                for alloc_policy in [
+                    'hybrid',
+                    'min-hops',
+                    'min-load',
+                    'random',
+                    'delta',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
+                    out_fn = f'{result_prefix}/{conference}.{abbrev}.{alloc_policy}.nest{nest}'
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'keyword': keyword,
+                        'simulation': sim_fmt.format(nest=nest),
+                        'out_fn': out_fn,
+                    })
 
     return configurations
 
