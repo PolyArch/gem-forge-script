@@ -17,7 +17,8 @@ def getConfigurations(subset):
 
     configurations = list()
 
-    sim_fmt = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0'
+    sim_prefix = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end'
+
 
     if subset in ['float-trace']:
         for nest in [
@@ -25,6 +26,7 @@ def getConfigurations(subset):
             8,
             16,
         ]:
+            sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0'
             for suite, benchmark, abbrev, sim_input, keyword in [
                 # ('gap', 'pr_push_adj_aff', 'pr_push_adj', 'krn17-k16', 'score.at'),
                 # ('gap', 'bfs_push_adj_aff_sf', 'bfs_push_adj', 'krn17-k16', 'swap.at'),
@@ -46,7 +48,35 @@ def getConfigurations(subset):
                         'tdg_folder': tdg_folder,
                         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                         'keyword': keyword,
-                        'simulation': sim_fmt.format(nest=nest),
+                        'simulation': sim,
+                        'out_fn': out_fn,
+                    })
+
+    if subset in ['gfm']:
+        for nest in [
+            16,
+        ]:
+            for suite, benchmark, abbrev, sim_input, keyword in [
+                ('gfm', 'omp_stencil3d_avx', 'stencil3d', 'medium', '43(store)'),
+            ]:
+                for alloc_policy in [
+                    # '.aff-hybrid',
+                    # '.aff-min-hops',
+                    # '.aff-min-load',
+                    '',
+                    # '-random',
+                    # '.aff-delta',
+                ]:
+                    sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                    tdg_folder = f'fake.0.tdg.{sim_input}{alloc_policy}.thread64'
+                    out_fn = f'{result_prefix}/{conference}.{abbrev}{alloc_policy}.nest{nest}'
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'keyword': keyword,
+                        'simulation': sim,
                         'out_fn': out_fn,
                     })
 

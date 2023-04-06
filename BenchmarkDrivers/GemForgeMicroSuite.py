@@ -157,6 +157,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'tiny': [str(x) for x in [64, 64, 8, 10, 0, 1]],
             'tiny-cold': [str(x) for x in [64, 64, 8, 10, 0, 0]],
             'small': [str(x) for x in [128, 128, 8, 10, 0, 1]],
+            'small-random': [str(x) for x in [128, 128, 8, 10, 0, 1, -1]],
             'small-cold': [str(x) for x in [128, 128, 8, 10, 0, 0]],
             'medium': [str(x) for x in [256, 256, 16, 1, 0, 1]],
             'medium-cold': [str(x) for x in [256, 256, 16, 1, 0, 0]],

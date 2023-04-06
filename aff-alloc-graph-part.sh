@@ -3,7 +3,7 @@
 # rm -f /tmp/job_scheduler.*
 
 Benchmark='-b '
-Benchmark+='gap.sssp_sf_delta1,'
+# Benchmark+='gap.sssp_sf_delta1,'
 # Benchmark+='gap.sssp_sf_delta2,'
 # Benchmark+='gap.sssp_sf_delta4,'
 # Benchmark+='gap.sssp_sf_delta8,'
@@ -13,26 +13,27 @@ Benchmark+='gap.pr_pull,'
 Benchmark+='gap.pr_push,'
 Benchmark+='gap.bfs_push_sf,'
 Benchmark+='gap.bfs_pull,'
-Benchmark+='gap.bfs_pull_nobrk,'
-Benchmark+='gap.sssp_adj_aff_sf_delta1,'
-# Benchmark+='gap.sssp_adj_aff_sf_delta2,'
-# Benchmark+='gap.sssp_adj_aff_sf_delta4,'
-# Benchmark+='gap.sssp_adj_aff_sf_delta8,'
-# Benchmark+='gap.sssp_adj_aff_sf_delta16,'
-# Benchmark+='gap.sssp_adj_aff_sf_delta32,'
-# Benchmark+='gap.bfs_pull_nobrk_adj_aff,'
-Benchmark+='gap.pr_push_adj_aff,'
-Benchmark+='gap.pr_pull_adj_aff,'
-Benchmark+='gap.bfs_push_adj_aff_sf,'
-Benchmark+='gap.bfs_pull_adj_aff,'
+# Benchmark+='gap.bfs_pull_nobrk,'
+# Benchmark+='gap.sssp_adj_aff_sf_delta1,'
+# # Benchmark+='gap.sssp_adj_aff_sf_delta2,'
+# # Benchmark+='gap.sssp_adj_aff_sf_delta4,'
+# # Benchmark+='gap.sssp_adj_aff_sf_delta8,'
+# # Benchmark+='gap.sssp_adj_aff_sf_delta16,'
+# # Benchmark+='gap.sssp_adj_aff_sf_delta32,'
+# # Benchmark+='gap.bfs_pull_nobrk_adj_aff,'
+# Benchmark+='gap.pr_push_adj_aff,'
+# Benchmark+='gap.pr_pull_adj_aff,'
+# Benchmark+='gap.bfs_push_adj_aff_sf,'
+# Benchmark+='gap.bfs_pull_adj_aff,'
 SimInput=''
 # SimInput+=',krn18-k16'
+SimInput+=',krn17-k16-metis64'
+SimInput+=',uni17-k16-metis64'
+SimInput+=',roadNet-TX-metis64'
 SimInput+=',krn17-k16'
-# SimInput+=',krn16-k16'
-# SimInput+=',krn15-k16'
-# SimInput+=',krn14-k16'
-# SimInput+=',krn10-k16'
-# SimInput+=',krn10-k4'
+SimInput+=',uni17-k16'
+SimInput+=',roadNet-TX'
+# SimInput+=',uni14-k16-metis64'
 # SimInput+=',krn17-k16.aff-min-hops'
 # SimInput+=',krn17-k16.aff-min-load'
 # SimInput+=',krn17-k16.aff-random'
@@ -40,14 +41,6 @@ SimInput+=',krn17-k16'
 # SimInput+=',krn17-k16.aff-delta'
 # SimInput+=',krn17-k16.aff-hybrid.iter=1'
 # SimInput+=',krn17-k16.aff-hybrid.iter=3'
-# SimInput+=',krn14-k16.aff-min-hops'
-# SimInput+=',krn14-k16.aff-min-load'
-# SimInput+=',krn14-k16.aff-random'
-# SimInput+=',krn14-k16.aff-hybrid'
-# SimInput+=',krn10-k4.aff-min-hops'
-# SimInput+=',krn10-k4.aff-min-load'
-# SimInput+=',krn10-k4.aff-random'
-# SimInput+=',krn10-k4.aff-hybrid'
 
 
 SimTrace='--fake-trace'
@@ -86,36 +79,20 @@ run_ssp () {
     local input=$3
     local threads=$4
     local parallel=$5
-    local i4=ss/ruby/uno/i4.$rubyc.c
-    local o4=ss/ruby/uno/o4.$rubyc.c-gb-fifo
     local o8=ss/ruby/uno/o8.$rubyc.c-gb-fifo
-    local tm=ss/ruby/uno/tm.$rubyc.c-fifo
-    local o8_link=stream/ruby/single/o8.$rubyc-link.c
     local all_sim=''
     # all_sim+=$o8,
     # all_sim+=$o8.flts-mc,
     # all_sim+=$o8.fltsc-cmp,
     all_sim+=$o8.fltsc-cmp-snuca,
+    all_sim+=$o8.fltsc-cmp-snuca-dist,
     # all_sim+=$o8.fltsc-cmp-snuca-rmtcfg,
-    # all_sim+=$o8.fltsc-cmp-snuca-idea-ind-req,
-    # all_sim+=$o8.fltsc-cmp-snuca-test,
-    # all_sim+=$o8.fltsc-cmp-snuca-rmtcfg-test,
-    # all_sim+=$o8.fltsc-cmp-snuca-rmtcfg-midway,
-    # all_sim+=$o8.inoc-gussa.fltsc-cmp,
-    # all_sim+=$o8.inoc-all.fltsc-cmp,
-    # all_sim+=$o8.inoc-all-il3.fltsc-cmp,
-    # all_sim+=$o8.inoc-sa.fltsc-cmp,
-    # all_sim+=$o8.inoc-sa.fltsc-cmp-snuca,
-    # all_sim+=$o8.inoc-sa.fltsc-cmp-snuca-rmtcfg,
-    # all_sim+=$o8.inoc-sa.fltsc-cmp-rmtcfg,
-    # all_sim+=$o8.inoc-sa.fltsc-cmp-snuca-elem,
-    # all_sim+=$o8.fltsc-cmp-sync,
     python Driver.py $Benchmark $SimTrace -t $trans \
         --sim-configs $all_sim \
         --sim-input $input \
         --input-threads $threads \
         -s -j $parallel \
-        # --gem5-debug ProtocolTrace,MLCRubyStream,LLCRubyStream --gem5-debug-start 25509906500 2>&1 | tee /benchmarks/llc.log
+        # --gem5-debug StreamNUCAManager 2>&1 | tee /benchmarks/llc.log
         # --gem5-debug StreamEngine,StreamElement,StreamBase,StreamRegion 2>&1 | tee /benchmarks/core.log
         # --perf-command \
 }

@@ -3,52 +3,63 @@
 # rm -f /tmp/job_scheduler.*
 
 Benchmark='-b '
-Benchmark+='gap.sssp_sf_delta1,'
-# Benchmark+='gap.sssp_sf_delta2,'
-# Benchmark+='gap.sssp_sf_delta4,'
-# Benchmark+='gap.sssp_sf_delta8,'
-# Benchmark+='gap.sssp_sf_delta16,'
-# Benchmark+='gap.sssp_sf_delta32,'
-Benchmark+='gap.pr_pull,'
-Benchmark+='gap.pr_push,'
-Benchmark+='gap.bfs_push_sf,'
-Benchmark+='gap.bfs_pull,'
-Benchmark+='gap.bfs_pull_nobrk,'
-Benchmark+='gap.sssp_adj_aff_sf_delta1,'
+# Benchmark+='gfm.omp_link_list_search_aff,'
+# Benchmark+='gfm.omp_hash_join_aff,'
+# Benchmark+='gfm.omp_binary_tree_aff,'
+Benchmark+='gfm.omp_binary_tree_rnd_aff,'
+# Benchmark+='gap.pr_push_adj_aff,'
+# Benchmark+='gap.pr_pull_adj_aff,'
+# Benchmark+='gap.bfs_push_adj_aff_sf,'
+# Benchmark+='gap.bfs_pull_adj_aff,'
+# Benchmark+='gap.sssp_adj_aff_sf_delta1,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta2,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta4,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta8,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta16,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta32,'
 # Benchmark+='gap.bfs_pull_nobrk_adj_aff,'
-Benchmark+='gap.pr_push_adj_aff,'
-Benchmark+='gap.pr_pull_adj_aff,'
-Benchmark+='gap.bfs_push_adj_aff_sf,'
-Benchmark+='gap.bfs_pull_adj_aff,'
 SimInput=''
-# SimInput+=',krn18-k16'
-SimInput+=',krn17-k16'
-# SimInput+=',krn16-k16'
-# SimInput+=',krn15-k16'
-# SimInput+=',krn14-k16'
-# SimInput+=',krn10-k16'
-# SimInput+=',krn10-k4'
+# SimInput+=',krn17-k16.aff-random'
 # SimInput+=',krn17-k16.aff-min-hops'
 # SimInput+=',krn17-k16.aff-min-load'
-# SimInput+=',krn17-k16.aff-random'
 # SimInput+=',krn17-k16.aff-hybrid'
 # SimInput+=',krn17-k16.aff-delta'
-# SimInput+=',krn17-k16.aff-hybrid.iter=1'
-# SimInput+=',krn17-k16.aff-hybrid.iter=3'
-# SimInput+=',krn14-k16.aff-min-hops'
-# SimInput+=',krn14-k16.aff-min-load'
-# SimInput+=',krn14-k16.aff-random'
+# SimInput+=',krn17-k16.aff-hybrid1'
+# SimInput+=',krn17-k16.aff-hybrid3'
+# SimInput+=',krn17-k16.aff-hybrid5'
+# SimInput+=',krn17-k16.aff-hybrid7'
+# SimInput+=',krn17-k16.aff-hybrid9'
+# SimInput+=',krn17-k16.aff-hybrid11'
+# SimInput+=',krn17-k16.aff-hybrid13'
+# SimInput+=',krn17-k16.aff-delta1'
+# SimInput+=',krn17-k16.aff-delta3'
+# SimInput+=',krn17-k16.aff-delta5'
+# SimInput+=',krn17-k16.aff-delta7'
+# SimInput+=',krn17-k16.aff-delta9'
+# SimInput+=',krn17-k16.aff-delta11'
+# SimInput+=',krn17-k16.aff-delta13'
 # SimInput+=',krn14-k16.aff-hybrid'
-# SimInput+=',krn10-k4.aff-min-hops'
-# SimInput+=',krn10-k4.aff-min-load'
-# SimInput+=',krn10-k4.aff-random'
-# SimInput+=',krn10-k4.aff-hybrid'
-
+# SimInput+=',krn10-k4.aff-delta'
+SimInput+=',large.aff-random'
+SimInput+=',large.aff-min-load'
+SimInput+=',large.aff-min-hops'
+SimInput+=',large.aff-hybrid1'
+SimInput+=',large.aff-hybrid3'
+SimInput+=',large.aff-hybrid5'
+SimInput+=',large.aff-hybrid7'
+SimInput+=',large.aff-hybrid9'
+SimInput+=',large.aff-hybrid11'
+SimInput+=',large.aff-hybrid13'
+SimInput+=',large.aff-delta1'
+SimInput+=',large.aff-delta3'
+SimInput+=',large.aff-delta5'
+SimInput+=',large.aff-delta7'
+SimInput+=',large.aff-delta9'
+SimInput+=',large.aff-delta11'
+SimInput+=',large.aff-delta13'
+# SimInput+=',large.aff-hybrid'
+# SimInput+=',large.aff-delta'
+# SimInput+=',small.aff-random'
 
 SimTrace='--fake-trace'
 # python Driver.py $Benchmark --build
@@ -58,27 +69,16 @@ BaseTrans=valid.ex
 # python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
 RubyConfig=8x8c
 Threads=64
-# RubyConfig=4x4c
-# Threads=1
-# RubyConfig=2x2c
-# Threads=4
-Parallel=64
+Parallel=32
 sim_replay_prefix=base/ruby/uno
-i4=$sim_replay_prefix/i4.${RubyConfig}
-o4=$sim_replay_prefix/o4.${RubyConfig}
 o8=$sim_replay_prefix/o8.${RubyConfig}
-# sim_replay=$i4,$i4.bingo-l2pf
-# sim_replay+=,$o4,$o4.bingo-l2pf
 sim_replay=$o8,$o8.bingo-l2pf
-# sim_replay=$o8
 # python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
 #     --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel
 
-# StreamTransform=stream/ex/static/so.store
-# StreamTransform=stream/ex/static/so.store.cmp
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
 # python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
-#     --transform-debug StaticStreamRegionAnalyzer,BasicBlockBranchDataGraph 2>&1 | tee /benchmarks/shit.log
+    # --transform-debug StaticStreamRegionAnalyzer,BasicBlockBranchDataGraph 2>&1 | tee /benchmarks/shit.log
 
 run_ssp () {
     local trans=$1
@@ -95,8 +95,8 @@ run_ssp () {
     # all_sim+=$o8,
     # all_sim+=$o8.flts-mc,
     # all_sim+=$o8.fltsc-cmp,
-    all_sim+=$o8.fltsc-cmp-snuca,
-    # all_sim+=$o8.fltsc-cmp-snuca-rmtcfg,
+    # all_sim+=$o8.fltsc-cmp-snuca,
+    all_sim+=$o8.fltsc-cmp-snuca-rmtcfg,
     # all_sim+=$o8.fltsc-cmp-snuca-idea-ind-req,
     # all_sim+=$o8.fltsc-cmp-snuca-test,
     # all_sim+=$o8.fltsc-cmp-snuca-rmtcfg-test,

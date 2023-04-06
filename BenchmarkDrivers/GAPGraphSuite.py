@@ -64,10 +64,10 @@ class GAPGraphBenchmark(Benchmark):
         cold_inputs = [
             ('krn21-k8', 1), # 2097152 Nodes (8MB w. 4B key), 16208491 undirected edges (126MB w. 4B key) for degree: 7.72881
             ('krn19-k16', 0),
-            ('roadNet-PA', 1), # 1090920 Nodes (4.3MB w. 4B key), 3083796 edges (12MB w. 4B key)
-            ('roadNet-TX', 1), # 1393383 Nodes (5.4MB w. 4B key), 3843320 edges (15MB w. 4B key)
-            ('roadNet-CA', 1), # 1971281 Nodes (7.7MB w. 4B key), 5533214 edges (21.6MB w. 4B key)
-            ('web-BerkStan', 1),
+            ('roadNet-PA', 0), # 1090920 Nodes (4.3MB w. 4B key), 3083796 edges (12MB w. 4B key)
+            ('roadNet-TX', 0), # 1393383 Nodes (5.4MB w. 4B key), 3843320 edges (15MB w. 4B key)
+            ('roadNet-CA', 0), # 1971281 Nodes (7.7MB w. 4B key), 5533214 edges (21.6MB w. 4B key)
+            ('web-BerkStan', 0),
             ('road-great-britain-osm', 1), # 7733822 Nodes (30.2MB w. 4B key), 8156517 edges (31.9MB w. 4B key)
             ('soc-LiveJournal1', 1), # 4847571 Nodes (19MB w. 4B key) and 68475391 directed edges (267MB w. 4B key) for degree: 14.1257
             ('soc-pokec-relationships', 0),

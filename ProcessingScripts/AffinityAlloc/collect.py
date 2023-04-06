@@ -20,9 +20,63 @@ result_prefix = os.path.join('result-data', conference)
 
 def getConfigurations(subset):
 
+    def get_aff_workloads(alloc):
+        return [
+            ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+            ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+            ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+            ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+            ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+            ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+        ]
+
     configurations = list()
 
     sim_prefix = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end'
+
+    if subset in ['overall']:
+        nest = 16
+        for alloc in [
+            'random',
+            'hybrid',
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gfm', 'omp_stencil1d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
+                ('gfm', 'omp_stencil2d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
+                ('gfm', 'omp_stencil3d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
+                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ]:
+                base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0'
+                sim = base_sim
+                if 'stencil' in benchmark:
+                    # Stencil is currently evaluated with different sim. Rename it.
+                    sim = (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0', base_sim)
+                    if 'large-hybrid' in tdg_folder:
+                        # Stencil have no hybrid configuration.
+                        tdg_folder = 'fake.0.tdg.large.thread64'
+                rename_tdg_folder = f'{alloc}.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                sim,
+                            ]
+                        }
+                    ],
+                })
 
     if subset in ['adj-aff']:
         for alloc in [
@@ -32,10 +86,34 @@ def getConfigurations(subset):
             'hybrid',
             'delta',
         ]:
+            for suite, benchmark, tdg_folder in get_aff_workloads(alloc):
+                rename_tdg_folder = f'{alloc}.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                f'{sim_prefix}-nest4.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                f'{sim_prefix}-nest8.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                f'{sim_prefix}-nest16.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['hybrid-weight']:
+        for alloc in [
+            'random',
+            'min-hops',
+            'min-load',
+        ] + [f'hybrid{x}' for x in range(1, 14, 2)]:
             for suite, benchmark, tdg_folder in [
                 ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
                 ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                # ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
                 ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
                 ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
                 ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
@@ -51,9 +129,38 @@ def getConfigurations(subset):
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                             'simulations': [
-                                f'{sim_prefix}-nest4.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
-                                f'{sim_prefix}-nest8.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
-                                f'{sim_prefix}-nest16.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['delta-weight']:
+        for alloc in [
+            'random',
+            'min-hops',
+            'min-load',
+        ] + [f'delta{x}' for x in range(1, 14, 2)]:
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                # ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ]:
+                rename_tdg_folder = f'{alloc}.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0',
                             ]
                         }
                     ],

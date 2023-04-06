@@ -967,15 +967,25 @@ class Benchmark(object):
             ],
         }
 
+        env_vars = list()
+        for opt in input_options:
+            for aff_env in affinity_alloc_envs:
+                if not opt.startswith(aff_env):
+                    continue
+                env_vars += affinity_alloc_envs[aff_env]
+                if len(opt) > len(aff_env):
+                    # Parse the load weight for hybrid and delta.
+                    assert(aff_env == 'aff-hybrid' or aff_env == 'aff-delta')
+                    load_weight = int(opt[len(aff_env):])
+                    env_vars += [
+                        ('AFFINITY_ALLOCATOR_LOAD_WEIGHT', str(load_weight)),
+                    ]
         env_options = list()
-        for aff_env in affinity_alloc_envs:
-            if aff_env in input_options:
-                env_vars = affinity_alloc_envs[aff_env]
-                env_fn = self.generate_gem5_env_file(env_vars)
-                env_options += [
-                    f'--env={env_fn}',
-                ]
-                break
+        if env_vars:
+            env_fn = self.generate_gem5_env_file(env_vars)
+            env_options += [
+                f'--env={env_fn}',
+            ]
         return env_options 
 
     """
