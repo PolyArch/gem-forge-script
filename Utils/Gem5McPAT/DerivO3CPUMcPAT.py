@@ -60,14 +60,14 @@ def configureDerivO3CPU(self, cpu):
     # Instruction TLB.
     try:
         mcpatITLB = core.itlb
-        mcpatITLB.number_entries = self.getTLBSize(cpu.itb)
+        mcpatITLB.number_entries = self.getTLBSize(cpu.mmu.itb)
     except AttributeError:
         print('Warn! Failed to configure ITLB.')
 
     # Data TLB.
     try:
         mcpatDTLB = core.dtlb
-        mcpatDTLB.number_entries = self.getTLBSize(cpu.dtb)
+        mcpatDTLB.number_entries = self.getTLBSize(cpu.mmu.dtb)
     except AttributeError:
         print('Warn! Failed to configure DTLB.')
 
@@ -76,46 +76,59 @@ def configureDerivO3CPU(self, cpu):
     mcpatL1Directory.clockrate = self.toMHz(self.getCPUClockDomain())
 
 def setStatsDerivO3CPU(self, cpu):
+    """
+    Gem5 stats changed the name from future_cpus00 -> future_cpus0.
+    """
+    def replace_path(path):
+        for suffix in [f'0{x}' for x in range(10)]:
+            if path.endswith(suffix):
+                return f'{path[:-2]}{cpu.cpu_id}'
+        return path
+    old_cpu_path = cpu.path
+    new_cpu_path = replace_path(cpu.path)
+
     core = self.xml.sys.core[cpu.cpu_id]
-    print(cpu.path)
+    print(f'CPU.Path old {old_cpu_path} new {new_cpu_path}')
     def scalar(stat): return self.getScalarStats(cpu.path + '.' + stat)
     def vector(stat): return self.getVecStatsTotal(cpu.path + '.' + stat)
+    def scalar2(stat): return self.getScalarStats(new_cpu_path + '.' + stat)
+    def vector2(stat): return self.getVecStatsTotal(new_cpu_path + '.' + stat)
 
-    decodedInsts = scalar("decode.DecodedInsts")
-    branchInsts = scalar("fetch.Branches")
-    loadInsts = scalar("iew.iewExecLoadInsts")
-    storeInsts = scalar("iew.exec_stores")
-    commitInsts = scalar("commit.committedOps")
-    commitIntInsts = scalar("commit.int_insts")
-    commitFpInsts = scalar("commit.fp_insts")
-    totalCycles = scalar("numCycles")
-    idleCycles = scalar("idleCycles")
-    robReads = scalar("rob.rob_reads")
-    robWrites = scalar("rob.rob_writes")
+    decodedInsts = scalar2("decode.decodedInsts")
+    branchInsts = scalar2("fetch.branches")
+    loadInsts = scalar2("iew.dispLoadInsts")
+    storeInsts = scalar2("iew.dispStoreInsts")
+    commitInsts = scalar2("commit.opsCommitted")
+    commitIntInsts = scalar2("commit.integer")
+    commitFpInsts = scalar2("commit.floating")
+    totalCycles = scalar2("numCycles")
+    idleCycles = scalar2("idleCycles")
+    robReads = scalar2("rob.reads")
+    robWrites = scalar2("rob.writes")
 
     # Gem5 seems not distinguish rename int/fp operands.
     # Just make rename float writes 0.
-    renameWrites = scalar("rename.RenamedOperands")
-    renameReads = scalar("rename.RenameLookups")
-    renameFpReads = scalar("rename.fp_rename_lookups")
+    renameWrites = scalar2("rename.renamedOperands")
+    renameReads = scalar2("rename.lookups")
+    renameFpReads = scalar2("rename.fpLookups")
     renameFpWrites = 0
 
-    instWinReads = scalar("iq.int_inst_queue_reads")
-    instWinWrites = scalar("iq.int_inst_queue_writes")
-    instWinWakeUpAccesses = scalar("iq.int_inst_queue_wakeup_accesses")
-    instWinFpReads = scalar("iq.fp_inst_queue_reads")
-    instWinFpWrites = scalar("iq.fp_inst_queue_writes")
-    instWinFpWakeUpAccesses = scalar("iq.fp_inst_queue_wakeup_accesses")
+    instWinReads = scalar2("intInstQueueReads")
+    instWinWrites = scalar2("intInstQueueWrites")
+    instWinWakeUpAccesses = scalar2("intInstQueueWakeupAccesses")
+    instWinFpReads = scalar2("fpInstQueueReads")
+    instWinFpWrites = scalar2("fpInstQueueWrites")
+    instWinFpWakeUpAccesses = scalar2("fpInstQueueWakeupAccesses")
 
-    intRegReads = scalar("int_regfile_reads")
-    intRegWrites = scalar("int_regfile_writes")
-    fpRegReads = scalar("fp_regfile_reads")
-    fpRegWrites = scalar("fp_regfile_writes")
+    intRegReads = scalar2("intRegfileReads")
+    intRegWrites = scalar2("intRegfileWrites")
+    fpRegReads = scalar2("fpRegfileReads")
+    fpRegWrites = scalar2("fpRegfileWrites")
 
-    commitCalls = scalar("commit.function_calls")
+    commitCalls = scalar2("commit.functionCalls")
 
-    intALU = scalar("iq.int_alu_accesses")
-    fpALU = scalar("iq.fp_alu_accesses")
+    intALU = scalar2("intAluAccesses")
+    fpALU = scalar2("fpAluAccesses")
     # auto multi = this->getHistStats()
     multi = 0.0
     divs = 0.0

@@ -202,10 +202,7 @@ class Gem5McPAT(object):
     def getCPUStatPrefix(self, cpu_id):
         cpu_name = 'future_cpus' if self.hasFutureCPU() else 'cpu'
         if self.hasMultipleCPU():
-            return 'system.{cpu_name}{cpu_id}'.format(
-                cpu_name=cpu_name,
-                cpu_id=cpu_id,
-            )
+            return f'system.{cpu_name}{cpu_id}'
         else:
             return 'system.{cpu_name}'.format(cpu_name=cpu_name)
 
@@ -258,9 +255,9 @@ class Gem5McPAT(object):
             print('Warn! Unsupported CPU {t}.'.format(t=cpuType))
         # TLB
         cpuId = cpu.cpu_id
-        itb = cpu.itb
+        itb = cpu.mmu.itb
         tlb.setStatsITLB(self, itb, cpuId)
-        dtb = cpu.dtb
+        dtb = cpu.mmu.dtb
         tlb.setStatsDTLB(self, dtb, cpuId)
 
         # Branch predictor.

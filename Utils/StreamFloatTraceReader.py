@@ -61,8 +61,10 @@ def collectAllTraces(args, folder, keyword=None):
             PRINT(f'Reading {f}')
             events = collectTrace(args, full_fn)
             if events:
+                PRINT(f'NumEvents {len(events)} {events[0].cycle}-{events[-1].cycle}')
                 min_cycle = min(min_cycle, events[0].cycle)
             all_events += events
+    PRINT(f'Subtracting Min Cycle {min_cycle}')
     for e in all_events:
         e.cycle -= min_cycle
     return all_events
@@ -72,6 +74,7 @@ def alignCycleToInterval(args, cycle):
 
 def addEventToStreamChanges(args, e, prev_streams, stream_changes):
     new_streams = prev_streams
+    # Stream events.
     if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_IN:
         new_streams += 1
     elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CONFIG:
@@ -79,6 +82,11 @@ def addEventToStreamChanges(args, e, prev_streams, stream_changes):
     elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_OUT:
         new_streams -= 1
     elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.END:
+        new_streams -= 1
+    # Stream engine events.
+    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_START:
+        new_streams += 1
+    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_DONE:
         new_streams -= 1
     if new_streams == prev_streams:
         # No change. Skip
@@ -342,7 +350,10 @@ def dumpAliveStreams(args):
         bank_stream_changes = alignStreamChanges(args, bank_stream_changes)
         addStatsToAligned(args, bank_stream_changes, banks)
 
-    with open(f'{args.out_fn}.float-trace.csv', 'w') as f:
+    out_csv_fn = f'{args.out_fn}.float-trace.csv'
+    PRINT(f'Write CSV {out_csv_fn}')
+
+    with open(out_csv_fn, 'w') as f:
         if args.align:
             dumpAlignedStreamChange(args, f, banks, bank_stream_changes)
         else:
@@ -357,21 +368,22 @@ def dumpAliveStreams(args):
             max_cycles.append(stream_changes[-1][0])
 
         f.write('\n')
-        for bank in range(len(max_streams)):
-            f.write(f'{bank},')
-        f.write('\n')
-        for bank in range(len(max_streams)):
-            f.write(f'{max_streams[bank]},')
-        f.write('\n')
-        for bank in range(len(min_cycles)):
-            f.write(f'{min_cycles[bank]},')
-        f.write('\n')
-        for bank in range(len(max_cycles)):
-            f.write(f'{max_cycles[bank]},')
-        f.write('\n')
-        for bank in range(len(max_cycles)):
-            f.write(f'{max_cycles[bank] - min_cycles[bank]},')
-        f.write('\n')
+        if not args.no_summary:
+            for bank in range(len(max_streams)):
+                f.write(f'{bank},')
+            f.write('\n')
+            for bank in range(len(max_streams)):
+                f.write(f'{max_streams[bank]},')
+            f.write('\n')
+            for bank in range(len(min_cycles)):
+                f.write(f'{min_cycles[bank]},')
+            f.write('\n')
+            for bank in range(len(max_cycles)):
+                f.write(f'{max_cycles[bank]},')
+            f.write('\n')
+            for bank in range(len(max_cycles)):
+                f.write(f'{max_cycles[bank] - min_cycles[bank]},')
+            f.write('\n')
 
 
 def main(argv):
@@ -395,6 +407,9 @@ def main(argv):
     parser.add_argument('--out-fn', '-o',
         type=str, default="float-trace.csv",
         help='Output filename')    
+    parser.add_argument('--no-summary',
+        action='store_true', default=False,
+        help='Dump summary at the end')    
 
     args = parser.parse_args(argv)
 

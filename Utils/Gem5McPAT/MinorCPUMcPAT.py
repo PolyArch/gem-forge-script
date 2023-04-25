@@ -68,14 +68,14 @@ def configureMinorCPU(self, cpu):
     # Instruction TLB.
     try:
         mcpatITLB = core.itlb
-        mcpatITLB.number_entries = self.getTLBSize(cpu.itb)
+        mcpatITLB.number_entries = self.getTLBSize(cpu.mmu.itb)
     except AttributeError:
         print('Warn! Failed to configure ITLB.')
 
     # Data TLB.
     try:
         mcpatDTLB = core.dtlb
-        mcpatDTLB.number_entries = self.getTLBSize(cpu.dtb)
+        mcpatDTLB.number_entries = self.getTLBSize(cpu.mmu.dtb)
     except AttributeError:
         print('Warn! Failed to configure DTLB.')
 

@@ -37,8 +37,8 @@ def configureGemForgeCPU(self, cpu):
     core.micro_opcode_width = 8
     core.machine_type = 0  # 0 for O3.
 
-    core.itlb.number_entries = self.getTLBSize(cpu.itb)
-    core.dtlb.number_entries = self.getTLBSize(cpu.dtb)
+    core.itlb.number_entries = self.getTLBSize(cpu.mmu.itb)
+    core.dtlb.number_entries = self.getTLBSize(cpu.mmu.dtb)
     # L1 directory.
     L1Directory = self.xml.sys.L1Directory[idx]
     L1Directory.clockrate = self.toMHz(self.getCPUClockDomain())

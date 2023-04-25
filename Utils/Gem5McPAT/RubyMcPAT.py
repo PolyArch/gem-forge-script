@@ -80,8 +80,8 @@ def setStatsL1ICache(self, cntrl, isGemForgeCPU):
     mcpatCPU = self.xml.sys.core[idx]
     mcpatL1I = mcpatCPU.icache
 
-    totalAccesses = scalar('Dcache.demand_accesses')
-    totalMisses = scalar('Dcache.demand_misses')
+    totalAccesses = scalar('Dcache.m_demand_accesses')
+    totalMisses = scalar('Dcache.m_demand_misses')
     # ! Jesus no easy way to distinguish read/write requests,
     # ! Just take them as half.
     mcpatL1I.read_accesses = totalAccesses
@@ -99,8 +99,8 @@ def setStatsL1DCache(self, cntrl):
     mcpatCPU = self.xml.sys.core[idx]
     mcpatL1D = mcpatCPU.dcache
 
-    totalAccesses = scalar('Dcache.demand_accesses')
-    totalMisses = scalar('Dcache.demand_misses')
+    totalAccesses = scalar('Dcache.m_demand_accesses')
+    totalMisses = scalar('Dcache.m_demand_misses')
     # ! Jesus no easy way to distinguish read/write requests,
     # ! Just take them as half.
     mcpatL1D.read_accesses = totalAccesses / 2
@@ -123,7 +123,7 @@ def configureL2Directories(self, cache):
 
 def configureL2CacheBank(self, cntrl):
     L2Idx = getControllerIdx(cntrl)
-    print('Setting L2Bank {idx}'.format(idx=L2Idx))
+    # print(f'Setting L2Bank {L2Idx}')
     mcpatL2 = self.xml.sys.L2[L2Idx]
     L2cache = cntrl.cache
 
@@ -171,8 +171,8 @@ def setStatsL2CacheBank(self, cntrl):
     def scalar(stat): return self.getScalarStats(cntrl.path + '.' + stat)
     mcpatL2 = self.xml.sys.L2[L2Idx]
 
-    totalAccesses = scalar('cache.demand_accesses')
-    totalMisses = scalar('cache.demand_misses')
+    totalAccesses = scalar('cache.m_demand_accesses')
+    totalMisses = scalar('cache.m_demand_misses')
     # ! Jesus no easy way to distinguish read/write requests,
     # ! Just take them as half.
     mcpatL2.read_accesses = totalAccesses / 2
@@ -187,7 +187,7 @@ def setStatsL2Cache(self, ruby):
 
 def configureL3CacheBank(self, cntrl):
     L3Idx = getControllerIdx(cntrl)
-    print('Setting L3Bank {idx}'.format(idx=L3Idx))
+    # print(f'Setting L3Bank {L3Idx}')
     mcpatL3 = self.xml.sys.L3[L3Idx]
     L3cache = cntrl.L2cache
 
@@ -258,8 +258,8 @@ def setStatsL3CacheBank(self, cntrl):
     def scalar(stat): return self.getScalarStats(cntrl.path + '.' + stat)
     mcpatL3 = self.xml.sys.L3[L3Idx]
 
-    totalAccesses = scalar('L2cache.demand_accesses')
-    totalMisses = scalar('L2cache.demand_misses')
+    totalAccesses = scalar('L2cache.m_demand_accesses')
+    totalMisses = scalar('L2cache.m_demand_misses')
     # ! Jesus no easy way to distinguish read/write requests,
     # ! Just take them as half.
     mcpatL3.read_accesses = totalAccesses / 2

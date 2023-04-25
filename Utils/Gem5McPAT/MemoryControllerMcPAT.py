@@ -25,11 +25,11 @@ def setStatsMemoryControl(self):
     memWrites = 0
     if len(mcs) > 1:
         for mcId in range(len(mcs)):
-            memReads += self.getVecStatsTotal('system.mem_ctrls{i}.num_reads'.format(i=mcId))
-            memWrites += self.getVecStatsTotal('system.mem_ctrls{i}.num_writes'.format(i=mcId))
+            memReads += self.getVecStatsTotal('system.mem_ctrls{i}.numReads'.format(i=mcId))
+            memWrites += self.getVecStatsTotal('system.mem_ctrls{i}.numWrites'.format(i=mcId))
     else:
-        memReads = self.getVecStatsTotal("system.mem_ctrls.num_reads")
-        memWrites = self.getVecStatsTotal("system.mem_ctrls.num_writes")
+        memReads = self.getVecStatsTotal("system.mem_ctrls.numReads")
+        memWrites = self.getVecStatsTotal("system.mem_ctrls.numWrites")
     mc = self.xml.sys.mc
     mc.memory_reads = memReads
     mc.memory_writes = memWrites

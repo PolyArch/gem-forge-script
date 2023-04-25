@@ -1,6 +1,17 @@
+"""
+Fix the future_cpus00 -> future_cpus0
+"""
+def replace_path(path):
+    for suffix in [f'0{x}' for x in range(10)]:
+        idx = path.find(suffix)
+        if idx == -1:
+            continue
+        return f'{path[:idx]}{path[idx+1:]}'
+    return path
 
 def setStatsDTLB(self, tlb, cpuId):
-    def scalar(stat): return self.getScalarStats(tlb.path + '.' + stat)
+    tlb_path = replace_path(tlb.path)
+    def scalar(stat): return self.getScalarStats(tlb_path + '.' + stat)
     reads = scalar("rdAccesses")
     readMisses = scalar("rdMisses")
     writes = scalar("wrAccesses")
@@ -14,7 +25,8 @@ def setStatsDTLB(self, tlb, cpuId):
     core.dtlb.total_misses = readMisses + writeMisses
 
 def setStatsITLB(self, tlb, cpuId):
-    def scalar(stat): return self.getScalarStats(tlb.path + '.' + stat)
+    tlb_path = replace_path(tlb.path)
+    def scalar(stat): return self.getScalarStats(tlb_path + '.' + stat)
     reads = scalar("rdAccesses")
     readMisses = scalar("rdMisses")
     writes = scalar("wrAccesses")

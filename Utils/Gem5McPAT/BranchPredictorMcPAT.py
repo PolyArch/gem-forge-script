@@ -36,7 +36,7 @@ def configureBranchPredictor(bp, mcpatCore):
 
     elif bpType == 'LTAGE':
         # ! Not sure how this work.
-        print('Warn! Not sure of correctly supporting predictor {s}.'.format(s=bpType))
+        print(f'Warn! Not sure of correctly supporting predictor {bpType}.')
 
         # Partially tagged tabe is modeled as local predictor.
         tage = bp.tage
@@ -69,8 +69,20 @@ def configureBranchPredictor(bp, mcpatCore):
     else:
         print('Warn! Unsupported type of predictor {s}.'.format(s=bpType))
 
+"""
+Fix the future_cpus00 -> future_cpus0
+"""
+def replace_path(path):
+    for suffix in [f'0{x}' for x in range(10)]:
+        idx = path.find(suffix)
+        if idx == -1:
+            continue
+        return f'{path[:idx]}{path[idx+1:]}'
+    return path
+
 def setStatsBranchPredictor(self, bp, mcpatCore):
-    def scalar(stat): return self.getScalarStats(bp.path + '.' + stat)
+    bp_path = replace_path(bp.path)
+    def scalar(stat): return self.getScalarStats(bp_path + '.' + stat)
     bpType = bp.type
 
     reads = scalar("BTBLookups")
