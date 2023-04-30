@@ -3,15 +3,15 @@
 # rm -f /tmp/job_scheduler.*
 
 Benchmark='-b '
-# Benchmark+='gfm.omp_link_list_search_aff,'
-# Benchmark+='gfm.omp_hash_join_aff,'
-# Benchmark+='gfm.omp_binary_tree_aff,'
-# Benchmark+='gfm.omp_binary_tree_rnd_aff,'
+# Benchmark+='gap.pr_push_adj_aff,'
 Benchmark+='gap.pr_push_adj_uno_aff,'
+# Benchmark+='gap.pr_pull_adj_aff,'
 Benchmark+='gap.pr_pull_adj_uno_aff,'
-Benchmark+='gap.bfs_push_adj_uno_aff_sf,'
-Benchmark+='gap.bfs_pull_adj_uno_aff,'
-Benchmark+='gap.sssp_adj_uno_aff_sf_delta1,'
+# Benchmark+='gap.bfs_push_adj_aff_sf,'
+# Benchmark+='gap.bfs_push_adj_uno_aff_sf,'
+# Benchmark+='gap.bfs_pull_adj_aff,'
+# Benchmark+='gap.bfs_pull_nobrk_adj_aff,'
+# Benchmark+='gap.sssp_adj_aff_sf_delta1,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta2,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta4,'
 # Benchmark+='gap.sssp_adj_aff_sf_delta8,'
@@ -20,16 +20,32 @@ Benchmark+='gap.sssp_adj_uno_aff_sf_delta1,'
 SimInput=''
 # SimInput+=',krn17-k16.aff-random'
 # SimInput+=',krn17-k16.aff-min-hops'
-SimInput+=',krn17-k16-rnd64.aff-min-load'
+# SimInput+=',krn17-k16.aff-min-load'
 # SimInput+=',krn17-k16.aff-hybrid'
 # SimInput+=',krn17-k16.aff-delta'
-SimInput+=',krn17-k16-rnd64.aff-hybrid1'
-SimInput+=',krn17-k16-rnd64.aff-hybrid3'
+# SimInput+=',krn17-k16.aff-hybrid1'
+# SimInput+=',krn17-k16.aff-hybrid3'
 # SimInput+=',krn17-k16.aff-hybrid5'
-SimInput+=',krn17-k16-rnd64.aff-hybrid7'
-SimInput+=',krn17-k16-rnd64.aff-hybrid9'
-SimInput+=',krn17-k16-rnd64.aff-hybrid11'
-SimInput+=',krn17-k16-rnd64.aff-hybrid13'
+# SimInput+=',krn17-k16.aff-hybrid7'
+# SimInput+=',krn17-k16.aff-hybrid9'
+# SimInput+=',krn17-k16.aff-hybrid11'
+# SimInput+=',krn17-k16.aff-hybrid13'
+SimInput+=',krn17-k16-rnd64.aff-random'
+SimInput+=',krn17-k16-rnd64.aff-min-hops'
+SimInput+=',krn17-k16-rnd64.aff-min-load'
+SimInput+=',krn17-k16-rnd64.aff-hybrid5'
+SimInput+=',uni17-k16-rnd64.aff-random'
+SimInput+=',uni17-k16-rnd64.aff-min-hops'
+SimInput+=',uni17-k16-rnd64.aff-min-load'
+SimInput+=',uni17-k16-rnd64.aff-hybrid5'
+# SimInput+=',roadNet-TX-rnd64.aff-random'
+# SimInput+=',roadNet-TX-rnd64.aff-min-hops'
+# SimInput+=',roadNet-TX-rnd64.aff-min-load'
+# SimInput+=',roadNet-TX-rnd64.aff-hybrid5'
+# SimInput+=',web-BerkStan-rnd64.aff-random'
+# SimInput+=',web-BerkStan-rnd64.aff-min-hops'
+# SimInput+=',web-BerkStan-rnd64.aff-min-load'
+# SimInput+=',web-BerkStan-rnd64.aff-hybrid5'
 # SimInput+=',krn17-k16.aff-delta1'
 # SimInput+=',krn17-k16.aff-delta3'
 # SimInput+=',krn17-k16.aff-delta5'
@@ -38,38 +54,12 @@ SimInput+=',krn17-k16-rnd64.aff-hybrid13'
 # SimInput+=',krn17-k16.aff-delta11'
 # SimInput+=',krn17-k16.aff-delta13'
 # SimInput+=',krn14-k16.aff-hybrid'
+# SimInput+=',krn10-k4.aff-random'
 # SimInput+=',krn10-k4.aff-delta'
-# SimInput+=',large.aff-random'
-# SimInput+=',large.aff-min-load'
-# SimInput+=',large.aff-min-hops'
-# SimInput+=',large.aff-hybrid1'
-# SimInput+=',large.aff-hybrid3'
-# SimInput+=',large.aff-hybrid5'
-# SimInput+=',large.aff-hybrid7'
-# SimInput+=',large.aff-hybrid9'
-# SimInput+=',large.aff-hybrid11'
-# SimInput+=',large.aff-hybrid13'
-# SimInput+=',large.aff-hybrid2'
-# SimInput+=',large.aff-hybrid4'
-# SimInput+=',large.aff-hybrid6'
-# SimInput+=',large.aff-hybrid8'
-# SimInput+=',large.aff-hybrid10'
-# SimInput+=',large.aff-hybrid12'
-# SimInput+=',large.aff-hybrid14'
-# SimInput+=',large.aff-delta1'
-# SimInput+=',large.aff-delta3'
-# SimInput+=',large.aff-delta5'
-# SimInput+=',large.aff-delta7'
-# SimInput+=',large.aff-delta9'
-# SimInput+=',large.aff-delta11'
-# SimInput+=',large.aff-delta13'
-# SimInput+=',large.aff-hybrid'
-# SimInput+=',large.aff-delta'
-# SimInput+=',small.aff-random'
 
 SimTrace='--fake-trace'
 # python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+# python Driver.py $Benchmark $SimTrace --trace 
 
 BaseTrans=valid.ex
 # python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
@@ -84,7 +74,7 @@ sim_replay=$o8,$o8.bingo-l2pf
 
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
 # python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
-    # --transform-debug StaticStreamRegionAnalyzer,BasicBlockBranchDataGraph 2>&1 | tee /benchmarks/shit.log
+#     --transform-debug StreamLoopEliminator,StaticStreamLoopBoundBuilder,BasicBlockBranchDataGraph 2>&1 | tee /benchmarks/shit.log
 
 run_ssp () {
     local trans=$1
@@ -121,8 +111,8 @@ run_ssp () {
         --sim-input $input \
         --input-threads $threads \
         -s -j $parallel \
+        # --gem5-debug StreamEngine,StreamElement,StreamBase,StreamRegion,ExecFunc 2>&1 | tee /benchmarks/core.log
         # --gem5-debug ProtocolTrace,MLCRubyStream,LLCRubyStream --gem5-debug-start 25509906500 2>&1 | tee /benchmarks/llc.log
-        # --gem5-debug StreamEngine,StreamElement,StreamBase,StreamRegion 2>&1 | tee /benchmarks/core.log
         # --perf-command \
 }
-run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel 
+# run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel 

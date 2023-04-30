@@ -36,6 +36,9 @@ def getConfigurations(subset):
 
     sim_prefix = 'ss.ruby.uno.o8.8x8c-l256-c4-s1kB-ch4kB.f2048x256-c-gb-o3end'
 
+    valid_trans = 'valid.ex'
+    valid_bingo_sim = 'base.ruby.uno.o8.8x8c-l256-s64B-ch64B.bingo-l2pf16'
+
     if subset in ['overall']:
         nest = 16
         for alloc in [
@@ -46,20 +49,13 @@ def getConfigurations(subset):
                 ('gfm', 'omp_stencil1d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
                 ('gfm', 'omp_stencil2d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
                 ('gfm', 'omp_stencil3d_avx', f'fake.0.tdg.large-{alloc}.thread64'),
-                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
             ]:
                 base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0'
-                sim = base_sim
+                new_base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                sim = (base_sim, new_base_sim)
                 if 'stencil' in benchmark:
                     # Stencil is currently evaluated with different sim. Rename it.
-                    sim = (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0', base_sim)
+                    sim = (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0', new_base_sim)
                     if 'large-hybrid' in tdg_folder:
                         # Stencil have no hybrid configuration.
                         tdg_folder = 'fake.0.tdg.large.thread64'
@@ -68,6 +64,7 @@ def getConfigurations(subset):
                     'suite': suite,
                     'benchmark': benchmark,
                     'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
                     'transforms': [
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
@@ -77,32 +74,138 @@ def getConfigurations(subset):
                         }
                     ],
                 })
+                if alloc == 'random':
+                    # Add the in-core baseline.
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': (tdg_folder, rename_tdg_folder),
+                        'collect_energy': True,
+                        'transforms': [
+                            {
+                                'transform': valid_trans,
+                                'simulations': [
+                                    valid_bingo_sim,
+                                ]
+                            }
+                        ],
+                    })
 
-    if subset in ['adj-aff']:
         for alloc in [
             'random',
-            'min-load',
-            'min-hops',
-            'hybrid',
-            'delta',
         ]:
-            for suite, benchmark, tdg_folder in get_aff_workloads(alloc):
-                rename_tdg_folder = f'{alloc}.thread64'
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'bfs_pull', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+            ]:
+                base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                dist_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                sim = (dist_sim, base_sim)
+                rename_tdg_folder = f'random.thread64'
                 configurations.append({
                     'suite': suite,
                     'benchmark': benchmark,
                     'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
                     'transforms': [
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                             'simulations': [
-                                f'{sim_prefix}-nest4.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
-                                f'{sim_prefix}-nest8.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
-                                f'{sim_prefix}-nest16.fltsc-cmp-snuca-rmtcfg-strand0-ind0-b0.2-csr1-iace0x0x0x0',
+                                sim,
+                            ]
+                        },
+                    ],
+                })
+                rename_benchmark = benchmark
+                if benchmark == 'sssp_sf_delta1':
+                    # Baseline of sssp is sssp_check.
+                    benchmark = 'sssp_check'
+
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': (benchmark, rename_benchmark),
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
+                    'transforms': [
+                        {
+                            'transform': valid_trans,
+                            'simulations': [
+                                valid_bingo_sim,
+                            ]
+                        },
+                    ],
+                })
+        for alloc in [
+            'hybrid5',
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'bfs_push_adj_uno_aff_sf', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'sssp_adj_uno_aff_sf_delta1', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'pr_pull_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'bfs_pull_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+            ]:
+                base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                sim = base_sim
+                rename_tdg_folder = f'hybrid.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                sim,
                             ]
                         }
                     ],
                 })
+        for alloc in [
+            'random',
+            'hybrid5',
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_binary_tree_rnd_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+            ]:
+                base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                sim = (base_sim, base_sim)
+                rename_tdg_folder = f'{alloc}.thread64' if alloc == 'random' else f'hybrid.thread64'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                sim,
+                            ]
+                        }
+                    ],
+                })
+                if alloc == 'random':
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': (f'fake.0.tdg.large.thread64', rename_tdg_folder),
+                        'collect_energy': True,
+                        'transforms': [
+                            {
+                                'transform': valid_trans,
+                                'simulations': [
+                                    valid_bingo_sim,
+                                ]
+                            }
+                        ],
+                    })
 
     if subset in ['hybrid-weight']:
         for alloc in [
@@ -111,16 +214,17 @@ def getConfigurations(subset):
             'min-load',
         ] + [f'hybrid{x}' for x in range(1, 14, 2)]:
             for suite, benchmark, tdg_folder in [
-                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                # ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
+                ('gap', 'pr_push_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'bfs_push_adj_uno_aff_sf', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'sssp_adj_uno_aff_sf_delta1', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'pr_pull_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
+                ('gap', 'bfs_pull_adj_uno_aff', f'fake.0.tdg.krn17-k16-rnd64.aff-{alloc}.thread64'),
                 ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
                 ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
+                ('gfm', 'omp_binary_tree_rnd_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
             ]:
                 rename_tdg_folder = f'{alloc}.thread64'
+                base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
                 configurations.append({
                     'suite': suite,
                     'benchmark': benchmark,
@@ -129,38 +233,7 @@ def getConfigurations(subset):
                         {
                             'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
                             'simulations': [
-                                f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0',
-                            ]
-                        }
-                    ],
-                })
-
-    if subset in ['delta-weight']:
-        for alloc in [
-            'random',
-            'min-hops',
-            'min-load',
-        ] + [f'delta{x}' for x in range(1, 14, 2)]:
-            for suite, benchmark, tdg_folder in [
-                ('gap', 'pr_push_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_push_adj_aff_sf', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                # ('gap', 'sssp_adj_aff_sf_delta1', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'pr_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gap', 'bfs_pull_adj_aff', f'fake.0.tdg.krn17-k16.aff-{alloc}.thread64'),
-                ('gfm', 'omp_link_list_search_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-                ('gfm', 'omp_hash_join_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-                ('gfm', 'omp_binary_tree_aff', f'fake.0.tdg.large.aff-{alloc}.thread64'),
-            ]:
-                rename_tdg_folder = f'{alloc}.thread64'
-                configurations.append({
-                    'suite': suite,
-                    'benchmark': benchmark,
-                    'tdg_folder': (tdg_folder, rename_tdg_folder),
-                    'transforms': [
-                        {
-                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                            'simulations': [
-                                f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0',
+                                base_sim,
                             ]
                         }
                     ],
@@ -191,6 +264,77 @@ def getConfigurations(subset):
                                 f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind1024-b0.2-csr1-iacer1x1x1x1x0',
                                 f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind4096-b0.2-csr1-iacer1x1x1x1x0',
                                 f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x1',
+                            ]
+                        }
+                    ],
+                })
+
+    if subset in ['idea-csr2']:
+        for nest in [
+            16,
+        ]:
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_pull_nobrk', f'fake.0.tdg.krn17-k16.thread64'),
+            ]:
+                if benchmark == 'bfs_pull_nobrk':
+                    benchmark = (benchmark, 'bfs_pull')
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind64-b0.2-csr1-iacer1x1x1x1x0', 'ind64'),
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind256-b0.2-csr1-iacer1x1x1x1x0', 'ind256'),
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind1024-b0.2-csr1-iacer1x1x1x1x0', 'ind1024'),
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind4096-b0.2-csr1-iacer1x1x1x1x0', 'ind4096'),
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind0-b0.2-csr1-iacer1x1x1x1x1', 'idea'),
+                            ]
+                        }
+                    ],
+                })
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+                ('gap', 'bfs_pull', f'fake.0.tdg.krn17-k16-rnd64.thread64'),
+            ]:
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0', 'base'),
+                            ]
+                        }
+                    ],
+                })
+            for suite, benchmark, tdg_folder in [
+                ('gap', 'pr_push', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_push_sf', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'sssp_sf_delta1', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'pr_pull', f'fake.0.tdg.krn17-k16.thread64'),
+                ('gap', 'bfs_pull', f'fake.0.tdg.krn17-k16.thread64'),
+            ]:
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                (f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer1x0x0x0x1', 'idea2'),
                             ]
                         }
                     ],
@@ -259,6 +403,235 @@ def getConfigurations(subset):
                         }
                     ],
                 })
+
+    if subset in ['graph-part-aff']:
+        for nest in [
+            16,
+        ]:
+            for graph in [
+                'twitch-gamers',
+                'ego-gplus',
+            ]:
+                base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                dist_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                # This is the baseline.
+                for part in [
+                    'rnd64',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push', 'pr_push'),
+                        ('gap', 'bfs_push_sf', 'bfs_push'),
+                        ('gap', 'sssp_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{graph}-{benchmark_stem}'
+                        rename_tdg_folder = f'{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        (dist_sim, base_sim),
+                                    ]
+                                }
+                            ],
+                        })
+                # This is the affinity allocator.
+                for part in [
+                    'rnd64.aff-hybrid5',
+                    'rnd64.aff-min-hops',
+                    'rnd64.aff-random',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push_adj_uno_aff', 'pr_push'),
+                        ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push'),
+                        ('gap', 'sssp_adj_uno_aff_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{graph}-{benchmark_stem}'
+                        rename_tdg_folder = f'{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        base_sim,
+                                    ]
+                                }
+                            ],
+                        })
+
+    if subset in ['graph-cold']:
+        for nest in [
+            16,
+        ]:
+            for graph in [
+                'krn17-k16',
+            ]:
+                base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                dist_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                # This is the baseline.
+                for part in [
+                    'rnd64.cold',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push', 'pr_push'),
+                        ('gap', 'bfs_push_sf', 'bfs_push'),
+                        ('gap', 'sssp_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{graph}-{benchmark_stem}'
+                        rename_tdg_folder = f'{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        (dist_sim, base_sim),
+                                    ]
+                                }
+                            ],
+                        })
+                # This is the affinity allocator.
+                for part in [
+                    'rnd64.aff-hybrid5.cold',
+                    'rnd64.aff-min-hops.cold',
+                    'rnd64.aff-random.cold',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push_adj_uno_aff', 'pr_push'),
+                        ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push'),
+                        ('gap', 'sssp_adj_uno_aff_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{graph}-{benchmark_stem}'
+                        rename_tdg_folder = f'{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        base_sim,
+                                    ]
+                                }
+                            ],
+                        })
+
+    if subset in ['graph-degree']:
+        for nest in [
+            16,
+        ]:
+            for graph in [
+                'krn15-k64',
+                'krn16-k32',
+                'krn17-k16',
+                'krn18-k8',
+                'krn19-k4',
+                'krn20-k2',
+            ]:
+                base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                dist_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                # This is the baseline.
+                for part in [
+                    'rnd64',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push', 'pr_push'),
+                        ('gap', 'bfs_push_sf', 'bfs_push'),
+                        ('gap', 'sssp_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{benchmark_stem}'
+                        rename_tdg_folder = f'{graph}-{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        (dist_sim, base_sim),
+                                    ]
+                                }
+                            ],
+                        })
+                # This is the affinity allocator.
+                for part in [
+                    'rnd64.aff-hybrid5',
+                    'rnd64.aff-min-hops',
+                    'rnd64.aff-random',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', 'pr_push_adj_uno_aff', 'pr_push'),
+                        ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push'),
+                        ('gap', 'sssp_adj_uno_aff_sf_delta1', 'sssp'),
+                    ]:
+                        rename_benchmark = f'{benchmark_stem}'
+                        rename_tdg_folder = f'{graph}-{part}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        base_sim,
+                                    ]
+                                }
+                            ],
+                        })
+
+    if subset in ['mix-csr']:
+        for nest in [
+            16,
+        ]:
+            graph = 'krn17-k16'
+            for mix_csr in [
+                1, 2, 4, 8, 16, 32, 64,
+            ]:
+                base_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                # This is the affinity allocator.
+                for part in [
+                    'rnd64.aff-hybrid5',
+                    'rnd64.aff-min-hops',
+                    'rnd64.aff-random',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{graph}-{part}.thread64'
+                    for suite, benchmark, benchmark_stem in [
+                        ('gap', f'pr_push_adj_mix{mix_csr}_aff', 'pr_push'),
+                    ]:
+                        rename_benchmark = f'{benchmark_stem}'
+                        rename_tdg_folder = f'{graph}-{part}.mix{mix_csr}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': (benchmark, rename_benchmark),
+                            'tdg_folder': (tdg_folder, rename_tdg_folder),
+                            'transforms': [
+                                {
+                                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                                    'simulations': [
+                                        base_sim,
+                                    ]
+                                }
+                            ],
+                        })
+
+
 
     return configurations
 
@@ -509,7 +882,18 @@ def collectEnergy(result, stats_fn):
 
         result['l3_pum_dyn_power'] = power_pum
 
-def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg_folder, weight):
+def collect(suite, 
+            benchmark,
+            transform_name, 
+            simulation,
+            tdg_folder,
+            weight,
+            collect_energy,
+    ):
+    if type(benchmark) is tuple:
+        benchmark, renamed_benchmark = benchmark
+    else:
+        renamed_benchmark = benchmark
     if type(simulation) is tuple:
         simulation, renamed_simulation = simulation
     else:
@@ -544,8 +928,8 @@ def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg
             addLLCReqStats(result, tile_stats)
             addMemResult(result, tile_stats)
             addPUMResult(result, tile_stats)
-            # Due to stupid gem5 update Gem5McPAT now failed to parse the stats.
-            # collectEnergy(result, stats_fn)
+            if collect_energy:
+                collectEnergy(result, stats_fn)
     except Exception as e:
         print(e)
         print('Failed {s} {b} {t} {sim} {tdg_folder}'.format(
@@ -558,73 +942,14 @@ def collect(suite, benchmark, renamed_benchmark, transform_name, simulation, tdg
 def isInSubsetAll(suite, benchmark):
     return True
 
-def isInSubsetFast(suite, benchmark):
-    if suite == 'rodinia':
-        if benchmark == 'cfd' or benchmark == 'particlefilter':
-            # These two benchmarks simulated slowly.
-            return False
-        return True
-    if suite == 'gfm':
-        return True
-    return False
-
 def getSubset(subset):
-    if subset == 'fast':
-        return ('fast', isInSubsetFast)
-    elif subset == 'gfm':
-        return ('gfm', lambda suite, _: suite == 'gfm')
-    elif subset == 'rodinia':
-        return ('rodinia', lambda suite, _: suite == 'rodinia')
-    elif subset == 'hpca21':
-        return ('hpca21', lambda suite, _: suite in ['gfm', 'rodinia'])
-    elif subset == 'spec':
-        return ('spec', lambda suite, _: suite == 'spec2017')
-    elif subset == 'no-spec':
-        return ('no-spec', lambda suite, _: suite != 'spec2017')
-    elif subset == 'sdvbs':
-        return ('sdvbs', lambda suite, _: suite == 'sdvbs')
-    elif subset == 'cortex':
-        return ('cortex', lambda suite, _: suite == 'cortex')
-    elif subset == 'cmp-no-graph':
-        cmp_sync_benchmarks = [
-            'hotspot-avx512-fix',
-            'hotspot3D-avx512-fix-fuse',
-            'pathfinder-avx512-nounroll',
-            'srad_v2-avx512-fix-dyn',
-            'streamcluster',
-            'omp_histogram_avx',
-            "svm",
-        ]
-        cmp_sync_suites = [
-            'gfm',
-            'rodinia',
-            'mine',
-        ]
-        return ('cmp-no-graph', lambda suite, benchmark: suite in cmp_sync_suites and benchmark in cmp_sync_benchmarks)
-    elif subset == 'cmp-stencil':
-        cmp_sync_benchmarks = [
-            'hotspot-avx512-fix',
-            'hotspot3D-avx512-fix-fuse',
-            'pathfinder-avx512-nounroll',
-            'srad_v2-avx512-fix-dyn',
-        ]
-        cmp_sync_suites = [
-            'rodinia',
-        ]
-        return ('cmp-stencil', lambda suite, benchmark: suite in cmp_sync_suites and benchmark in cmp_sync_benchmarks)
-    elif subset == 'dot-offset':
-        return ('dot-offset', lambda _, benchmark: benchmark.find('omp_dot_prod_avx_offset') != -1)
-    elif subset == 'dot-interleave':
-        return ('dot-interleave', lambda _, benchmark: benchmark.find('omp_dot_prod_avx_interleave') != -1)
-    elif subset == 'dot-random':
-        return ('dot-random', lambda _, benchmark: benchmark.find('omp_dot_prod_avx_random_offset') != -1)
-    elif subset == 'dot-reverse':
-        return ('dot-reverse', lambda _, benchmark: benchmark.find('omp_dot_prod_avx_reverse_offset') != -1)
     return (subset, isInSubsetAll)
 
 def generate_tdg_weights(config):
     suite = config['suite']
     benchmark = config['benchmark']
+    if type(benchmark) is tuple:
+        benchmark = benchmark[0]
     tdg_folder = config['tdg_folder']
     tdg_weights = list()
     if tdg_folder == 'region.fake':
@@ -680,12 +1005,9 @@ def main(subset):
     for config in configurations:
         suite = config['suite']
         benchmark = config['benchmark']
-        renamed_benchmark = benchmark
-        if 'renamed_benchmark' in config:
-            renamed_benchmark = config['renamed_benchmark']
 
-        if not isInSubset(suite, benchmark):
-            continue
+        collect_energy = 'collect_energy' in config
+
         tdg_weights = generate_tdg_weights(config)
         for transform in config['transforms']:
             transform_name = transform['transform']
@@ -693,7 +1015,15 @@ def main(subset):
                 for tdg_folder, weight in tdg_weights:
                     jobs.append(pool.apply_async(
                         collect,
-                        (suite, benchmark, renamed_benchmark, transform_name, simulation, tdg_folder, weight)))
+                        (
+                            suite,
+                            benchmark,
+                            transform_name,
+                            simulation,
+                            tdg_folder,
+                            weight,
+                            collect_energy,
+                        )))
 
     results = []
     failed = False
@@ -717,4 +1047,14 @@ if __name__ == '__main__':
     import sys
     Util.mkdir_chain(result_prefix)
     subset = sys.argv[1] if len(sys.argv) >= 2 else 'all'
-    main(subset)
+    if subset == 'all':
+        for subset in [
+            'idea-csr',
+            'idea-csr2',
+            'graph-part-aff',
+            'graph-degree',
+            'hybrid-weight',
+        ]:
+            main(subset)
+    else:
+        main(subset)

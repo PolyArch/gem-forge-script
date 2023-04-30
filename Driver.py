@@ -225,8 +225,11 @@ class Driver:
         return benchmarks
 
     def _schedule_and_run(self):
+        job_log_dir = C.GEM_FORGE_RESULT_PATH
+        if self.options.no_job_log:
+            job_log_dir = None
         job_scheduler = JobScheduler.JobScheduler(
-            self.get_unique_id(), self.options.cores, 1)
+            self.get_unique_id(), self.options.cores, 1, job_log_dir)
         for benchmark in self.benchmarks:
             if self.options.build:
                 benchmark.build_raw_bc()
@@ -543,6 +546,8 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option('-j', '--cores', action='store',
                       type='int', dest='cores', default=8)
+    parser.add_option('--no-job-log', action='store_true',
+                      dest='no_job_log', default=False)
     parser.add_option('--build', action='store_true',
                       dest='build', default=False)
     parser.add_option('--perf', action='store_true',

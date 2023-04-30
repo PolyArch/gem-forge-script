@@ -7,15 +7,15 @@ Benchmark+='gfm.omp_stencil1d_avx,'
 Benchmark+='gfm.omp_stencil2d_avx,'
 Benchmark+='gfm.omp_stencil3d_avx,'
 SimInput=''
-SimInput+=',large'
+# SimInput+=',large'
 SimInput+=',large-random'
 
 SimTrace='--fake-trace'
-# python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
 
 BaseTrans=valid.ex
-# python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
+python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
 RubyConfig=8x8c
 Threads=64
 # RubyConfig=4x4c
@@ -31,8 +31,8 @@ o8=$sim_replay_prefix/o8.${RubyConfig}
 # sim_replay+=,$o4,$o4.bingo-l2pf
 sim_replay=$o8,$o8.bingo-l2pf
 # sim_replay=$o8
-# python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
-#     --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel
+python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
+    --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel
 
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
 # python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
@@ -56,4 +56,4 @@ run_ssp () {
         # --gem5-debug StreamEngine,StreamElement,StreamBase,StreamRegion 2>&1 | tee /benchmarks/core.log
         # --perf-command \
 }
-run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel 
+# run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel 

@@ -2,6 +2,7 @@ import os
 import subprocess
 import glob
 import abc
+import sys
 
 import Constants as C
 import Util
@@ -1163,7 +1164,7 @@ class Benchmark(object):
                 'env',
                 'HEAPPROFILE=/benchmarks/heap.p',
             ] + gem5_args
-        Util.call_helper(gem5_args)
+        Util.call_helper(gem5_args, stdout=sys.stdout, stderr=sys.stderr)
         os.chdir(cwd)
 
     """

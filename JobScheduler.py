@@ -19,11 +19,17 @@ def error(msg, *args):
 
 
 class LogExceptions(object):
-    def __init__(self, callable, timeout=None):
+    def __init__(self, callable, log_fn=None, timeout=None):
         self.__callable = callable
         self.__timeout = timeout
+        self.__log_fn = log_fn
 
     def __call__(self, *args, **kwargs):
+        # Redirect to log f.
+        if self.__log_fn is not None:
+            log_f = open(self.__log_fn, "w")
+            sys.stdout = log_f
+            sys.stderr = log_f
         pool = multiprocessing.dummy.Pool(1)
         result = pool.apply_async(self.__callable, args=args, kwds=kwargs)
         try:
@@ -66,12 +72,14 @@ class JobScheduler:
             self.timeout = timeout
             self.start_time = datetime.datetime.now()
             self.end_time = datetime.datetime.now()
+            self.log_fn = None
 
-    def __init__(self, name, cores, poll_seconds):
+    def __init__(self, name, cores, poll_seconds, log_dir=None):
         self.state = JobScheduler.STATE_INIT
         self.name = name
         self.cores = cores
         self.poll_seconds = poll_seconds
+        self.log_dir = log_dir
         self.current_job_id = 1
         self.lock = multiprocessing.Lock()
         self.pool = multiprocessing.Pool(processes=self.cores)
@@ -80,6 +88,9 @@ class JobScheduler:
         self.job_deps = dict()
         self.running_jobs = 0
         self.ready_jobs = list()
+
+        # Remember the common name within jobs.
+        self.common_job_name = None
 
         multiprocessing.log_to_stderr()
 
@@ -128,6 +139,7 @@ class JobScheduler:
             assert(child_job.status == JobScheduler.STATE_INIT or child_job.status ==
                    JobScheduler.STATE_FAILED)
             self.kick(child)
+        self.dump(sys.stdout)
         self.dump(self.log_f)
         self.running_jobs -= 1
         self.lock.release()
@@ -170,6 +182,7 @@ class JobScheduler:
             job.status = JobScheduler.STATE_FAILED
             for child_id in self.job_children[job_id]:
                 stack.append(child_id)
+        self.dump(sys.stdout)
         self.dump(self.log_f)
         self.dump_failed(self.log_failed_f)
         self.running_jobs -= 1
@@ -177,40 +190,63 @@ class JobScheduler:
 
     def start_ready_jobs(self):
         # Caller should hold the lock.
+        started = 0
         while self.running_jobs < self.cores and self.ready_jobs:
             job = self.ready_jobs[0]
             self.ready_jobs.pop(0)
             self.running_jobs += 1
+            # Create a log file for the job.
+            if self.log_dir is not None:
+                with tempfile.NamedTemporaryFile(
+                    mode='wt',
+                    dir=self.log_dir,
+                    prefix='job_log.',
+                    # suffix='.log',
+                    delete=False,
+                    ) as f:
+                    job.log_fn = f.name
+
             # Do we actually need to use nested lambda to capture job_id?
             job.status = JobScheduler.STATE_STARTED
             job.start_time = datetime.datetime.now()
+            started += 1
+
             print('{job} started'.format(job=job.job_id))
             job.res = self.pool.apply_async(
-                func=LogExceptions(job.job, job.timeout),
+                func=LogExceptions(job.job, job.log_fn, job.timeout),
                 args=job.args,
                 callback=(lambda i: lambda _: self.call_back(i))(job.job_id)
             )
+        if started > 0:
+            self.dump(sys.stdout)
+            self.dump(self.log_f)
 
     def str_status(self, job):
         status = job.status
-        if status == JobScheduler.STATE_INIT:
-            return f'INIT'
-        if status == JobScheduler.STATE_TIMEOUTED:
-            return 'TIMEOUTED'
+        msg = 'INIT'
         diff = None
-        if status == JobScheduler.STATE_FAILED:
+        if status == JobScheduler.STATE_INIT:
+            msg = 'INIT'
+        elif status == JobScheduler.STATE_TIMEOUTED:
+            msg = 'TIMEOUTED'
+        elif status == JobScheduler.STATE_READY:
+            msg = 'READY'
+        elif status == JobScheduler.STATE_FAILED:
             diff = job.end_time - job.start_time
             msg = 'FAILED'
-        if status == JobScheduler.STATE_STARTED:
+        elif status == JobScheduler.STATE_STARTED:
             diff = datetime.datetime.now() - job.start_time
             msg = 'STARTED'
-        if status == JobScheduler.STATE_FINISHED:
+        elif status == JobScheduler.STATE_FINISHED:
             diff = job.end_time - job.start_time
             msg = 'FINISHED'
-        if diff is None:
-            return 'UNKNOWN'
-        d = datetime.timedelta(days=diff.days, seconds=diff.seconds)
-        return f'{d} {msg}'
+        log_fn = ''
+        if job.log_fn is not None:
+            log_fn = f'{job.log_fn} '
+        diff_str = ''
+        if diff is not None:
+            diff_str = f'{datetime.timedelta(days=diff.days, seconds=diff.seconds)} '
+        return f'{log_fn}{diff_str}{msg}'
 
     def dump(self, f):
         stack = list()
@@ -218,17 +254,19 @@ class JobScheduler:
             if len(self.job_deps[job_id]) == 0:
                 stack.append((job_id, 0))
         f.write('=================== Job Scheduler =====================\n')
+        f.write(f'!! Common Job Name $ = {self.common_job_name}\n')
         while stack:
             job_id, level = stack.pop()
             job = self.jobs[job_id]
-            f.write('{tab}{job_id} {job_name} {status}\n'.format(
+            f.write('{tab}{job_id:3} {job_name} {status}\n'.format(
                 tab='  '*level,
                 job_id=job_id,
-                job_name=job.name,
+                job_name=self.compress_job_name(job.name),
                 status=self.str_status(self.jobs[job_id])
             ))
             for child_id in self.job_children[job_id]:
                 stack.append((child_id, level + 1))
+        f.write(f'!! Common Job Name $ = {self.common_job_name}\n')
         f.write('=================== Job Scheduler =====================\n')
         f.flush()
 
@@ -239,6 +277,7 @@ class JobScheduler:
             if len(self.job_deps[job_id]) == 0:
                 stack.append((job_id, 0))
         f.write('=================== Job Scheduler =====================\n')
+        f.write(f'!! Common Job Name $ = {self.common_job_name}\n')
         while stack:
             job_id, level = stack.pop()
             job = self.jobs[job_id]
@@ -247,16 +286,18 @@ class JobScheduler:
                 f.write('{tab}{job_id} {job_name} {status}\n'.format(
                     tab='  '*level,
                     job_id=job_id,
-                    job_name=job.name,
+                    job_name=self.compress_job_name(job.name),
                     status=self.str_status(self.jobs[job_id])
                 ))
             for child_id in self.job_children[job_id]:
                 stack.append((child_id, level + 1))
+        f.write(f'!! Common Job Name $ = {self.common_job_name}\n')
         f.write('=================== Job Scheduler =====================\n')
         f.flush()
 
     def run(self):
         assert(self.state == JobScheduler.STATE_INIT)
+        self.find_common_job_name()
         self.log_f = tempfile.NamedTemporaryFile(
             mode='wt', prefix='job_scheduler.', suffix='.{n}'.format(n=self.name), delete=False)
         self.log_failed_f = tempfile.NamedTemporaryFile(
@@ -265,6 +306,7 @@ class JobScheduler:
         seconds = 0
         
         # Initial dump.
+        self.dump(sys.stdout)
         self.dump(self.log_f)
 
         self.state = JobScheduler.STATE_STARTED
@@ -281,6 +323,7 @@ class JobScheduler:
             if seconds > 600:
                 seconds = 0
                 self.log_f.truncate()
+                self.dump(sys.stdout)
                 self.dump(self.log_f)
                 self.dump_failed(self.log_failed_f)
 
@@ -311,6 +354,49 @@ class JobScheduler:
         self.log_f.close()
         self.log_failed_f.close()
         self.pool.join()
+
+    def find_common_job_name(self):
+        N = len(self.jobs)
+        if N < 1:
+            return
+        job_names = list()
+        for job_id in self.jobs:
+            job = self.jobs[job_id]
+            job_names.append(job.name)
+        
+        min_len = min([len(x) for x in job_names])
+
+        max_common_name = ''
+
+        first_job_name = job_names[0]
+        first_len = len(first_job_name)
+        for lhs in range(first_len):
+            for rhs in range(first_len, lhs, -1):
+                sub = first_job_name[lhs:rhs]
+
+                all_have = True
+                for remain_job_name in job_names[1:]:
+                    if remain_job_name.find(sub) == -1:
+                        all_have = False
+                        break
+                
+                if all_have:
+                    common_len = rhs - lhs
+                    if common_len > len(max_common_name):
+                        max_common_name = sub
+                    # No need to search for smaller rhs.
+                    break
+
+        if max_common_name != '':
+            self.common_job_name = max_common_name
+
+    def compress_job_name(self, job_name):
+        if self.common_job_name is None:
+            return job_name
+        lhs = job_name.find(self.common_job_name)
+        assert(lhs != -1)
+        rhs = lhs + len(self.common_job_name)
+        return f'{job_name[:lhs]}${job_name[rhs:]}'
 
 
 def test_job(id):

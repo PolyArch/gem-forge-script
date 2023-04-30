@@ -11,7 +11,7 @@ import importlib
 conference = 'affinity-alloc'
 result_prefix = os.path.join('result-data', conference)
 
-StreamFloatTraceReader.enable_print = False
+StreamFloatTraceReader.enable_print = True 
 
 def getConfigurations(subset):
 
@@ -22,23 +22,23 @@ def getConfigurations(subset):
 
     if subset in ['float-trace']:
         for nest in [
-            4,
-            8,
+            # 4,
+            # 8,
             16,
         ]:
-            sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-snuca-rmtcfg-strand0-ind64-b0.2-csr1-iace0x0x0x0'
+            sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
             for suite, benchmark, abbrev, sim_input, keyword in [
-                # ('gap', 'pr_push_adj_aff', 'pr_push_adj', 'krn17-k16', 'score.at'),
-                # ('gap', 'bfs_push_adj_aff_sf', 'bfs_push_adj', 'krn17-k16', 'swap.at'),
-                ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld'),
+                ('gap', 'pr_push_adj_uno_aff', 'pr_push_adj', 'krn17-k16-rnd64', 'score.at'),
+                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push_adj', 'krn17-k16-rnd64', 'swap.at'),
+                # ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld'),
                 # ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld'),
             ]:
                 for alloc_policy in [
-                    'hybrid',
+                    'hybrid5',
                     'min-hops',
                     'min-load',
                     'random',
-                    'delta',
+                    # 'delta',
                 ]:
                     tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
                     out_fn = f'{result_prefix}/{conference}.{abbrev}.{alloc_policy}.nest{nest}'
@@ -80,17 +80,83 @@ def getConfigurations(subset):
                         'out_fn': out_fn,
                     })
 
+    if subset in ['bfs-push']:
+        for nest in [
+            16,
+        ]:
+            sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+            for suite, benchmark, abbrev, sim_input, keyword in [
+                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push_adj', 'krn17-k16-rnd64', 'swap.at'),
+            ]:
+                for alloc_policy in [
+                    'hybrid5',
+                    'min-hops',
+                    'min-load',
+                    'random',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
+                    out_fn = f'{result_prefix}/{conference}.{abbrev}.{alloc_policy}.nest{nest}'
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'keyword': keyword,
+                        'simulation': sim,
+                        'out_fn': out_fn,
+                        'interval': 10000,
+                    })
+
+    if subset in ['llc-cmp']:
+        for nest in [
+            16,
+        ]:
+            sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+            for suite, benchmark, abbrev, sim_input, keyword in [
+                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push_adj', 'krn17-k16-rnd64', 'LLC_SE'),
+            ]:
+                for alloc_policy in [
+                    'hybrid5',
+                    'min-hops',
+                    'random',
+                ]:
+                    tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
+                    out_fn = f'{result_prefix}/{conference}.{subset}.{abbrev}.{alloc_policy}.nest{nest}'
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': benchmark,
+                        'tdg_folder': tdg_folder,
+                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                        'keyword': keyword,
+                        'simulation': sim,
+                        'out_fn': out_fn,
+                        'interval': 1000,
+                    })
+
     return configurations
 
-def collect(suite, benchmark, transform_name, simulation, tdg_folder, keyword, out_fn):
+def collect(config):
+    suite = config['suite']
+    benchmark = config['benchmark']
+    transform_name = config['transform']
+    simulation = config['simulation']
+    tdg_folder = config['tdg_folder']
+    keyword = config['keyword']
+    out_fn = config['out_fn']
     result_path = os.path.join(C.GEM_FORGE_RESULT_PATH, suite, benchmark, transform_name, simulation, tdg_folder)
+    if 'interval' in config:
+        interval = config['interval']
+        interval_args = f'--interval={interval}'
+    else:
+        interval_args = f'--n-intervals=100'
     try:
         args = [
             f'{result_path}/stream_float_trace',
-            f'--n-intervals=100',
+            interval_args,
             f'--align',
             f'--keyword={keyword}',
             f'--out-fn={out_fn}',
+            f'--no-summary',
         ]
         StreamFloatTraceReader.main(args)
         result = 0
@@ -109,17 +175,9 @@ def main(subset):
     configurations = getConfigurations(subset)
 
     for config in configurations:
-        suite = config['suite']
-        benchmark = config['benchmark']
-
-        transform_name = config['transform']
-        simulation = config['simulation']
-        tdg_folder = config['tdg_folder']
-        keyword = config['keyword']
-        out_fn = config['out_fn']
         jobs.append(pool.apply_async(
             collect,
-            (suite, benchmark, transform_name, simulation, tdg_folder, keyword, out_fn)))
+            (config,)))
 
     failed = False
     for job in jobs:

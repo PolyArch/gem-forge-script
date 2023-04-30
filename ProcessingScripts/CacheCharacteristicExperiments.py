@@ -29,17 +29,17 @@ class TileStatsParser(object):
             'load_blocked_ratio': re.compile(self.format_re(
                 'system\.future_cpus{tile_id}\.loadBlockedCyclesPercen*')),
             'l1d_access': re.compile(self.format_re(
-                'system\.ruby\.l0_cntrl{tile_id}\.Dcache.demand_accesses')),
+                'system\.ruby\.l0_cntrl{tile_id}\.Dcache.m_demand_accesses')),
             'l1d_misses': re.compile(self.format_re(
-                'system\.ruby\.l0_cntrl{tile_id}\.Dcache.demand_misses')),
+                'system\.ruby\.l0_cntrl{tile_id}\.Dcache.m_demand_misses')),
             'l2_access': re.compile(self.format_re(
-                'system\.ruby\.l1_cntrl{tile_id}\.cache.demand_accesses')),
+                'system\.ruby\.l1_cntrl{tile_id}\.cache.m_demand_accesses')),
             'l2_misses': re.compile(self.format_re(
-                'system\.ruby\.l1_cntrl{tile_id}\.cache.demand_misses')),
+                'system\.ruby\.l1_cntrl{tile_id}\.cache.m_demand_misses')),
             'l3_access': re.compile(self.format_re(
-                'system\.ruby\.l2_cntrl{tile_id}\.L2cache.demand_accesses')),
+                'system\.ruby\.l2_cntrl{tile_id}\.L2cache.m_demand_accesses')),
             'l3_misses': re.compile(self.format_re(
-                'system\.ruby\.l2_cntrl{tile_id}\.L2cache.demand_misses')),
+                'system\.ruby\.l2_cntrl{tile_id}\.L2cache.m_demand_misses')),
         }
 
     def format_re(self, expression):

@@ -200,19 +200,19 @@ class TileStatsParser(object):
             'llc_se_microops_update': self.format_re(
                 'system.ruby.l2_cntrl{tile_id}.llcScheduledStreamUpdateMicroOps'),
             'mem_bytes_read': self.format_re(
-                'system.mem_ctrls{tile_id}.bytes_read::total'),
+                'system.mem_ctrls{tile_id}.bytesRead::total'),
             'mem_num_reads': self.format_re(
-                'system.mem_ctrls{tile_id}.num_reads::total'),
+                'system.mem_ctrls{tile_id}.numReads::total'),
             'mem_bw_read': self.format_re(
-                'system.mem_ctrls{tile_id}.bw_read::total'),
+                'system.mem_ctrls{tile_id}.bwRead::total'),
             'mem_bytes_write': self.format_re(
-                'system.mem_ctrls{tile_id}.bytes_written::total'),
+                'system.mem_ctrls{tile_id}.bytesWritten::total'),
             'mem_num_writes': self.format_re(
-                'system.mem_ctrls{tile_id}.num_writes::total'),
+                'system.mem_ctrls{tile_id}.numWrites::total'),
             'mem_bw_write': self.format_re(
-                'system.mem_ctrls{tile_id}.bw_write::total'),
+                'system.mem_ctrls{tile_id}.bwWrite::total'),
             'mem_bw_total': self.format_re(
-                'system.mem_ctrls{tile_id}.bw_total::total'),
+                'system.mem_ctrls{tile_id}.bwTotal::total'),
             'pum_total_cycle': self.format_re(
                 'system.ruby.l1_cntrl{tile_id}.pumTotalCycles'),
             'pum_prefetch_cycle': self.format_re(
@@ -340,7 +340,7 @@ class TileStatsParser(object):
             ('ctrl', 'Response::UNBLOCK'),
             ('ctrl', 'Response::EXCLUSIVE_UNBLOCK'),
             ('ctrl', 'Response::INV'),
-            ('strm', 'Response::STREAM_ACK'),
+            ('ctrl', 'Response::STREAM_ACK'),
             ('strm', 'Response::STREAM_RANGE'),
             ('strm', 'Response::STREAM_DONE'),
             ('strm', 'Response::STREAM_NDC'),
@@ -462,6 +462,9 @@ def print_stats(tile_stats):
     print('total l2 miss rate      {v}'.format(
         v=sum(ts.l2_misses for ts in tile_stats) /
         sum_or_nan(ts.l2_access for ts in tile_stats)
+    ))
+    print('total l1d accesses      {v}'.format(
+        v=sum_or_nan(ts.l1d_access for ts in tile_stats)
     ))
     print('total l1d miss rate     {v}'.format(
         v=sum(ts.l1d_misses for ts in tile_stats) /

@@ -61,6 +61,12 @@ class GAPGraphBenchmark(Benchmark):
             # Only one trial.
             '-n', '1',
         ]
+        for opt in input_options:
+            if opt == 'part':
+                # Enable partition of the graph.
+                args += [
+                    '-j',
+                ]
         cold_inputs = [
             ('krn21-k8', 1), # 2097152 Nodes (8MB w. 4B key), 16208491 undirected edges (126MB w. 4B key) for degree: 7.72881
             ('krn19-k16', 0),
@@ -113,27 +119,43 @@ class GAPGraphBenchmark(Benchmark):
     def get_sim_input_name(self, sim_input):
         return f'{sim_input}.thread{self.n_thread}'
 
-    PR_PUSH_KERNEL_1_CSR = '.omp_outlined..15'
-    PR_PUSH_KERNEL_1_ADJ = '.omp_outlined..16'
-    PR_PUSH_KERNEL_2 = '.omp_outlined..17'
-    PR_PUSH_ADJ_WARM = '.omp_outlined..50'
-    PR_PULL_KERNEL_1 = '.omp_outlined..18'
-    PR_PULL_KERNEL_2_CSR = '.omp_outlined..19'
-    PR_PULL_KERNEL_2_ADJ = '.omp_outlined..21'
-    PR_PULL_ADJ_WARM = '.omp_outlined..51'
+    ADJ_WARM = 'omp?AdjListGraph<int, int, 0, 4, 64, true, true, (AdjListTypeE)0>::warmOneAdjListPerNode'
+    S_ADJ_WARM = 'omp?AdjListGraph<int, int, 0, 4, 64, false, true, (AdjListTypeE)0>::warmOneAdjListPerNode'
+    UNO_ADJ_WARM = 'AdjListGraph<int, int, 0, 4, 64, false, false, (AdjListTypeE)1>::warmSingleAdjList'
+    MIX_ADJ_WARM = 'AdjListGraph<int, int, 0, 4, 64, false, true, (AdjListTypeE)3>::warmOneAdjListPerNode'
+    W_UNO_ADJ_WARM = 'AdjListGraph<int, NodeWeight<int, int>, 4, 4, 64, false, false, (AdjListTypeE)1>::warmSingleAdjList'
 
-    BFS_PUSH_KERNEL = '.omp_outlined..15'
-    BFS_PUSH_ADJ_KERNEL = '.omp_outlined..15'
-    BFS_PUSH_ADJ_WARM = '.omp_outlined..44'
-    BFS_PULL_KERNEL_1 = '.omp_outlined..16'
-    BFS_PULL_KERNEL_2 = '.omp_outlined..17'
-    BFS_PULL_KERNEL_1_ADJ = '.omp_outlined..18'
+    PR_PUSH_KERNEL_1_CSR = 'omp?pageRankPushCSR'
+    PR_PUSH_KERNEL_1_ADJ = 'omp?pageRankPushAdjList'
+    PR_PUSH_KERNEL_1_UNO_ADJ = 'omp?pageRankPushSingleAdjList'
+    PR_PUSH_KERNEL_1_MIX_ADJ = 'omp?pageRankPushAdjListMixCSR'
+    PR_PUSH_KERNEL_2 = 'omp?pageRankPushUpdate'
+    PR_PUSH_KERNEL_INTER_PART = 'omp?pageRankPushInterPartUpdate'
+
+    PR_PULL_KERNEL_1 = 'omp?pageRankPullUpdate'
+    PR_PULL_KERNEL_2_CSR = 'omp?pageRankPullCSR'
+    PR_PULL_KERNEL_2_ADJ = 'omp?pageRankPullAdjList'
+    PR_PULL_KERNEL_2_UNO_ADJ = 'omp?pageRankPullSingleAdjList'
+
+    PR_ADJ_WARM = 'omp?AdjListGraph<int, int, 0, 4, 64, true, true, (AdjListTypeE)0>::warmOneAdjListPerNode'
+    PR_UNO_ADJ_WARM = 'AdjListGraph<int, int, 0, 4, 64, false, false, (AdjListTypeE)1>::warmSingleAdjList'
+
+    BFS_PUSH_KERNEL = 'omp?bfsPushCSR'
+    BFS_PUSH_ADJ_KERNEL = 'omp?bfsPushAdjList'
+    BFS_PUSH_UNO_ADJ_KERNEL = 'omp?bfsPushSingleAdjList'
+    BFS_ADJ_WARM = 'omp?AdjListGraph<int, int, 0, 4, 64, true, true, (AdjListTypeE)0>::warmOneAdjListPerNode'
+    BFS_UNO_ADJ_WARM = 'AdjListGraph<int, int, 0, 4, 64, false, false, (AdjListTypeE)1>::warmSingleAdjList'
+
+    BFS_PULL_KERNEL_1 = 'omp?bfsPullCSR'
+    BFS_PULL_KERNEL_2 = 'omp?bfsPullUpdate'
+    BFS_PULL_KERNEL_1_ADJ = 'omp?bfsPullAdjList'
+    BFS_PULL_KERNEL_1_UNO_ADJ = 'omp?bfsPullSingleAdjList'
 
     SSSP_KERNEL = '.omp_outlined..22'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
-    SSSP_SPATIAL_SF_KERNEL = '.omp_outlined..27'
-    SSSP_ADJ_SPATIAL_SF_KERNEL = '.omp_outlined..26'
-    SSSP_ADJ_SPATIAL_SF_WARM = '.omp_outlined..36'
+    SSSP_SPATIAL_SF_KERNEL = 'omp?DeltaStepImpl'
+    SSSP_ADJ_SPATIAL_SF_KERNEL = 'omp?DeltaStepImpl'
+    SSSP_ADJ_SPATIAL_SF_WARM = '.omp_outlined..52'
 
     GRAPH_FUNC = {
         'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
@@ -150,23 +172,44 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push_sf': [BFS_PUSH_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_spatial': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
         'bfs_push_adj_rnd_sf': [BFS_PUSH_ADJ_KERNEL, 'gf_warm_impl'],
-        'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, BFS_PUSH_ADJ_WARM, 'gf_warm_impl'],
+        'bfs_push_adj_aff_sf': [BFS_PUSH_ADJ_KERNEL, BFS_ADJ_WARM, 'gf_warm_impl'],
+        'bfs_push_adj_uno_aff_sf': [BFS_PUSH_UNO_ADJ_KERNEL, BFS_UNO_ADJ_WARM, 'gf_warm_impl'],
+
         'bfs_pull': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
         'bfs_pull_nobrk': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
         'bfs_pull_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
+        'bfs_pull_adj_uno_aff': [BFS_PULL_KERNEL_1_UNO_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_nobrk_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
 
-        'pr_pull':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
-        'pr_pull_adj_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_ADJ, PR_PULL_ADJ_WARM],  # Two kernels.
-        'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
-        'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels.
+        'pr_pull':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR], 
+        'pr_pull_adj_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_ADJ, PR_ADJ_WARM], 
+        'pr_pull_adj_uno_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_UNO_ADJ, PR_UNO_ADJ_WARM],
+        'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels
+        'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels
 
-        'pr_push':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
-        'pr_push_adj_rnd':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
-        'pr_push_adj_lnr':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
-        'pr_push_adj_aff':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, PR_PUSH_ADJ_WARM],  # Two kernels.
+        'pr_push':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2, PR_PUSH_KERNEL_INTER_PART],
+        'pr_push_adj_rnd':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
+        'pr_push_adj_lnr':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
+        'pr_push_adj_aff':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
+        'pr_push_adj_s_aff':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, S_ADJ_WARM],
+        'pr_push_adj_uno_aff':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_thd':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn16':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn32':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn64':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn128':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn256':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn512':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_uno_aff_dyn1024':  [PR_PUSH_KERNEL_1_UNO_ADJ, PR_PUSH_KERNEL_2, UNO_ADJ_WARM],
+        'pr_push_adj_mix1_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix2_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix4_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix8_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix16_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix32_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
+        'pr_push_adj_mix64_aff':  [PR_PUSH_KERNEL_1_MIX_ADJ, PR_PUSH_KERNEL_2, MIX_ADJ_WARM],
         'pr_push_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_offset_dyn_gap28kB':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
@@ -175,6 +218,7 @@ class GAPGraphBenchmark(Benchmark):
         'pr_push_double':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_double_dyn':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
         'pr_push_shuffle_double':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2],  # Two kernels.
+        'pr_push_inter_part':  [PR_PUSH_KERNEL_INTER_PART],
         'pr_push_atomic':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
         'pr_push_atomic_dyn':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
         'pr_push_atomic_double_dyn':  [PR_PUSH_KERNEL_1_CSR],  # One kernel.
@@ -207,6 +251,7 @@ class GAPGraphBenchmark(Benchmark):
         'sssp_adj_aff_sf_delta8':  [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_aff_sf_delta16': [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_adj_aff_sf_delta32': [SSSP_ADJ_SPATIAL_SF_KERNEL, SSSP_ADJ_SPATIAL_SF_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
+        'sssp_adj_uno_aff_sf_delta1':  [SSSP_ADJ_SPATIAL_SF_KERNEL, W_UNO_ADJ_WARM, 'copySpatialQueueToSpatialFrontier', 'gf_warm_impl'],
         'sssp_inline_offset': [SSSP_KERNEL],
         'tc':  ['.omp_outlined.'],
 

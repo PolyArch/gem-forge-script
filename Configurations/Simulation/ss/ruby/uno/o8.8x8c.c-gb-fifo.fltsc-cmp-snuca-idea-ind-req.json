@@ -18,6 +18,7 @@
         "--gem-forge-stream-engine-enable-float-idea-ack={idea_ack}",
         "--gem-forge-stream-engine-enable-float-idea-end={idea_end}",
         "--gem-forge-stream-engine-enable-float-idea-flow={idea_flow}",
+        "--gem-forge-stream-engine-enable-float-idea-ind-req={idea_ind_req}",
         "--gem-forge-stream-engine-enable-float-partial-config={partial_config}",
         "--gem-forge-stream-engine-enable-float-indirect",
         "--gem-forge-stream-engine-enable-float-advance-migrate",
