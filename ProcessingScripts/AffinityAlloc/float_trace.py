@@ -107,31 +107,33 @@ def getConfigurations(subset):
                         'interval': 10000,
                     })
 
-    if subset in ['llc-cmp']:
+    if subset in ['llc-cmp', 'llc-cmp-idea']:
         for nest in [
             16,
         ]:
             sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
-            for suite, benchmark, abbrev, sim_input, keyword in [
-                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push_adj', 'krn17-k16-rnd64', 'LLC_SE'),
-            ]:
-                for alloc_policy in [
-                    'hybrid5',
-                    'min-hops',
-                    'random',
+            if subset == 'llc-cmp-idea':
+                sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer1x1x1x1x1'
+            for event_type in ['llc-req', 'llc-cmp']:
+                for suite, benchmark, abbrev, sim_input, keyword in [
+                    ('gap', 'pr_push_adj_uno_aff', 'pr_push_adj', 'krn17-k16-rnd64', 'LLC_SE'),
                 ]:
-                    tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
-                    out_fn = f'{result_prefix}/{conference}.{subset}.{abbrev}.{alloc_policy}.nest{nest}'
-                    configurations.append({
-                        'suite': suite,
-                        'benchmark': benchmark,
-                        'tdg_folder': tdg_folder,
-                        'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
-                        'keyword': keyword,
-                        'simulation': sim,
-                        'out_fn': out_fn,
-                        'interval': 1000,
-                    })
+                    for alloc_policy in [
+                        'hybrid5',
+                    ]:
+                        tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
+                        out_fn = f'{result_prefix}/{conference}.{subset}.{abbrev}.{alloc_policy}.nest{nest}'
+                        configurations.append({
+                            'suite': suite,
+                            'benchmark': benchmark,
+                            'tdg_folder': tdg_folder,
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'keyword': keyword,
+                            'simulation': sim,
+                            'out_fn': out_fn,
+                            'interval': 1000,
+                            'event_type': event_type,
+                        })
 
     return configurations
 
@@ -149,6 +151,9 @@ def collect(config):
         interval_args = f'--interval={interval}'
     else:
         interval_args = f'--n-intervals=100'
+    event_type = 'llc-stream'
+    if 'event_type' in config:
+        event_type = config['event_type']
     try:
         args = [
             f'{result_path}/stream_float_trace',
@@ -157,6 +162,7 @@ def collect(config):
             f'--keyword={keyword}',
             f'--out-fn={out_fn}',
             f'--no-summary',
+            f'--event-type={event_type}',
         ]
         StreamFloatTraceReader.main(args)
         result = 0

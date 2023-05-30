@@ -1005,7 +1005,7 @@ class Benchmark(object):
         gem5_env_fn = os.path.join(C.GEM_FORGE_DRIVER_PATH, 'Utils', 'Gem5Env.sh')
         gem5_args = [
             # C.GEM5_X86 if not hoffman2 else C.HOFFMAN2_GEM5_X86,
-            C.get_gem5(),
+            C.get_gem5(self.options.gem5_variant),
             f'--outdir={outdir}',
             # Always dump all stats.
             '--stats-file=text://stats.txt?dumpAll=False',
@@ -1152,12 +1152,15 @@ class Benchmark(object):
         cwd = os.getcwd()
         os.chdir(self.get_sim_exe_path())
         if self.options.perf_command:
+            gem5_version = self.options.gem5_variant
             gem5_args = [
                 C.PERF_BIN,
                 'record',
-                # '-g',
+                '-g', # Call graph.
                 '-F',
                 str(self.get_perf_frequency()),
+                '-o',
+                f'perf.data.th{self.options.input_threads}.{gem5_version}'
                 ] + gem5_args
         elif self.options.perf_heap:
             gem5_args = [

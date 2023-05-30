@@ -625,6 +625,8 @@ if __name__ == '__main__':
                       action='store', dest='gem5_max_ticks', default=None)
     parser.add_option('--gem5-max-insts', type='int',
                       action='store', dest='gem5_max_insts', default=None)
+    parser.add_option('--gem5-variant',
+                      action='store', dest='gem5_variant', default='opt')
 
     # If true, the simuation is not performed, but prepare the hoffman2 cluster to do it.
     parser.add_option('--hoffman2', action='store_true',

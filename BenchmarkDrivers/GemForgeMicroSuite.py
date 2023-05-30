@@ -15,6 +15,9 @@ import os
 class GemForgeMicroBenchmark(Benchmark):
 
     INPUT_SIZE = {
+        'omp_yield': {
+            'large': ['2'],
+        },
         'omp_partition_avx': {
             'large': ['large']
         },

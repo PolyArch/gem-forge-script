@@ -75,19 +75,26 @@ def alignCycleToInterval(args, cycle):
 def addEventToStreamChanges(args, e, prev_streams, stream_changes):
     new_streams = prev_streams
     # Stream events.
-    if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_IN:
-        new_streams += 1
-    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CONFIG:
-        new_streams += 1
-    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_OUT:
-        new_streams -= 1
-    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.END:
-        new_streams -= 1
+    if args.event_type == 'llc-stream':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_IN:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CONFIG:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.MIGRATE_OUT:
+            new_streams -= 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.END:
+            new_streams -= 1
     # Stream engine events.
-    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_START:
-        new_streams += 1
-    elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_DONE:
-        new_streams -= 1
+    elif args.event_type == 'llc-cmp':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.CMP_DONE:
+            new_streams -= 1
+    elif args.event_type == 'llc-req':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.LOCAL_REQ_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.LOCAL_REQ_DONE:
+            new_streams -= 1
     if new_streams == prev_streams:
         # No change. Skip
         return new_streams
@@ -350,7 +357,7 @@ def dumpAliveStreams(args):
         bank_stream_changes = alignStreamChanges(args, bank_stream_changes)
         addStatsToAligned(args, bank_stream_changes, banks)
 
-    out_csv_fn = f'{args.out_fn}.float-trace.csv'
+    out_csv_fn = f'{args.out_fn}.{args.event_type}.csv'
     PRINT(f'Write CSV {out_csv_fn}')
 
     with open(out_csv_fn, 'w') as f:
@@ -410,6 +417,9 @@ def main(argv):
     parser.add_argument('--no-summary',
         action='store_true', default=False,
         help='Dump summary at the end')    
+    parser.add_argument('--event-type',
+        choices=['llc-stream', 'llc-cmp', 'llc-req'], default='llc-stream',
+        help='What event to process')
 
     args = parser.parse_args(argv)
 

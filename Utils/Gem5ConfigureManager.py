@@ -537,25 +537,25 @@ class Gem5ReplayConfigureManager(object):
             "--cpu-type=DerivO3CPU",
             "--llvm-issue-width=8",
             "--gem-forge-enable-func-acc-tick",
-            # "--gem-forge-enable-func-trace",
+            # "--gem-forge-enable-func-trace-at-tick=745916208500",
             "--prog-interval=10000", # Hz
             "--tlb-timing-se",
         ] + L2_TLB,
         'i2': [
-            "--cpu-type=MinorCPU",
+            "--cpu-type=X86MinorCPU",
             "--llvm-issue-width=2",
             "--prog-interval=1000",
         ],
         'i4': [
-            "--cpu-type=MinorCPU",
+            "--cpu-type=X86MinorCPU",
             "--llvm-issue-width=4",
             "--prog-interval=10000", # Hz
         ] + L2_TLB,
         'i4.tlb': [
-            "--cpu-type=MinorCPU",
+            "--cpu-type=X86MinorCPU",
             "--llvm-issue-width=4",
             "--gem-forge-enable-func-acc-tick",
-            "--prog-interval=10000", # Hz
+            "--prog-interval=100000", # Hz
             "--tlb-timing-se",
         ] + L2_TLB,
         'tm.tlb': [

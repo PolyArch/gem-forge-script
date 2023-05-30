@@ -140,8 +140,11 @@ def get_gem5_m5ops():
         return GEM5_M5OPS_RISCV
 
 
-def get_gem5():
+def get_gem5(gem5_variant='opt'):
+    gem5 = GEM5_X86
     if ISA == 'x86':
-        return GEM5_X86
+        gem5 = GEM5_X86
     if ISA == 'riscv':
-        return GEM5_RISCV
+        gem5 = GEM5_RISCV
+    gem5 = f'{gem5[:-4]}.{gem5_variant}'
+    return gem5

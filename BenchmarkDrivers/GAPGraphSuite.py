@@ -125,6 +125,8 @@ class GAPGraphBenchmark(Benchmark):
     MIX_ADJ_WARM = 'AdjListGraph<int, int, 0, 4, 64, false, true, (AdjListTypeE)3>::warmOneAdjListPerNode'
     W_UNO_ADJ_WARM = 'AdjListGraph<int, NodeWeight<int, int>, 4, 4, 64, false, false, (AdjListTypeE)1>::warmSingleAdjList'
 
+    WARM = 'gf_warm_impl'
+
     PR_PUSH_KERNEL_1_CSR = 'omp?pageRankPushCSR'
     PR_PUSH_KERNEL_1_ADJ = 'omp?pageRankPushAdjList'
     PR_PUSH_KERNEL_1_UNO_ADJ = 'omp?pageRankPushSingleAdjList'
@@ -151,14 +153,37 @@ class GAPGraphBenchmark(Benchmark):
     BFS_PULL_KERNEL_1_ADJ = 'omp?bfsPullAdjList'
     BFS_PULL_KERNEL_1_UNO_ADJ = 'omp?bfsPullSingleAdjList'
 
-    SSSP_KERNEL = '.omp_outlined..22'
+    SSSP_KERNEL = 'omp?DeltaStepImpl'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
     SSSP_SPATIAL_SF_KERNEL = 'omp?DeltaStepImpl'
     SSSP_ADJ_SPATIAL_SF_KERNEL = 'omp?DeltaStepImpl'
     SSSP_ADJ_SPATIAL_SF_WARM = '.omp_outlined..52'
 
+    BC_BFS_KERNEL = 'omp?PBFS'
+    BC_SCORE_PUSH_KERNEL = 'omp?computeScoresPush'
+    BC_NORMALIZE_KERNEL = 'omp?normalizeScores'
+
     GRAPH_FUNC = {
-        'bc':  ['.omp_outlined.', '.omp_outlined..13'],  # Two kernels
+        'bc':  [
+            BC_BFS_KERNEL, 
+            # BC_SCORE_KERNEL,
+            # BC_NORMALIZE_KERNEL,
+            # WARM,
+        ],
+        'bc_sq':  [
+            BC_BFS_KERNEL, 
+            BC_SCORE_PUSH_KERNEL,
+            BC_NORMALIZE_KERNEL,
+            WARM,
+        ],
+        'bc_adj_uno_aff_sq':  [
+            BC_BFS_KERNEL, 
+            BC_SCORE_PUSH_KERNEL,
+            BC_NORMALIZE_KERNEL,
+            UNO_ADJ_WARM,
+            WARM,
+        ],
+
         # Two kernels -- top down and bottom up.
         'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
         'bfs_push': [BFS_PUSH_KERNEL],
@@ -180,8 +205,9 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_pull_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_adj_uno_aff': [BFS_PULL_KERNEL_1_UNO_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_nobrk_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
-        'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
-        'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  # Two kernels.
+        'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  
+        'bfs_pull_shuffle_nobrk': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
+        'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
 
         'pr_pull':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR], 
         'pr_pull_adj_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_ADJ, PR_ADJ_WARM], 
@@ -189,7 +215,12 @@ class GAPGraphBenchmark(Benchmark):
         'pr_pull_shuffle':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels
         'pr_pull_shuffle_offset':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR],  # Two kernels
 
-        'pr_push':  [PR_PUSH_KERNEL_1_CSR, PR_PUSH_KERNEL_2, PR_PUSH_KERNEL_INTER_PART],
+        'pr_push':  [
+            PR_PUSH_KERNEL_1_CSR,
+            PR_PUSH_KERNEL_2,
+            PR_PUSH_KERNEL_INTER_PART,
+            WARM,
+        ],
         'pr_push_adj_rnd':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
         'pr_push_adj_lnr':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
         'pr_push_adj_aff':  [PR_PUSH_KERNEL_1_ADJ, PR_PUSH_KERNEL_2, ADJ_WARM],
@@ -300,15 +331,21 @@ class GAPGraphBenchmark(Benchmark):
             'bfs_pull',
             'bfs_push',
             'pr_pull',
+            'pr_push',
+            'bc',
         ]
         for b in no_unroll_workloads:
             if self.benchmark_name.startswith(b):
                 flags.append('-fno-unroll-loops')
                 break
-        if self.benchmark_name.startswith('pr_push'):
-            flags.append('-ffast-math')
-            flags.append('-fno-unroll-loops')
-            flags.append('-mavx512f')
+        avx_workloads = [
+            'pr_push',
+            'bc',
+        ] 
+        for b in avx_workloads:
+            if self.benchmark_name.startswith(b):
+                flags.append('-ffast-math')
+                flags.append('-mavx512f')
 
         sources = [self.source]
         bcs = [s[:-2] + '.bc' for s in sources]
@@ -372,19 +409,19 @@ class GAPGraphBenchmark(Benchmark):
             )
         work_items = -1
         if self.benchmark_name.startswith('pr'):
-            # Two kernels, two iteration.
-            work_items = 4
+            # Three kernels, two iteration.
+            work_items = 6
             _, input_options = self.decompose_input_name(input_name)
             if 'iter=1' in input_options:
-                work_items = 2
+                work_items = 3
             elif 'iter=3' in input_options:
-                work_items = 6
+                work_items = 9
             for single_kernel_prefix in [
                 'pr_push_atomic',
                 'pr_push_swap',
             ]:
                 if self.benchmark_name.startswith(single_kernel_prefix):
-                    work_items = work_items // 2
+                    work_items = work_items // 3
                     break
         """
         This takes too long to finish. So we limit some work items.

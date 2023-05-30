@@ -119,6 +119,20 @@ class TileStatsParser(object):
                 'system.future_cpus{tile_id}.accelManager.se.numLLCMigrated'),
             'mlc_response': self.format_re(
                 'system.future_cpus{tile_id}.accelManager.se.numMLCResponse'),
+            'router_in_arbiter_act': self.format_re(
+                'system.ruby.network.routers{tile_id}.sw_input_arbiter_activity'),
+            'router_out_arbiter_act': self.format_re(
+                'system.ruby.network.routers{tile_id}.sw_output_arbiter_activity'),
+            'router_xbar_act': self.format_re(
+                'system.ruby.network.routers{tile_id}.crossbar_activity'),
+            'router_act': self.format_re(
+                'system.ruby.network.routers{tile_id}.router_activity'),
+            'router_input_sched': self.format_re(
+                'system.ruby.network.routers{tile_id}.input_sched'),
+            'router_output_sched': self.format_re(
+                'system.ruby.network.routers{tile_id}.output_sched'),
+            'router_switch_sched': self.format_re(
+                'system.ruby.network.routers{tile_id}.switch_sched'),
             'dcache_core_requests': self.format_re(
                 'system.ruby.l0_cntrl{tile_id}.coreRequests'),
             'dcache_core_stream_requests': self.format_re(
@@ -573,6 +587,27 @@ def print_stats(tile_stats):
     print('num llc core req        {v}'.format(
         v=sum(value_or_zero(ts, 'llc_core_requests') for ts in tile_stats)
     ))
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_in_arbiter_act') for ts in tile_stats),
+        f='router in arbiter act   {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_out_arbiter_act') for ts in tile_stats),
+        f='router out arbiter act  {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_xbar_act') for ts in tile_stats),
+        f='router xbar act         {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_act') for ts in tile_stats),
+        f='router wake             {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_input_sched') for ts in tile_stats),
+        f='router in sched         {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_output_sched') for ts in tile_stats),
+        f='router out sched        {v}')
+    print_if_non_zero(
+        v=sum(value_or_zero(ts, 'router_switch_sched') for ts in tile_stats),
+        f='router xbar sched       {v}')
     print_if_non_zero(
         v=main_ts.sim_ticks / ticks_per_us,
         f='main cpu us             {v}')
