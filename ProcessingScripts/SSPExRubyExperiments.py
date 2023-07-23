@@ -95,6 +95,10 @@ class TileStatsParser(object):
                 'system.future_cpus{tile_id}.committedOps'),
             'commit_inst': self.format_re(
                 'system.future_cpus{tile_id}.committedInsts'),
+            'branch_cond': self.format_re(
+                'system.future_cpus{tile_id}.branchPred.condPredicted'),
+            'branch_cond_incorrect': self.format_re(
+                'system.future_cpus{tile_id}.branchPred.condIncorrect'),
             'idea_cycles': self.format_re(
                 'system.future_cpus{tile_id}.ideaCycles'),
             'idea_cycles_no_fu': self.format_re(
@@ -538,6 +542,12 @@ def print_stats(tile_stats):
     ))
     print('main cpu opc            {v}'.format(
         v=main_ts.commit_op / main_ts.sim_ticks  * ticks_per_cycle
+    ))
+    print('main cpu branch conds   {v}'.format(
+        v=value_or_nan(main_ts, 'branch_cond')
+    ))
+    print('main cpu branch wrong   {v}'.format(
+        v=value_or_nan(main_ts, 'branch_cond_incorrect')
     ))
     # print('main cpu idea opc       {v}'.format(
     #     v=main_ts.commit_op / main_ts.idea_cycles if hasattr(main_ts, 'idea_cycles') else 0

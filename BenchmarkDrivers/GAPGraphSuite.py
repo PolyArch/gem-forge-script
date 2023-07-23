@@ -111,6 +111,28 @@ class GAPGraphBenchmark(Benchmark):
                 '-d',
                 f'{delta}',
             ]
+        # BFS both we need to control switching between pull/push explicitly.
+        # Otherwise it's just push.
+        if self.benchmark_name.startswith('bfs_both'):
+            if graph_name.startswith('krn17-k16') or graph_name.startswith('krn14-k8'):
+                push_to_pull_iter = 3
+                pull_to_push_iter = 4 # Just do one iter in pull?
+                args += [
+                    '-i',
+                    f'{-push_to_pull_iter}',
+                    '-t',
+                    f'{-pull_to_push_iter}',
+                ]
+        if self.benchmark_name.startswith('bfs_scout_adj_uno_aff_sf'):
+            if graph_name.startswith('krn17-k16') or graph_name.startswith('krn14-k8'):
+                push_to_pull_iter = 3
+                pull_to_push_iter = 4 # Just do one iter in pull?
+                args += [
+                    '-i',
+                    f'{-push_to_pull_iter}',
+                    '-t',
+                    f'{-pull_to_push_iter}',
+                ]
         return args
 
     def get_extra_compile_flags(self):
@@ -152,6 +174,7 @@ class GAPGraphBenchmark(Benchmark):
     BFS_PULL_KERNEL_2 = 'omp?bfsPullUpdate'
     BFS_PULL_KERNEL_1_ADJ = 'omp?bfsPullAdjList'
     BFS_PULL_KERNEL_1_UNO_ADJ = 'omp?bfsPullSingleAdjList'
+    BFS_PULL_FRONTIER = 'omp?bfsPullToFrontier'
 
     SSSP_KERNEL = 'omp?DeltaStepImpl'
     SSSP_SPATIAL_KERNEL = '.omp_outlined..24'
@@ -185,7 +208,7 @@ class GAPGraphBenchmark(Benchmark):
         ],
 
         # Two kernels -- top down and bottom up.
-        'bfs': ['.omp_outlined.', '.omp_outlined..10', 'BUStep', 'DOBFS'],
+        'bfs': ['omp?BUStep', 'omp?TDStep'],
         'bfs_push': [BFS_PUSH_KERNEL],
         'bfs_push_check': [BFS_PUSH_KERNEL],
         'bfs_push_offset': [BFS_PUSH_KERNEL],
@@ -208,6 +231,37 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_pull_shuffle': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2],  
         'bfs_pull_shuffle_nobrk': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
         'bfs_pull_shuffle_offset': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
+
+        'bfs_both_sf': [
+            BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2,
+            BFS_PUSH_KERNEL,
+            BFS_PULL_FRONTIER,
+            'gf_warm_impl',
+        ],
+        'bfs_both_adj_uno_aff_sf': [
+            BFS_PULL_KERNEL_1_UNO_ADJ, BFS_PULL_KERNEL_2,
+            BFS_PUSH_UNO_ADJ_KERNEL,
+            BFS_PULL_FRONTIER,
+            BFS_UNO_ADJ_WARM, 'gf_warm_impl',
+        ],
+        'bfs_scout_sf': [
+            BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2,
+            BFS_PUSH_KERNEL,
+            BFS_PULL_FRONTIER,
+            'gf_warm_impl',
+        ],
+        'bfs_scout_check': [
+            BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2,
+            BFS_PUSH_KERNEL,
+            BFS_PULL_FRONTIER,
+            'gf_warm_impl',
+        ],
+        'bfs_scout_adj_uno_aff_sf': [
+            BFS_PULL_KERNEL_1_UNO_ADJ, BFS_PULL_KERNEL_2,
+            BFS_PUSH_UNO_ADJ_KERNEL,
+            BFS_PULL_FRONTIER,
+            BFS_UNO_ADJ_WARM, 'gf_warm_impl',
+        ],
 
         'pr_pull':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_CSR], 
         'pr_pull_adj_aff':  [PR_PULL_KERNEL_1, PR_PULL_KERNEL_2_ADJ, PR_ADJ_WARM], 
@@ -330,6 +384,8 @@ class GAPGraphBenchmark(Benchmark):
         no_unroll_workloads = [
             'bfs_pull',
             'bfs_push',
+            'bfs_both',
+            'bfs_scout',
             'pr_pull',
             'pr_push',
             'bc',

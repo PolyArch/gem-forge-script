@@ -31,8 +31,8 @@ o8=$sim_replay_prefix/o8.${RubyConfig}
 # sim_replay+=,$o4,$o4.bingo-l2pf
 sim_replay=$o8,$o8.bingo-l2pf
 # sim_replay=$o8
-python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
-    --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel
+# python Driver.py $Benchmark $SimTrace -t valid.ex --sim-input-size $SimInput \
+#     --sim-configs $sim_replay --input-threads $Threads -s -j $Parallel
 
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
 # python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \

@@ -75,6 +75,10 @@ class GemForgeMicroBenchmark(Benchmark):
             'large-cold': [str(x) for x in [4 * 1024 * 1024, 0, 0]],
             'mem': [str(x) for x in [64 * 1024 * 1024 / 4, 0, 0]],
         },
+        'sparse_dot_p_tern': {
+            # total elements (float), check, warm, offset_bytes
+            'large': [str(x) for x in [4 * 1024 * 1024, 0, 1]],
+        },
         'vec_add': {
             # total elements (float), check, warm, offset_bytes
             'teeny': [str(x) for x in [16 * 1024, 0, 1]],
@@ -117,7 +121,7 @@ class GemForgeMicroBenchmark(Benchmark):
             # Baseline for SIMPLE
             'simple-base-cold': [str(x) for x in [7650 * 1024, 32, 0, 0]],
         },
-        'omp_dot_prod_avx': {
+        'dot_prod': {
             # total elements (float), check, warm
             'medium': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 1]],
             'medium-cold': [str(x) for x in [1 * 1024 * 1024 / 4 / 2, 1, 0]],
@@ -222,6 +226,23 @@ class GemForgeMicroBenchmark(Benchmark):
             'simple-base-cold': [str(x) for x in [64 * 1024, 32, 32, 0, 0]],
         },
         'mm_inner': {
+            # M, K, N, P, (float, 4 array), check, warm
+            'tiny': [str(x) for x in [256, 256, 256, 64, 0, 1]],
+            'tiny-cold': [str(x) for x in [256, 256, 256, 64, 0, 0]],
+            'small': [str(x) for x in [512, 512, 512, 64, 0, 1]],
+            'small-cold': [str(x) for x in [512, 512, 512, 64, 0, 0]],
+            'medium': [str(x) for x in [1024, 1024, 1024, 64, 0, 1]],
+            'medium-cold': [str(x) for x in [1024, 1024, 1024, 64, 0, 0]],
+            'strnd': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 2, 0, 1]],
+            'strnd-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 2, 0, 0]],
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 64, 0, 0]],
+            'large2x': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 1]],
+            'large2x-cold': [str(x) for x in [2 * 1024, 4 * 1024, 2 * 1024, 64, 0, 0]],
+            # Baseline for SIMPLE M=16k, K=2k, N=32
+            'simple-base-cold': [str(x) for x in [32 * 1024, 2 * 1024, 2 * 1024, 1, 0, 0]],
+        },
+        'mm_lnm_': {
             # M, K, N, P, (float, 4 array), check, warm
             'tiny': [str(x) for x in [256, 256, 256, 64, 0, 1]],
             'tiny-cold': [str(x) for x in [256, 256, 256, 64, 0, 0]],
@@ -403,11 +424,17 @@ class GemForgeMicroBenchmark(Benchmark):
 
         self.is_variant_input = False
         self.variant_input_sizes = None
+        self.stem = '' 
         for stem in GemForgeMicroBenchmark.INPUT_SIZE:
+            # Match with the longest stem.
             if stem in self.benchmark_name:
-                self.is_variant_input = True
-                self.variant_input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[stem]
-                self.stem = stem
+                if len(stem) > len(self.stem):
+                    self.is_variant_input = True
+                    self.variant_input_sizes = GemForgeMicroBenchmark.INPUT_SIZE[stem]
+                    self.stem = stem
+                elif len(stem) == len(self.stem):
+                    print(f'Ambiguous stem {stem} vs. {self.stem}')
+                    assert(False)
 
         self.work_items = -1
         if self.benchmark_name == 'omp_page_rank':
@@ -580,6 +607,15 @@ class GemForgeMicroBenchmark(Benchmark):
                 funcs = ['.omp_outlined.']
         else:
             funcs = ['foo']
+        # In some cases we want to apply stream to the warm up function
+        # to avoid bringing data into the private cache.
+        trace_warm_benchmarks = [
+            'mm_outer_avx',
+        ]
+        for x in trace_warm_benchmarks:
+            if self.benchmark_name.find(x) != -1:
+                funcs += ['gf_warm_array']
+                break
         return Benchmark.ROI_FUNC_SEPARATOR.join(funcs)
 
     def get_lang(self):
@@ -610,7 +646,7 @@ class GemForgeMicroBenchmark(Benchmark):
             '-mllvm',
             '-loop-unswitch-threshold=1',
             # '-mllvm',
-            # '-opt-bisect-limit=235',
+            # '-opt-bisect-limit=100',
             '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
         ] + self.get_extra_compile_flags()
         no_unroll_workloads = [
@@ -628,6 +664,7 @@ class GemForgeMicroBenchmark(Benchmark):
             'mm_outer',
             'omp_mm_outer_avx',
             'omp_mm_inner_avx',
+            'omp_mm_lnm_',
         ]
         for prefix in no_unroll_workloads:
             if self.benchmark_name.startswith(prefix):

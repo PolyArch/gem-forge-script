@@ -91,6 +91,52 @@ def getConfigurations(subset):
                         ],
                     })
 
+            for suite, benchmark, tdg_folder in [
+                ('rodinia', 'pathfinder-avx512-nounroll', f'fake.0.tdg.large-thread64'),
+                ('rodinia', 'hotspot-avx512-fix', f'fake.0.tdg.large-thread64'),
+                ('rodinia', 'srad_v2-avx512-fix', f'fake.0.tdg.large-thread64'),
+                ('rodinia', 'hotspot3D-avx512-fix-fuse', f'fake.0.tdg.large-thread64'),
+            ]:
+                # I accidentally simulate with nest4 but it's the same as nest16.
+                base_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca0-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                nuca_sim = f'{sim_prefix}-nest16.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+                sim = (base_sim, nuca_sim)
+                if alloc == 'hybrid':
+                    sim = (nuca_sim, nuca_sim)
+                rename_tdg_folder = f'{alloc}.thread64'
+                rename_benchmark = benchmark
+                benchmark = f'{benchmark}-random'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': (benchmark, rename_benchmark),
+                    'tdg_folder': (tdg_folder, rename_tdg_folder),
+                    'collect_energy': True,
+                    'transforms': [
+                        {
+                            'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                            'simulations': [
+                                sim,
+                            ]
+                        }
+                    ],
+                })
+                if alloc == 'random':
+                    # Add the in-core baseline.
+                    configurations.append({
+                        'suite': suite,
+                        'benchmark': (benchmark, rename_benchmark),
+                        'tdg_folder': (tdg_folder, rename_tdg_folder),
+                        'collect_energy': True,
+                        'transforms': [
+                            {
+                                'transform': valid_trans,
+                                'simulations': [
+                                    valid_bingo_sim,
+                                ]
+                            }
+                        ],
+                    })
+
         for alloc in [
             'random',
         ]:

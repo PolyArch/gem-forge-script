@@ -376,6 +376,19 @@ class RodiniaBenchmark(Benchmark):
             flags.append(
                 '--gem-forge-cpu-deadlock-interval=0ns'
             )
+        transform_id = transform_config.get_transform_id()
+        simulation_id = simulation_config.get_simulation_id()
+        if transform_id == 'stream.ex.static.so.store' and simulation_id.endswith('flts-mc2'):
+            # pathfinder should enable float history.
+            if self.benchmark_name.startswith('pathfinder'):
+                flags.append(
+                    "--gem-forge-stream-engine-enable-float-history=1"
+                )
+            # srad_v2 should enable float cancel.
+            if self.benchmark_name.startswith('srad_v2'):
+                flags.append(
+                    "--gem-forge-stream-engine-enable-float-cancel"
+                )
         # Migration valve to all streams in memory controller.
         memory_stream_valve_all = [
             'hotspot3D',

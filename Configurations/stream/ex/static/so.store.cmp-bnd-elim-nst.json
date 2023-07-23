@@ -11,6 +11,7 @@
         "-stream-pass-enable-reduce",
         "-stream-pass-upgrade-load-to-update",
         "-stream-pass-enable-value-dg",
+        "-stream-pass-enable-value-dep-on-inner-loop",
         "-stream-pass-enable-fuse-load-op",
         "-stream-pass-enable-loop-bound-predication",
         "-stream-pass-enable-loop-elimination",

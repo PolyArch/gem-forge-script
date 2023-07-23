@@ -27,6 +27,7 @@
         "stream_fifo": [2048]
     },
     "support-transform-ids": [
-        "stream.ex.static.so.store"
+        "stream.ex.static.so.store",
+        "stream.ex.static.so.store.cmp-bnd-elim-nst"
     ]
 }

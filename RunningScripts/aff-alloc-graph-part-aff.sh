@@ -26,10 +26,11 @@ Benchmark='-b '
 # Benchmark+='gap.bfs_push_adj_aff_sf,'
 # Benchmark+='gap.bfs_pull_adj_aff,'
 # Benchmark+='gap.pr_push_adj_s_aff,'
-Benchmark+='gap.pr_push_adj_uno_aff,'
+# Benchmark+='gap.pr_push_adj_uno_aff,'
 # Benchmark+='gap.pr_pull_adj_uno_aff,'
-Benchmark+='gap.bfs_push_adj_uno_aff_sf,'
-# Benchmark+='gap.bfs_pull_adj_uno_aff,'
+# Benchmark+='gap.bfs_push_adj_uno_aff_sf,'
+Benchmark+='gap.bfs_pull_adj_uno_aff,'
+# Benchmark+='gap.bc_adj_uno_aff_sq,'
 # Benchmark+='gap.sssp_adj_uno_aff_sf_delta1,'
 
 # Benchmark+='gap.pr_push_adj_uno_aff_thd,'
@@ -47,38 +48,41 @@ SimInput=''
 # SimInput+=',web-BerkStan-rnd64.aff-hybrid5'
 # SimInput+=',ego-fb-rnd64.aff-hybrid5'
 # SimInput+=',ego-twitter-rnd64.aff-hybrid5'
-# SimInput+=',ego-gplus-rnd64.aff-hybrid5'
 
 # SimInput+=',uni17-k16-rnd64.aff-random'
 # SimInput+=',roadNet-TX-rnd64.aff-random'
 # SimInput+=',web-BerkStan-rnd64.aff-random'
 # SimInput+=',ego-fb-rnd64.aff-random'
 # SimInput+=',ego-twitter-rnd64.aff-random'
-# SimInput+=',ego-gplus-rnd64.aff-random'
 
 # SimInput+=',roadNet-TX-rnd64.aff-min-hops'
 # SimInput+=',web-BerkStan-rnd64.aff-min-hops'
 # SimInput+=',ego-fb-rnd64.aff-min-hops'
 # SimInput+=',ego-twitter-rnd64.aff-min-hops'
+
+# SimInput+=',ego-gplus-rnd64.aff-hybrid5'
 # SimInput+=',ego-gplus-rnd64.aff-min-hops'
+# SimInput+=',ego-gplus-rnd64.aff-random'
 
 # SimInput+=',twitch-gamers-rnde64.aff-hybrid5'
 # SimInput+=',twitch-gamers-rnde64.aff-min-hops'
 # SimInput+=',twitch-gamers-rnde64.aff-random'
-SimInput+=',twitch-gamers-rnd64.aff-hybrid5'
-SimInput+=',twitch-gamers-rnd64.aff-min-hops'
-SimInput+=',twitch-gamers-rnd64.aff-random'
+# SimInput+=',twitch-gamers-rnd64.aff-hybrid5'
+# SimInput+=',twitch-gamers-rnd64.aff-min-hops'
+# SimInput+=',twitch-gamers-rnd64.aff-random'
 
 # SimInput+=',soc-LiveJournal1-rnd64.aff-hybrid5'
 # SimInput+=',soc-LiveJournal1-rnd64.aff-min-hops'
 # SimInput+=',soc-LiveJournal1-rnd64.aff-random'
 
 SimInput+=',krn17-k16-rnd64.aff-hybrid5'
-SimInput+=',krn17-k16-rnd64.aff-min-hops'
-SimInput+=',krn17-k16-rnd64.aff-random'
+# SimInput+=',krn17-k16-rnd64.aff-min-hops'
+# SimInput+=',krn17-k16-rnd64.aff-random'
 # SimInput+=',krn17-k16-rnd64.aff-hybrid5.cold'
 # SimInput+=',krn17-k16-rnd64.aff-min-hops.cold'
 # SimInput+=',krn17-k16-rnd64.aff-random.cold'
+
+# SimInput+=',krn14-k8-rnd64.aff-hybrid5'
 
 # SimInput+=',krn15-k64-rnd64.aff-random'
 # SimInput+=',krn15-k64-rnd64.aff-min-hops'
@@ -97,8 +101,8 @@ SimInput+=',krn17-k16-rnd64.aff-random'
 # SimInput+=',krn20-k2-rnd64.aff-hybrid5'
 
 SimTrace='--fake-trace'
-# python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
 
 BaseTrans=valid.ex
 # python Driver.py $Benchmark $SimTrace -t $BaseTrans -d
@@ -119,7 +123,7 @@ sim_replay=$o8,$o8.bingo-l2pf
 # StreamTransform=stream/ex/static/so.store
 # StreamTransform=stream/ex/static/so.store.cmp
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
-# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
 #     --transform-debug StaticStreamRegionAnalyzer,BasicBlockBranchDataGraph 2>&1 | tee /benchmarks/shit.log
 
 run_ssp () {
@@ -139,8 +143,10 @@ run_ssp () {
         --sim-input $input \
         --input-threads $threads \
         -s -j $parallel \
-        # --gem5-debug StreamNUCAManager 2>&1 | tee /benchmarks/llc.log
-        # --gem5-debug StreamEngine,StreamElement,StreamBase,StreamRegion 2>&1 | tee /benchmarks/core.log
+        # --no-job-log \
+        # --gem5-debug StreamEngine,StreamBase,LLCRubyStream,MLCRubyStream,StreamElement,ExecFunc 2>&1 | tee /benchmarks/core.log
+        # --gem5-variant fast \
         # --perf-command \
+        # --gem5-debug StreamLoopBound 2>&1 | tee /benchmarks/llc.log \
 }
 run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel 
