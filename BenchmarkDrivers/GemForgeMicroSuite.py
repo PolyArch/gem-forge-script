@@ -206,6 +206,16 @@ class GemForgeMicroBenchmark(Benchmark):
             'duality': [str(x) for x in [1024, 1024, 3, 0, 1]],
             'duality-cold': [str(x) for x in [1024, 1024, 3, 0, 0]],
         },
+        'acc_gen': {
+            # check, warm
+            'large': [str(x) for x in [0, 1]],
+            'large-cold': [str(x) for x in [0, 0]],
+        },
+        'mm_aocl': {
+            # M, K, N, (float, 3 array), check, warm
+            'large': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 1]],
+            'large-cold': [str(x) for x in [2 * 1024, 2 * 1024, 2 * 1024, 0, 0]],
+        },
         'mm_outer': {
             # M, K, N, (float, 3 array), check, warm
             'tiny': [str(x) for x in [256, 256, 256, 0, 1]],
@@ -417,7 +427,9 @@ class GemForgeMicroBenchmark(Benchmark):
         elif '_int8' in self.benchmark_name:
             self.value_type = 'VALUE_TYPE_INT8'
         self.is_omp = self.benchmark_name.startswith('omp_')
+        self.is_aocl = self.benchmark_name == 'omp_mm_aocl'
         self.is_avx512 = 'avx' in self.benchmark_name
+        self.is_amx = 'amx' in self.benchmark_name
         self.is_graph = os.path.basename(
             os.path.dirname(self.src_path)) == 'graph'
         self.n_thread = benchmark_args.options.input_threads
@@ -453,7 +465,20 @@ class GemForgeMicroBenchmark(Benchmark):
         return 'gfm.{b}'.format(b=self.benchmark_name)
 
     def get_sim_input_args(self, input_name):
-        base_input, _ = self.decompose_input_name(input_name)
+        base_input, fields = self.decompose_input_name(input_name)
+
+        # Special case for the AOCL version mm for customized input sizes.
+        if (base_input == 'MNK' or base_input == 'MNK-cold') and self.benchmark_name == 'omp_mm_aocl':
+            assert(len(fields) == 3)
+            M = int(fields[0])
+            N = int(fields[1])
+            K = int(fields[2])
+            # M, K, N, (float, 3 array), check, warm
+            check = 0
+            warm = 0 if base_input == 'MNK-cold' else 1
+            args = [M, K, N, check, warm]
+            return [str(x) for x in args]
+
         if self.is_variant_input:
             input_sizes = self.variant_input_sizes
             if base_input not in input_sizes:
@@ -467,6 +492,10 @@ class GemForgeMicroBenchmark(Benchmark):
             f'-L{C.AFFINITY_ALLOC_LIB_PATH}',
             f'-lAffinityAllocGemForgeStatic',
         ]
+        if self.is_aocl:
+            links += [
+                f'-lblis-mt'
+            ]
         if self.is_omp:
             links += [
                 '-lomp',
@@ -476,7 +505,7 @@ class GemForgeMicroBenchmark(Benchmark):
             ]
         return links
 
-    def get_args(self, input_name):
+    def get_args(self, input_name, **kwargs):
         base_input, _ = self.decompose_input_name(input_name)
         args = list()
         if self.is_omp or self.is_variant_input:
@@ -508,6 +537,9 @@ class GemForgeMicroBenchmark(Benchmark):
             flags.append('-ffast-math')
             if self.value_type in ['VALUE_TYPE_INT16', 'VALUE_TYPE_INT8']:
                 flags.append('-mavx512bw')
+        if self.is_amx:
+            flags.append('-mamx-tile')
+            flags.append('-mamx-int8')
         if self.benchmark_name.endswith('histogram_avx'):
             flags.append('-mavx512dq')
             flags.append('-mavx512vl')
@@ -646,7 +678,7 @@ class GemForgeMicroBenchmark(Benchmark):
             '-mllvm',
             '-loop-unswitch-threshold=1',
             # '-mllvm',
-            # '-opt-bisect-limit=100',
+            # '-opt-bisect-limit=666',
             '-I{GFM_INC}'.format(GFM_INC=self.suite_path),
         ] + self.get_extra_compile_flags()
         no_unroll_workloads = [
@@ -688,10 +720,11 @@ class GemForgeMicroBenchmark(Benchmark):
                 '-Rpass-analysis=loop-vectorize',
             ] + flags + [
                 '-emit-llvm',
-                '-std=c11',
+                '-std=c11' if not self.is_aocl else '',
                 '-gline-tables-only',
                 f'-I{C.GEM5_INCLUDE_DIR}',
                 f'-I{C.AFFINITY_ALLOC_INC_PATH}',
+                f'-I{C.AOCL_INC_PATH}' if self.is_aocl else '',
                 '-mllvm',
                 '-enable-load-pre=true',
                 '-o',
@@ -769,7 +802,7 @@ class GemForgeMicroBenchmark(Benchmark):
         flags = list()
         if self.stem == 'mm_outer':
             # It takes for ever to finish mm_outer
-            self.work_items = 2
+            self.work_items = 64
         if self.work_items != -1:
             flags.append(
                 '--work-end-exit-count={v}'.format(v=self.work_items),

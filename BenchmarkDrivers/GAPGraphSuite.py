@@ -10,7 +10,16 @@ import Constants as C
 import Util
 
 import os
+import json
 
+# Load the BFS switch json file.
+def load_bfs_swich_points():
+    switch_fn = f'{C.GEM_FORGE_DRIVER_PATH}/BenchmarkDrivers/gap_bfs_push_pull_switch.json'
+    with open(switch_fn) as f:
+        switch_points = json.load(f)
+    return switch_points
+
+bfs_switch_points = load_bfs_swich_points()
 
 class GAPGraphBenchmark(Benchmark):
     def __init__(self, benchmark_args, src_path, benchmark_name):
@@ -48,7 +57,7 @@ class GAPGraphBenchmark(Benchmark):
             f'-lAffinityAllocGemForgeStatic',
         ]
 
-    def get_args(self, input_name):
+    def get_args(self, input_name, **kwargs):
         graphs = os.path.join(self.src_path, 'benchmark/graphs')
         suffix = '.sg'
         graph_name, input_options = self.decompose_input_name(input_name)
@@ -114,9 +123,29 @@ class GAPGraphBenchmark(Benchmark):
         # BFS both we need to control switching between pull/push explicitly.
         # Otherwise it's just push.
         if self.benchmark_name.startswith('bfs_both'):
-            if graph_name.startswith('krn17-k16') or graph_name.startswith('krn14-k8'):
-                push_to_pull_iter = 3
-                pull_to_push_iter = 4 # Just do one iter in pull?
+            transform_id = kwargs['trans']
+            simulation_id = kwargs['sim']
+            switch_points = None
+            for wk, trans, sim, tdg, sw in bfs_switch_points:
+                if self.benchmark_name == wk and transform_id == trans and simulation_id == sim and tdg.find(input_name) != -1:
+                    print(f'Found switch points {sw}')
+                    switch_points = sw
+                    break
+            if switch_points is None:
+                # We didn't find one.
+                pass
+            else:
+                if len(switch_points) == 0:
+                    # Use a huge switch point that never switches.
+                    switch_points = [(100000, False), (100001, True)]
+            
+                assert(len(switch_points) ==  2)
+                assert(switch_points[0][1] == False)
+                assert(switch_points[1][1] == True)
+
+                push_to_pull_iter = switch_points[0][0]
+                pull_to_push_iter = switch_points[1][0]
+
                 args += [
                     '-i',
                     f'{-push_to_pull_iter}',
@@ -124,15 +153,53 @@ class GAPGraphBenchmark(Benchmark):
                     f'{-pull_to_push_iter}',
                 ]
         if self.benchmark_name.startswith('bfs_scout_adj_uno_aff_sf'):
-            if graph_name.startswith('krn17-k16') or graph_name.startswith('krn14-k8'):
-                push_to_pull_iter = 3
-                pull_to_push_iter = 4 # Just do one iter in pull?
-                args += [
-                    '-i',
-                    f'{-push_to_pull_iter}',
-                    '-t',
-                    f'{-pull_to_push_iter}',
-                ]
+            # Use a taylored switch policy:
+            # push to pull: visited > 24% and scout > 6%
+            # pull to push: more awake or awake > 25%.
+            push_to_pull_visit = 24
+            push_to_pull_scout = 6
+            pull_to_push_awake = 25
+            # However, krn19-k16 needs some special handling.
+            if graph_name == 'krn19-k16-rnd64':
+                push_to_pull_visit = 10
+            args += [
+                '-i',
+                f'{push_to_pull_scout}',
+                '-t',
+                f'{pull_to_push_awake}',
+                '-d',
+                f'{push_to_pull_visit}',
+            ]
+        if self.benchmark_name == 'bfs_scout_sf':
+            # Use a taylored switch policy:
+            # push to pull: visited > 40% and scout > 6%
+            # pull to push: more awake or awake > 25%.
+            push_to_pull_visit = 40
+            push_to_pull_scout = 6
+            pull_to_push_awake = 25
+            args += [
+                '-i',
+                f'{push_to_pull_scout}',
+                '-t',
+                f'{pull_to_push_awake}',
+                '-d',
+                f'{push_to_pull_visit}',
+            ]
+        if self.benchmark_name == 'bfs_scout_sf_test':
+            # Use a taylored switch policy:
+            # push to pull: visited > 40% and scout > 6%
+            # pull to push: more awake or awake > 25%.
+            push_to_pull_visit = 3
+            push_to_pull_scout = 6
+            pull_to_push_awake = 25
+            args += [
+                '-i',
+                f'{push_to_pull_scout}',
+                '-t',
+                f'{pull_to_push_awake}',
+                '-d',
+                f'{push_to_pull_visit}',
+            ]
         return args
 
     def get_extra_compile_flags(self):
@@ -224,6 +291,7 @@ class GAPGraphBenchmark(Benchmark):
         'bfs_push_adj_uno_aff_sf': [BFS_PUSH_UNO_ADJ_KERNEL, BFS_UNO_ADJ_WARM, 'gf_warm_impl'],
 
         'bfs_pull': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
+        'bfs_pull_test': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
         'bfs_pull_nobrk': [BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2], 
         'bfs_pull_adj_aff': [BFS_PULL_KERNEL_1_ADJ, BFS_PULL_KERNEL_2], 
         'bfs_pull_adj_uno_aff': [BFS_PULL_KERNEL_1_UNO_ADJ, BFS_PULL_KERNEL_2], 
@@ -245,6 +313,12 @@ class GAPGraphBenchmark(Benchmark):
             BFS_UNO_ADJ_WARM, 'gf_warm_impl',
         ],
         'bfs_scout_sf': [
+            BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2,
+            BFS_PUSH_KERNEL,
+            BFS_PULL_FRONTIER,
+            'gf_warm_impl',
+        ],
+        'bfs_scout_sf_test': [
             BFS_PULL_KERNEL_1, BFS_PULL_KERNEL_2,
             BFS_PUSH_KERNEL,
             BFS_PULL_FRONTIER,
@@ -463,6 +537,23 @@ class GAPGraphBenchmark(Benchmark):
             additional_options.append(
                 "--gem-forge-stream-engine-enable-float-history=0"
             )
+            """
+            For SSSP, we have to disable IdeaAck for PredicateOffElem
+            to really get the traffic benefit from AffinityAlloc. This
+            should actually be analyzed and extended.
+            """
+            additional_options.append(
+                '--gem-forge-stream-engine-enable-float-idea-ack-for-pred-off-elem=0'
+            )
+            if self.benchmark_name == 'sssp_sf_delta1' and input_name.find('krn20-k16') != -1:
+                """
+                This configuration actually sees potential fake deadlock
+                some threads is starving by the flood of StreamAck. Here
+                I try to increase the deadlock threshold to see if it helps.
+                """
+                additional_options.append(
+                    '--gem-forge-cpu-deadlock-interval=1000000ns'
+                )
         work_items = -1
         if self.benchmark_name.startswith('pr'):
             # Three kernels, two iteration.

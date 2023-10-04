@@ -512,7 +512,7 @@ def parse_stream_plot(option, opt, value, parser):
 
 
 def parse_transform_configurations(option, opt, value, parser):
-    vs = value.split(',')
+    vs = [x for x in value.split(',') if x != '']
     full_paths = [os.path.join(
         C.GEM_FORGE_DRIVER_PATH, 'Configurations', v + '.json') for v in vs]
     for full_path in full_paths:
@@ -627,6 +627,12 @@ if __name__ == '__main__':
                       action='store', dest='gem5_max_insts', default=None)
     parser.add_option('--gem5-variant',
                       action='store', dest='gem5_variant', default='opt')
+    parser.add_option('--gem5-stream-engine-yield-cpu-when-blocked',
+                      action='store_true', dest='gem5_stream_engine_yield_cpu_when_blocked',
+                      default=False)
+    parser.add_option('--gem5-enable-llc-stream-engine-trace',
+                      action='store_true', dest='gem5_enable_llc_stream_engine_trace',
+                      default=False)
 
     # If true, the simuation is not performed, but prepare the hoffman2 cluster to do it.
     parser.add_option('--hoffman2', action='store_true',

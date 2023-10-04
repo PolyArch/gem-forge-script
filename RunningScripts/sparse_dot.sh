@@ -6,10 +6,11 @@
 # transform/benchmark/GemForgeMicroSuite/stream/vec_add/omp_vec_add_avx
 Benchmark='-b '
 Benchmark+='gfm.sparse_dot_prod,'
+# Benchmark+='gfm.dot_prod_avx,'
 
 # Specify the input size. Check driver/BenchmarkDrivers/GemForgeMicroSuite.py
 # for the details of how the benchmark is built and simulated.
-SimInput=large
+SimInput=large-cold
 
 # Specify the number of threads. The workload is parallelized with OpenMP.
 Threads=64
@@ -58,7 +59,9 @@ sim_replay=$o8.bingo-l2pf
 StreamTransform=stream/ex/static/so.store
 # StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
 # python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
-    # --transform-debug StaticStreamRegionAnalyzer,StaticStream,StaticIndVarStream,StaticMemStream,StreamExecutionTransformer
+#     --transform-debug StaticStreamRegionAnalyzer,StaticIndVarStream,StaticStream
+    
+    # ,StaticStream,StaticIndVarStream,StaticMemStream,StreamExecutionTransformer
 
 run_ssp () {
     local trans=$1
@@ -75,7 +78,7 @@ run_ssp () {
         --input-threads $threads \
         -s -j $parallel \
         --no-job-log \
-        # --gem5-debug ISAStreamEngine,StreamEngine,O3CPUDelegator | tee /benchmarks/gfm-new.log
+        # --gem5-debug ISAStreamEngine,StreamEngine,StreamBase | tee /benchmarks/gfm-new.log
         # --gem5-debug MLCStreamPUM 2>&1 | tee /benchmarks/gfm-new.log
         # --gem5-debug StreamNUCAManager,MLCStreamPUM,MLCRubyStream | tee /benchmarks/gfm-new.log
         # --gem5-debug StreamNUCAManager,MLCStreamPUM | tee /benchmarks/gfm-new.log

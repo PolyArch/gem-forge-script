@@ -76,7 +76,7 @@ class Benchmark(object):
         return
 
     @abc.abstractmethod
-    def get_args(self, input_name):
+    def get_args(self, input_name, **kwargs):
         return
 
     @abc.abstractmethod
@@ -102,8 +102,8 @@ class Benchmark(object):
     def get_run_path(self):
         return
 
-    def get_sim_args(self, sim_input):
-        return self.get_args(sim_input)
+    def get_sim_args(self, sim_input, **kwargs):
+        return self.get_args(sim_input, **kwargs)
 
     def get_gem5_links(self):
         return self.get_links()
@@ -1013,6 +1013,8 @@ class Benchmark(object):
             C.GEM5_LLVM_TRACE_SE_CONFIG if not hoffman2 else C.HOFFMAN2_GEM5_LLVM_TRACE_SE_CONFIG,
             f'--cmd={binary}',
             f'--llvm-store-queue-size={C.STORE_QUEUE_SIZE}',
+            f'--gem-forge-stream-engine-yield-core-when-blocked={int(self.options.gem5_stream_engine_yield_cpu_when_blocked)}',
+            f'--gem-forge-enable-llc-stream-engine-trace={int(self.options.gem5_enable_llc_stream_engine_trace)}',
             f'--llvm-mcpat={C.GEM5_USE_MCPAT}',
             '--caches',
             '--l2cache',
@@ -1050,6 +1052,9 @@ class Benchmark(object):
             simulation_config=simulation_config,
             input_name=sim_input)
 
+        transform_id = transform_config.get_transform_id()
+        simulation_id = simulation_config.get_simulation_id()
+
         # Allow each benchmark to have a customized memory capacity.
         if self.get_gem5_mem_size():
             mem_size = self.get_gem5_mem_size()
@@ -1064,7 +1069,6 @@ class Benchmark(object):
                 gem5_args.append('--mem-size={s}'.format(s=mem_size))
 
         if self.get_name() == 'rodinia.srad_v2-avx512-fix':
-            transform_id = transform_config.get_transform_id()
             if transform_id == 'stream.ex.static.so.store':
                 for i in range(len(gem5_args)):
                     if gem5_args[i] == '--gem-forge-stream-engine-enable-float':
@@ -1077,7 +1081,6 @@ class Benchmark(object):
                         break
 
         if self.get_name() == 'rodinia.srad_v3-avx512-fix':
-            transform_id = transform_config.get_transform_id()
             if transform_id == 'stream.ex.static.so.store':
                 for i in range(len(gem5_args)):
                     if gem5_args[i] == '--gem-forge-stream-engine-enable-float':
@@ -1112,9 +1115,10 @@ class Benchmark(object):
                 if gem5_args[i] == '--gem-forge-stream-engine-llc-multicast-group-size=2':
                     gem5_args[i] = '--gem-forge-stream-engine-llc-multicast-group-size=0'
         # Append the arguments.
-        if self.get_sim_args(sim_input) is not None:
+        sim_args = self.get_sim_args(sim_input, trans=transform_id, sim=simulation_id)
+        if sim_args is not None:
             gem5_args.append(
-                '--options={binary_args}'.format(binary_args=' '.join(self.get_sim_args(sim_input))))
+                '--options={binary_args}'.format(binary_args=' '.join(sim_args)))
         return gem5_args
 
     """

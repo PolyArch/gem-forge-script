@@ -1,0 +1,49 @@
+{
+    "id": "o8-sapphire-rapids.cache-48kBm{l1_mshr}-2MBm{l2_mshr}-4MB-d{max_infly_data_req}.8x8c-l{link}-s{llc_intrlv}-ch{ch_intrlv}.f{stream_fifo}-c-gb.l2stride{l2_stride_dist}c{l2_cross_page}h{l2_pf_on_hit}",
+    "options": [
+        "--gem-forge-num-active-cpus=1",
+        "--gem-forge-cache-load-ports=6",
+        "--gem-forge-cache-store-ports=4",
+        "--gem-forge-core-pipeline=sapphire-rapids",
+        "--link-width-bits={link}",
+        "--gem-forge-ruby-max-infly-data-req={max_infly_data_req}",
+        "--gem-forge-stream-engine-enable",
+        "--gem-forge-stream-engine-total-run-ahead-bytes={stream_fifo}",
+        "--gem-forge-stream-engine-total-run-ahead-length={stream_fifo//16}",
+        "--gem-forge-stream-engine-max-num-elements-prefetch-for-atomic=2",
+        "--gem-forge-stream-engine-enable-lsq",
+        "--gem-forge-stream-engine-enable-coalesce",
+        "--gem-forge-stream-engine-throttling=global",
+        "--gem-forge-l2-prefetcher=stride",
+        "--gem-forge-l2-prefetch-dist={l2_stride_dist}",
+        "--gem-forge-l2-prefetch-cross-page={l2_cross_page}",
+        "--gem-forge-l2-prefetch-on-hit={l2_pf_on_hit}",
+        "--l1d_mshrs={l1_mshr}",
+        "--l1_5d_mshrs={l2_mshr}",
+        "--llc-select-low-bit={log2Byte(llc_intrlv)}",
+        "--numa-high-bit={log2Byte(ch_intrlv) + 1}",
+        "--gem-forge-stream-engine-llc-stream-engine-issue-width=1"
+    ],
+    "snippts": [
+        "o8.tlb",
+        "8x8.dir_corner.l1_48kB.l2_2MB.l3_4MB_s0.ruby",
+        "ddr4-no-xor"
+    ],
+    "design_space": {
+        "llc_intrlv": ["64B"],
+        "ch_intrlv": ["64B"],
+        "link": [256],
+        "l1_mshr": [32],
+        "l2_mshr": [64],
+        "stream_fifo": [2048],
+        "max_infly_data_req": [32],
+        "l2_stride_dist": [256],
+        "l2_cross_page": [1],
+        "l2_pf_on_hit": [0]
+    },
+    "support-transform-ids": [
+        "stream.ex.static.so",
+        "stream.ex.static.so.store",
+        "stream.ex.static.so.store.cmp-bnd-elim-nst"
+    ]
+}

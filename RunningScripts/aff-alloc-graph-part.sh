@@ -24,15 +24,12 @@ SimInput=''
 # SimInput+=',krn16-k32-rnd64'
 # SimInput+=',krn18-k8-rnd64'
 # SimInput+=',krn19-k4-rnd64'
-
-# SimInput+=',twitch-gamers-rnd64'
-# SimInput+=',ego-fb-rnd64'
-# SimInput+=',ego-twitter-rnd64'
-# SimInput+=',ego-gplus-rnd64'
-# SimInput+=',soc-LiveJournal1-rnd64'
 # SimInput+=',krn20-k2-rnd64'
 
-SimInput+=',krn17-k16-ne64.part'
+SimInput+=',twitch-gamers-rnd64'
+SimInput+=',ego-gplus-rnd64'
+
+# SimInput+=',krn17-k16-ne64.part'
 # SimInput+=',twitch-gamers-ne64.part'
 # SimInput+=',ego-gplus-ne64.part'
 

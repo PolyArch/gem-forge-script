@@ -39,6 +39,12 @@ class RodiniaBenchmark(Benchmark):
             'medium': ['512', '512', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'pic':  ['1024', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large':  ['2048', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large2x':  ['4096', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large4x':  ['8192', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large8x':  ['16384', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large2x-cold':  ['4096', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'large4x-cold':  ['8192', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'large8x-cold':  ['16384', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
             'mix':    ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'mix-cold': ['3584', '1024', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
@@ -49,6 +55,12 @@ class RodiniaBenchmark(Benchmark):
             'medium': ['512', '512', '2', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large':  ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'large-cold': ['256', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'large2x':  ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large4x':  ['1024', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large8x':  ['2048', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
+            'large2x-cold':  ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'large4x-cold':  ['1024', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
+            'large8x-cold':  ['2048', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
             'mix':    ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '1'],
             'mix-cold': ['512', '1024', '8', '100', '$NTHREADS', 'invalid.data', 'invalid.data', 'output.txt', '0'],
         },
@@ -88,6 +100,12 @@ class RodiniaBenchmark(Benchmark):
             'medium': ['1000', '100', '$NTHREADS', '1'],
             'large': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '1'],
             'large-cold': [str(6 * 1024 * 1024 // 4), '8', '$NTHREADS', '0'],
+            'large2x': [str(6 * 1024 * 1024 // 4), '16', '$NTHREADS', '1'],
+            'large4x': [str(6 * 1024 * 1024 // 4), '32', '$NTHREADS', '1'],
+            'large8x': [str(6 * 1024 * 1024 // 4), '64', '$NTHREADS', '1'],
+            'large2x-cold': [str(6 * 1024 * 1024 // 4), '16', '$NTHREADS', '0'],
+            'large4x-cold': [str(6 * 1024 * 1024 // 4), '32', '$NTHREADS', '0'],
+            'large8x-cold': [str(6 * 1024 * 1024 // 4), '64', '$NTHREADS', '0'],
             'mix': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '1'],
             'mix-cold': [str(24 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
             'mem': [str(48 * 1024 * 1024 // 4), '100', '$NTHREADS', '0'],
@@ -97,6 +115,12 @@ class RodiniaBenchmark(Benchmark):
             # rows, cols, x0, x1, y0, y1, threads, lambda, iterations, warm.
             'medium': ['256', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
             'large': ['1024', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'large2x': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'large4x': ['4096', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'large8x': ['4096', '4096', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
+            'large2x-cold': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
+            'large4x-cold': ['4096', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
+            'large8x-cold': ['4096', '4096', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
             'mix': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '1'],
             'mix-cold': ['2048', '2048', '0', '127', '0', '127', '$NTHREADS', '0.5', '100', '0'],
         },
@@ -291,7 +315,7 @@ class RodiniaBenchmark(Benchmark):
             return 'mix-cold'
         return self.break_input_name(input_name)[0]
 
-    def _get_args(self, input_name):
+    def _get_args(self, input_name, **kwargs):
         data_folder = os.path.join(
             self.benchmark_path,
             '../../data',
@@ -315,7 +339,7 @@ class RodiniaBenchmark(Benchmark):
             return ['-mavx512f']
         return list()
 
-    def get_sim_args(self, input_name):
+    def get_sim_args(self, input_name, **kwargs):
         return self._get_args(input_name)
 
     def get_sim_input_name(self, sim_input):

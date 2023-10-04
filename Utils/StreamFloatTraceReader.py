@@ -49,12 +49,21 @@ def collectTrace(args, fn):
         events.append(msg)
     return events
 
+def match_file_with_keyword(fn, keyword):
+    if keyword is None:
+        return True
+    ks = keyword.split(',')
+    for k in ks:
+        if k in fn:
+            return True
+    return False
+
 def collectAllTraces(args, folder, keyword=None):
     all_events = list()
     min_cycle = 1000000000000000
     PRINT(f'Reading folder {folder}')
     for f in os.listdir(folder):
-        if keyword and keyword not in f:
+        if not match_file_with_keyword(f, keyword):
             continue
         full_fn = os.path.join(folder, f)
         if os.path.isfile(full_fn):

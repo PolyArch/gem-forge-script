@@ -22,23 +22,19 @@ def getConfigurations(subset):
 
     if subset in ['float-trace']:
         for nest in [
-            # 4,
-            # 8,
             16,
         ]:
             sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1-rmt-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
+            nsc_sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mif8-snuca1x1-strand0-ind0-b0.2-csr1-iacer0x0x0x0x0'
             for suite, benchmark, abbrev, sim_input, keyword in [
-                ('gap', 'pr_push_adj_uno_aff', 'pr_push_adj', 'krn17-k16-rnd64', 'score.at'),
-                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push_adj', 'krn17-k16-rnd64', 'swap.at'),
-                # ('gfm', 'omp_link_list_search_aff', 'link-list', 'large', 'link_list.next.ld'),
-                # ('gfm', 'omp_hash_join_aff', 'hash-join', 'large', 'hash_join.next.ld'),
+                # ('gap', 'pr_push_adj_uno_aff', 'pr_push', 'krn17-k16-rnd64', 'score.at'),
+                ('gap', 'bfs_push_adj_uno_aff_sf', 'bfs_push', 'krn17-k16-rnd64', 'swap.at'),
+                ('gap', 'bfs_both_adj_uno_aff_sf', 'bfs_both', 'krn17-k16-rnd64', 'swap.at,v_parent.ld'),
             ]:
                 for alloc_policy in [
                     'hybrid5',
                     'min-hops',
-                    'min-load',
                     'random',
-                    # 'delta',
                 ]:
                     tdg_folder = f'fake.0.tdg.{sim_input}.aff-{alloc_policy}.thread64'
                     out_fn = f'{result_prefix}/{conference}.{abbrev}.{alloc_policy}.nest{nest}'
@@ -51,6 +47,22 @@ def getConfigurations(subset):
                         'simulation': sim,
                         'out_fn': out_fn,
                     })
+            # for suite, benchmark, abbrev, sim_input, keyword in [
+            #     # ('gap', 'pr_push_adj_uno_aff', 'pr_push_adj', 'krn17-k16-rnd64', 'score.at'),
+            #     ('gap', 'bfs_push_sf', 'bfs_push', 'krn17-k16-rnd64', 'swap.at'),
+            #     ('gap', 'bfs_both_sf', 'bfs_both', 'krn17-k16-rnd64', 'swap.at,v_parent.ld'),
+            # ]:
+            #     tdg_folder = f'fake.0.tdg.{sim_input}.thread64'
+            #     out_fn = f'{result_prefix}/{conference}.{abbrev}.nsc.nest{nest}'
+            #     configurations.append({
+            #         'suite': suite,
+            #         'benchmark': benchmark,
+            #         'tdg_folder': tdg_folder,
+            #         'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+            #         'keyword': keyword,
+            #         'simulation': nsc_sim,
+            #         'out_fn': out_fn,
+            #     })
 
     if subset in ['gfm']:
         for nest in [
@@ -134,6 +146,27 @@ def getConfigurations(subset):
                             'interval': 1000,
                             'event_type': event_type,
                         })
+
+    if subset in ['llc-cmp-mm']:
+        nest = 4
+        sim = f'{sim_prefix}-nest{nest}.fltsc-cmp-mcf-mif8-snuca1-strand1-ind0-b0.2-csr1-iacerf1x0x0x1x0x0'
+        for event_type in ['llc-req', 'llc-cmp']:
+            for suite, benchmark, abbrev, sim_input, keyword in [
+                ('gfm', 'mm_outer_avx', 'mm_outer', 'large', 'LLC_SE'),
+            ]:
+                tdg_folder = f'fake.0.tdg.{sim_input}.thread64'
+                out_fn = f'{result_prefix}/{conference}.{subset}.{abbrev}.nest{nest}'
+                configurations.append({
+                    'suite': suite,
+                    'benchmark': benchmark,
+                    'tdg_folder': tdg_folder,
+                    'transform': 'stream.ex.static.so.store.cmp-bnd-elim-nst',
+                    'keyword': keyword,
+                    'simulation': sim,
+                    'out_fn': out_fn,
+                    'interval': 1000,
+                    'event_type': event_type,
+                })
 
     return configurations
 

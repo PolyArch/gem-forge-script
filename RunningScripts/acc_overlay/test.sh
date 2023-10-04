@@ -3,26 +3,25 @@
 # rm -f /tmp/job_scheduler.*
 
 Benchmark='-b '
-# New workloads.
+# Benchmark+='gfm.acc_gen_avx,'
+# Benchmark+='gfm.acc_gen_mm_avx,'
+Benchmark+='gfm.acc_gen_mm_M35_N704_K2048_avx,'
 # Benchmark+='gfm.mm_outer_avx,'
-Benchmark+='gfm.mm_acc_avx,'
-# Benchmark+='gfm.dot_prod_avx,'
-# Benchmark+='gfm.omp_mm_outer_avx,'
-SimInput=large
-# SimInput=medium
-# SimInput=large-cold
+SimInput=''
+# SimInput+='large,'
+SimInput+='large-cold'
 
 SimTrace='--fake-trace'
-python Driver.py $Benchmark --build
-python Driver.py $Benchmark $SimTrace --trace
+# python Driver.py $Benchmark --build
+# python Driver.py $Benchmark $SimTrace --trace
 
 RubyConfig=8x8c
 Threads=64
 Parallel=100
 
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
-python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
-    --transform-debug StaticStreamRegionAnalyzer,StaticStream,StaticMemStream 2>&1 | tee shit.log
+# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+#     --transform-debug StaticStreamRegionAnalyzer,StaticStream,StaticMemStream 2>&1 | tee shit.log
 
 run_ssp () {
     local trans=$1
@@ -46,11 +45,14 @@ run_ssp () {
         --sim-input $input \
         --input-threads $threads \
         -s -j $parallel \
-        --no-job-log \
-        # --gem5-debug LLCRubyStream 2>&1 | tee /benchmarks/cmp-cache.log
+        --gem5-variant fast \
+        --gem5-stream-engine-yield-cpu-when-blocked \
+        # --no-job-log \
+        # --perf-command \
+        # --gem5-debug MLCRubyStrandSplit,LLCRubyStream 2>&1 | tee /benchmarks/cmp-cache.log
         # --gem5-debug ISAStreamEngine,StreamEngine,StreamBase,LLCRubyStream,MLCRubyStream | tee /benchmarks/cmp-cache.log
         # --gem5-debug IEW,IQ,O3CPUDelegator,ISAStreamEngine,StreamBase,StreamEngine,StreamElement --gem5-debug-start 44781005000 2>&1 | tee /benchmarks/cmp.log
         # --gem5-debug LLCRubyStream,MLCRubyStream --gem5-debug-start 45820730500 --gem5-max-ticks 45830730500 | tee /benchmarks/cmp.log
         # --gem5-debug LLCRubyStream,MLCRubyStream,ISAStreamEngine,StreamEngine,StreamBase --gem5-debug-start 28672993500 | tee /benchmarks/cmp.log
 }
-# run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel
+run_ssp $StreamTransform $RubyConfig $SimInput $Threads $Parallel

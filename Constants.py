@@ -12,6 +12,10 @@ GEM_FORGE_TOP_PATH = os.getenv('GEM_FORGE_TOP')
 AFFINITY_ALLOC_INC_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'lib/affinity_alloc')
 AFFINITY_ALLOC_LIB_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'lib/affinity_alloc/build')
 
+# Where to find AOCL
+AOCL_INC_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'build/include/blis')
+AOCL_LIB_PATH = os.path.join(GEM_FORGE_TOP_PATH, 'build/lib')
+
 # Where to store the llvm_bc and traces.
 EXPERIMENTS = 'stream'
 # EXPERIMENTS = 'fractal'
