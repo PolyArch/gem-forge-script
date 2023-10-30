@@ -508,7 +508,7 @@ class RodiniaSuite:
         if benchmark_path is None:
             print('Please specify where the benchmark is in GEM_FORGE_BENCHMARK_PATH')
             assert(False)
-        suite_folder = os.path.join(benchmark_path, 'Rodinia')
+        suite_folder = os.path.join(benchmark_path, 'rodinia')
         self.benchmarks = list()
         sub_folders = ['openmp']
         for sub_folder in sub_folders:
