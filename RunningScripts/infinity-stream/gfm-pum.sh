@@ -31,15 +31,15 @@ SimInput=large-cold,large
 Threads=64
 
 SimTrace='--fake-trace'
-# python Driver.py $Benchmark --build
-# python Driver.py $Benchmark $SimTrace --trace
+python Driver.py $Benchmark --build
+python Driver.py $Benchmark $SimTrace --trace
 
 # RubyConfig=8x8c
 RubyConfig=8x8t4x4
 Parallel=40
 
 StreamTransform=stream/ex/static/so.store.cmp-bnd-elim-nst
-# python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
+python Driver.py $Benchmark $SimTrace -t $StreamTransform -d \
 #     --transform-debug StreamLoopEliminator 2>&1 | tee /benchmarks/gfm-new.log
 
 run_ssp () {
