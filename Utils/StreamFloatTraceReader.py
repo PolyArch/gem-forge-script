@@ -104,6 +104,48 @@ def addEventToStreamChanges(args, e, prev_streams, stream_changes):
             new_streams += 1
         elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.LOCAL_REQ_DONE:
             new_streams -= 1
+    elif args.event_type == 'router-xbar-south':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_SOUTH_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_SOUTH_DONE:
+            new_streams -= 1
+    elif args.event_type == 'router-xbar-north':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_NORTH_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_NORTH_DONE:
+            new_streams -= 1
+    elif args.event_type == 'router-xbar-east':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_EAST_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_EAST_DONE:
+            new_streams -= 1
+    elif args.event_type == 'router-xbar-west':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_WEST_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_WEST_DONE:
+            new_streams -= 1
+    elif args.event_type == 'router-xbar-local':
+        if e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_LOCAL_START:
+            new_streams += 1
+        elif e.type == StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_LOCAL_DONE:
+            new_streams -= 1
+    elif args.event_type == 'router-xbar':
+        if e.type in [
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_SOUTH_START,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_NORTH_START,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_EAST_START,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_WEST_START,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_LOCAL_START,
+                ]:
+            new_streams += 1
+        elif e.type in [
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_SOUTH_DONE,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_NORTH_DONE,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_EAST_DONE,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_WEST_DONE,
+            StreamMesssage_pb2.StreamFloatEvent.StreamFloatEventType.ROUTER_XBAR_OUT_LOCAL_DONE,
+                ]:
+            new_streams -= 1
     if new_streams == prev_streams:
         # No change. Skip
         return new_streams
@@ -336,6 +378,25 @@ def dumpAlignedStreamChange(args, f, banks, bank_stream_changes):
             f.write(f',{streams}')
         f.write('\n')
 
+    # Dump the accumulate.
+    f.write('\n')
+    for cycle, _ in bank_stream_changes[banks[0]]:
+        f.write(f',{cycle}')
+    f.write('\n')
+    for bank in banks:
+        stream_changes = bank_stream_changes[bank]
+        f.write(f'acc-bank-{bank[0]}-{bank[1]}')
+        prev_cycle = 0
+        prev_streams = 0
+        acc = 0
+        for cycle, streams in stream_changes:
+            f.write(f',{acc}')
+            acc += prev_streams * (cycle - prev_cycle)
+            prev_cycle = cycle
+            prev_streams = streams
+        f.write(f',{acc}\n')
+
+
 def determinInterval(args, all_events):
     if args.n_intervals == 0:
         return
@@ -427,7 +488,18 @@ def main(argv):
         action='store_true', default=False,
         help='Dump summary at the end')    
     parser.add_argument('--event-type',
-        choices=['llc-stream', 'llc-cmp', 'llc-req'], default='llc-stream',
+        choices=[
+            'llc-stream',
+            'llc-cmp',
+            'llc-req',
+            'router-xbar',
+            'router-xbar-south',
+            'router-xbar-north',
+            'router-xbar-east',
+            'router-xbar-west',
+            'router-xbar-local',
+            ],
+        default='llc-stream',
         help='What event to process')
 
     args = parser.parse_args(argv)

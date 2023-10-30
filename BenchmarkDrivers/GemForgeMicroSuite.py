@@ -207,9 +207,10 @@ class GemForgeMicroBenchmark(Benchmark):
             'duality-cold': [str(x) for x in [1024, 1024, 3, 0, 0]],
         },
         'acc_gen': {
-            # check, warm
+            # check, warm, reset_stats_after_warm
             'large': [str(x) for x in [0, 1]],
             'large-cold': [str(x) for x in [0, 0]],
+            'large-prefetch': [str(x) for x in [0, 1, 0]],
         },
         'mm_aocl': {
             # M, K, N, (float, 3 array), check, warm
@@ -643,10 +644,11 @@ class GemForgeMicroBenchmark(Benchmark):
         # to avoid bringing data into the private cache.
         trace_warm_benchmarks = [
             'mm_outer_avx',
+            'acc_gen_mm',
         ]
         for x in trace_warm_benchmarks:
             if self.benchmark_name.find(x) != -1:
-                funcs += ['gf_warm_array']
+                funcs += ['gf_warm_array_impl']
                 break
         return Benchmark.ROI_FUNC_SEPARATOR.join(funcs)
 

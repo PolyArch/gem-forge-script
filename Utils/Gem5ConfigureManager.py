@@ -199,9 +199,10 @@ class Gem5ReplayConfigureManager(object):
         return self.gem_forge_system_configs
 
     def insert_snippts(self, json_obj):
+        # We insert snippt at the beginning so the original json can override it?
         for snippt_name in json_obj['snippts']:
             snippt = Gem5ReplayConfigureManager.SNIPPTS[snippt_name]
-            json_obj['options'] += snippt
+            json_obj['options'] = snippt + json_obj['options']
         return json_obj
 
     """
@@ -322,7 +323,7 @@ class Gem5ReplayConfigureManager(object):
         "--ruby",
         "--access-backing-store",
         "--network=garnet",
-        "--garnet-enable-multicast",
+        "--garnet-multicast-mode=duplicate",
         "--router-latency=2",
         "--link-latency=1",
         "--mem-channels=2",
@@ -342,6 +343,11 @@ class Gem5ReplayConfigureManager(object):
         "--ruby-mesh-dir-location=middle",
         "--routing-YX", # Routing in YX direction.
     ]
+    RUBY_MESH_DIR_EAST_WEST_EDGE = [
+        "--topology=MeshDir_XY",
+        "--ruby-mesh-dir-location=east-west-edge",
+        "--routing-YX", # Routing in YX direction.
+    ]
     RUBY_MESH_DIR_TILE = [
         "--topology=MeshDir_XY",
         "--ruby-mesh-dir-location=tile",
@@ -355,6 +361,7 @@ class Gem5ReplayConfigureManager(object):
     RUBY_L3 = RUBY_L3_BASE + RUBY_MESH
     RUBY_L3_DIR_CORNER = RUBY_L3_BASE + RUBY_MESH_DIR_CORNER
     RUBY_L3_DIR_MIDDLE = RUBY_L3_BASE + RUBY_MESH_DIR_MIDDLE
+    RUBY_L3_DIR_EAST_WEST_EDGE = RUBY_L3_BASE + RUBY_MESH_DIR_EAST_WEST_EDGE
     RUBY_L3_DIR_TILE = RUBY_L3_BASE + RUBY_MESH_DIR_TILE
     RUBY_L3_DIR_DIAG = RUBY_L3_BASE + RUBY_MESH_DIR_DIAG
 
@@ -548,6 +555,12 @@ class Gem5ReplayConfigureManager(object):
             "--num-l2caches=64",
             "--mesh-rows=8",
         ] + RUBY_L3_DIR_MIDDLE + L0_48kB + MLC_2MB + LLC_4MB,
+        '8x8.dir_east_west_edge.l1_48kB.l2_2MB.l3_4MB_s0.ruby': [
+            "--num-cpus=64",
+            "--num-dirs=16",
+            "--num-l2caches=64",
+            "--mesh-rows=8",
+        ] + RUBY_L3_DIR_EAST_WEST_EDGE + L0_48kB + MLC_2MB + LLC_4MB,
         '4x4.dir_tile2x2.l2_256kB.l3_1MB_s0.ruby': [
             "--num-cpus=16",
             "--num-dirs=4",

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13StreamMessage.proto\x12\x08LLVM.TDG\"/\n\x0bStreamParam\x12\r\n\x05value\x18\x01 \x01(\x03\x12\x11\n\tis_static\x18\x02 \x01(\x08\"e\n\tIVPattern\x12\x31\n\x0bval_pattern\x18\x01 \x01(\x0e\x32\x1c.LLVM.TDG.StreamValuePattern\x12%\n\x06params\x18\x02 \x03(\x0b\x32\x15.LLVM.TDG.StreamParam\"9\n\x12StaticCoalesceInfo\x12\x13\n\x0b\x62\x61se_stream\x18\x01 \x01(\x04\x12\x0e\n\x06offset\x18\x02 \x01(\x05\"$\n\x08StreamId\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x04\"[\n\x12PredicatedStreamId\x12\x1e\n\x02id\x18\x01 \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x11\n\tpred_true\x18\x02 \x01(\x08\x12\x12\n\npred_dg_id\x18\x03 \x01(\x05\"\xab\x02\n\x0c\x45xecFuncInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12,\n\x04\x61rgs\x18\x02 \x03(\x0b\x32\x1e.LLVM.TDG.ExecFuncInfo.FuncArg\x12 \n\x04type\x18\x03 \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12\x34\n\ncompute_op\x18\x04 \x01(\x0e\x32 .LLVM.TDG.ExecFuncInfo.ComputeOp\x1aQ\n\x07\x46uncArg\x12\x11\n\tis_stream\x18\x01 \x01(\x08\x12\x11\n\tstream_id\x18\x02 \x01(\x04\x12 \n\x04type\x18\x03 \x01(\x0e\x32\x12.LLVM.TDG.DataType\"4\n\tComputeOp\x12\x0b\n\x07UNKNOWN\x10\x00\x12\r\n\tFLOAT_ADD\x10\x01\x12\x0b\n\x07INT_ADD\x10\x02\"\xd5\x02\n\x17StaticStreamComputeInfo\x12)\n\rupdate_stream\x18\x01 \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x0fstore_func_info\x18\x02 \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x1a\n\x12\x65nabled_store_func\x18\x03 \x01(\x08\x12.\n\x0eload_func_info\x18\x04 \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x19\n\x11\x65nabled_load_func\x18\x05 \x01(\x08\x12.\n\x12value_base_streams\x18\x06 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12-\n\x11value_dep_streams\x18\x07 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x18\n\x10reduce_from_zero\x18\x10 \x01(\x08\"\xe6\r\n\x10StaticStreamInfo\x12\x14\n\x0cis_candidate\x18\x01 \x01(\x08\x12\x14\n\x0cis_qualified\x18\x02 \x01(\x08\x12\x11\n\tis_chosen\x18\x03 \x01(\x08\x12\x30\n\x0bstp_pattern\x18\x04 \x01(\x0e\x32\x1b.LLVM.TDG.StreamStepPattern\x12\x31\n\x0bval_pattern\x18\x05 \x01(\x0e\x32\x1c.LLVM.TDG.StreamValuePattern\x12K\n\x11not_stream_reason\x18\x06 \x01(\x0e\x32\x30.LLVM.TDG.StaticStreamInfo.StaticNotStreamReason\x12\x1a\n\x12loop_possible_path\x18\x07 \x01(\r\x12!\n\x19\x63onfig_loop_possible_path\x18\x08 \x01(\r\x12\'\n\niv_pattern\x18\t \x01(\x0b\x32\x13.LLVM.TDG.IVPattern\x12\x14\n\x0c\x66loat_manual\x18\n \x01(\x08\x12\x31\n\x12\x63onst_update_param\x18\x0e \x01(\x0b\x32\x15.LLVM.TDG.StreamParam\x12\x16\n\x0eis_cond_access\x18\x0f \x01(\x08\x12\x1b\n\x13is_trip_count_fixed\x18\x10 \x01(\x08\x12\x38\n\x12predicated_streams\x18\x12 \x03(\x0b\x32\x1c.LLVM.TDG.PredicatedStreamId\x12?\n\x19merged_predicated_streams\x18\x13 \x03(\x0b\x32\x1c.LLVM.TDG.PredicatedStreamId\x12#\n\x1bis_merged_predicated_stream\x18\x14 \x01(\x08\x12.\n\x0epred_func_info\x18\x15 \x03(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x14\n\x0cno_core_user\x18\x16 \x01(\x08\x12\x12\n\nloop_level\x18\x17 \x01(\r\x12\x19\n\x11\x63onfig_loop_level\x18\x18 \x01(\r\x12\x1a\n\x12is_inner_most_loop\x18\x19 \x01(\x08\x12-\n\x11\x61lias_base_stream\x18  \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x14\n\x0c\x61lias_offset\x18! \x01(\r\x12+\n\x0f\x61liased_streams\x18\" \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x37\n\x0c\x63ompute_info\x18# \x01(\x0b\x32!.LLVM.TDG.StaticStreamComputeInfo\x12\x17\n\x0floop_eliminated\x18$ \x01(\x08\x12\x1d\n\x15\x63ore_need_final_value\x18% \x01(\x08\x12$\n\x1c\x63ore_need_second_final_value\x18& \x01(\x08\x12\x19\n\x11\x63ore_element_size\x18< \x01(\x05\x12\x18\n\x10mem_element_size\x18= \x01(\x05\x12-\n\x11\x63ore_element_type\x18> \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12,\n\x10mem_element_type\x18? \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12\x12\n\nuser_param\x18@ \x03(\t\"\x9a\x04\n\x15StaticNotStreamReason\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x30\n,BASE_STREAM_INNER_MOST_LOOP_NOT_CONTAIN_MINE\x10\x01\x12#\n\x1fMULTI_PHIMNODE_FOR_COMPUTEMNODE\x10\x02\x12 \n\x1cMULTI_NON_EMPTY_COMPUTE_PATH\x10\x03\x12\x1d\n\x19NO_NON_EMPTY_COMPUTE_PATH\x10\x04\x12\x1d\n\x19NOT_SCEVABLE_COMPUTEMNODE\x10\x05\x12\x12\n\x0eRANDOM_PATTERN\x10\x06\x12\x13\n\x0fMULTI_STEP_ROOT\x10\x07\x12\x10\n\x0cNO_STEP_ROOT\x10\x08\x12\x1a\n\x16VARIANT_BACKEDGE_TAKEN\x10\t\x12\x13\n\x0fIS_UPDATE_STORE\x10\n\x12!\n\x1dIN_LOOP_REMAINDER_OR_EPILOGUE\x10\x0b\x12\x17\n\x13IV_NO_MEM_DEPENDENT\x10\x0c\x12\x15\n\x11USER_NOT_OUT_MOST\x10\r\x12\x1a\n\x16IN_LOOP_REDUCTION_USER\x10\x0e\x12\x18\n\x14USER_NEST_LOOP_LEVEL\x10\x0f\x12\x12\n\x0eUSER_NO_STREAM\x10\x10\x12\x1d\n\x19\x42\x41SE_STREAM_NOT_QUALIFIED\x10\x14\x12\x15\n\x11NO_STATIC_MAPPING\x10\x15\"\xad\x01\n\x11\x44ynamicStreamInfo\x12\x14\n\x0cis_candidate\x18\x01 \x01(\x08\x12\x14\n\x0cis_qualified\x18\x02 \x01(\x08\x12\x11\n\tis_chosen\x18\x03 \x01(\x08\x12\x12\n\nis_aliased\x18\x04 \x01(\x08\x12\x13\n\x0btotal_iters\x18\x05 \x01(\x04\x12\x16\n\x0etotal_accesses\x18\x06 \x01(\x04\x12\x18\n\x10total_configures\x18\x07 \x01(\x04\"\xc6\x04\n\nStreamInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x04\x12\'\n\x04type\x18\x03 \x01(\x0e\x32\x19.LLVM.TDG.StreamInfo.Type\x12\x14\n\x0cpattern_path\x18\x07 \x01(\t\x12\x14\n\x0chistory_path\x18\x08 \x01(\t\x12\x33\n\rcoalesce_info\x18\t \x01(\x0b\x32\x1c.LLVM.TDG.StaticCoalesceInfo\x12\x31\n\x0c\x64ynamic_info\x18\n \x01(\x0b\x32\x1b.LLVM.TDG.DynamicStreamInfo\x12\x18\n\x10region_stream_id\x18\x0b \x01(\x05\x12.\n\x0e\x61\x64\x64r_func_info\x18\x0c \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12(\n\x0c\x62\x61se_streams\x18\x10 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12-\n\x11\x62\x61\x63k_base_streams\x18\x11 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x13\x63hosen_base_streams\x18\x12 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x34\n\x18\x63hosen_back_base_streams\x18\x13 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x0bstatic_info\x18\x18 \x01(\x0b\x32\x1a.LLVM.TDG.StaticStreamInfo\"&\n\x04Type\x12\x06\n\x02IV\x10\x00\x12\x06\n\x02LD\x10\x01\x12\x06\n\x02ST\x10\x02\x12\x06\n\x02\x41T\x10\x03\"\xe5\x03\n\x0cStreamRegion\x12\x0e\n\x06region\x18\x01 \x01(\t\x12\x15\n\rrelative_path\x18\x02 \x01(\t\x12\x1b\n\x13total_alive_streams\x18\x03 \x01(\x05\x12%\n\x1dtotal_alive_coalesced_streams\x18\x04 \x01(\x05\x12%\n\x07streams\x18\x08 \x03(\x0b\x32\x14.LLVM.TDG.StreamInfo\x12\x1c\n\x14\x63oalesced_stream_ids\x18\t \x03(\x04\x12\"\n\x1anest_region_relative_paths\x18\n \x03(\t\x12\x30\n\x10nest_config_func\x18\x0b \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12.\n\x0enest_pred_func\x18\x0c \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x15\n\rnest_pred_ret\x18\r \x01(\x08\x12\x0f\n\x07is_nest\x18\x0e \x01(\x08\x12/\n\x0floop_bound_func\x18\x0f \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x16\n\x0eloop_bound_ret\x18\x10 \x01(\x08\x12\x15\n\ris_loop_bound\x18\x11 \x01(\x08\x12\x17\n\x0floop_eliminated\x18\x12 \x01(\x08\":\n\x10\x41llStreamRegions\x12\x0e\n\x06\x62inary\x18\x01 \x01(\t\x12\x16\n\x0erelative_paths\x18\x02 \x03(\t\"\x8e\x02\n\rStreamPattern\x12\x13\n\x0bval_pattern\x18\x01 \x01(\t\x12\x13\n\x0b\x61\x63\x63_pattern\x18\x02 \x01(\t\x12\r\n\x05iters\x18\x03 \x01(\x04\x12\x10\n\x08\x61\x63\x63\x65sses\x18\x04 \x01(\x04\x12\x0f\n\x07updates\x18\x05 \x01(\x04\x12\x0c\n\x04\x62\x61se\x18\x06 \x01(\x04\x12\x10\n\x08stride_i\x18\x07 \x01(\x03\x12\n\n\x02ni\x18\x08 \x01(\x04\x12\x10\n\x08stride_j\x18\t \x01(\x03\x12\x35\n\x07history\x18\n \x03(\x0b\x32$.LLVM.TDG.StreamPattern.HistoryEntry\x1a,\n\x0cHistoryEntry\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\r\n\x05value\x18\x02 \x01(\x04\"\xbc\x01\n\rStreamHistory\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x35\n\x07history\x18\x02 \x03(\x0b\x32$.LLVM.TDG.StreamHistory.HistoryEntry\x12\x17\n\x0fnum_cache_lines\x18\x03 \x01(\x04\x12\x14\n\x0cnum_accesses\x18\x04 \x01(\x04\x1a\x39\n\x0cHistoryEntry\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\x04\x12\x0c\n\x04used\x18\x03 \x01(\x08\"\x84\x03\n\x10StreamFloatEvent\x12\r\n\x05\x63ycle\x18\x01 \x01(\x04\x12\x10\n\x08llc_bank\x18\x02 \x01(\r\x12=\n\x04type\x18\x03 \x01(\x0e\x32/.LLVM.TDG.StreamFloatEvent.StreamFloatEventType\x12\x37\n\x02se\x18\x04 \x01(\x0e\x32+.LLVM.TDG.StreamFloatEvent.StreamEngineType\"7\n\x10StreamEngineType\x12\x08\n\x04\x43ORE\x10\x00\x12\x07\n\x03MLC\x10\x01\x12\x07\n\x03LLC\x10\x02\x12\x07\n\x03MEM\x10\x03\"\x9d\x01\n\x14StreamFloatEventType\x12\n\n\x06\x43ONFIG\x10\x00\x12\x07\n\x03\x45ND\x10\x01\x12\x0e\n\nMIGRATE_IN\x10\x02\x12\x0f\n\x0bMIGRATE_OUT\x10\x03\x12\t\n\x05ISSUE\x10\x04\x12\r\n\tCMP_START\x10\x05\x12\x0c\n\x08\x43MP_DONE\x10\x06\x12\x13\n\x0fLOCAL_REQ_START\x10\x07\x12\x12\n\x0eLOCAL_REQ_DONE\x10\x08*O\n\x11StreamStepPattern\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x11\n\rUNCONDITIONAL\x10\x01\x12\x0f\n\x0b\x43ONDITIONAL\x10\x02\x12\t\n\x05NEVER\x10\x03*\x87\x01\n\x12StreamValuePattern\x12\n\n\x06RANDOM\x10\x00\x12\x0c\n\x08\x43ONSTANT\x10\x01\x12\n\n\x06LINEAR\x10\x02\x12\x0c\n\x08QUARDRIC\x10\x03\x12\x0c\n\x08INDIRECT\x10\x04\x12\x11\n\rPOINTER_CHASE\x10\x05\x12\r\n\tPREV_LOAD\x10\x06\x12\r\n\tREDUCTION\x10\x07*\x94\x01\n\x08\x44\x61taType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x0b\n\x07INTEGER\x10\x01\x12\t\n\x05\x46LOAT\x10\x02\x12\n\n\x06\x44OUBLE\x10\x03\x12\x0e\n\nVECTOR_128\x10\x04\x12\x0e\n\nVECTOR_256\x10\x05\x12\x0e\n\nVECTOR_512\x10\x06\x12\x08\n\x04VOID\x10\x07\x12\x08\n\x04INT1\x10\x08\x12\x0e\n\nINT32_INT1\x10\t*\x90\x01\n\x16ReservedStreamRegionId\x12\x13\n\x0fInvalidRegionId\x10\x00\x12\"\n\x1eNestConfigureFuncInputRegionId\x10\x01\x12\x1e\n\x1aLoopBoundFuncInputRegionId\x10\x02\x12\x1d\n\x19NumReservedStreamRegionId\x10\x03\x62\x06proto3'
+  serialized_pb=b'\n\x13StreamMessage.proto\x12\x08LLVM.TDG\"/\n\x0bStreamParam\x12\r\n\x05value\x18\x01 \x01(\x03\x12\x11\n\tis_static\x18\x02 \x01(\x08\"e\n\tIVPattern\x12\x31\n\x0bval_pattern\x18\x01 \x01(\x0e\x32\x1c.LLVM.TDG.StreamValuePattern\x12%\n\x06params\x18\x02 \x03(\x0b\x32\x15.LLVM.TDG.StreamParam\"9\n\x12StaticCoalesceInfo\x12\x13\n\x0b\x62\x61se_stream\x18\x01 \x01(\x04\x12\x0e\n\x06offset\x18\x02 \x01(\x05\"$\n\x08StreamId\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x04\"[\n\x12PredicatedStreamId\x12\x1e\n\x02id\x18\x01 \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x11\n\tpred_true\x18\x02 \x01(\x08\x12\x12\n\npred_dg_id\x18\x03 \x01(\x05\"\xab\x02\n\x0c\x45xecFuncInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12,\n\x04\x61rgs\x18\x02 \x03(\x0b\x32\x1e.LLVM.TDG.ExecFuncInfo.FuncArg\x12 \n\x04type\x18\x03 \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12\x34\n\ncompute_op\x18\x04 \x01(\x0e\x32 .LLVM.TDG.ExecFuncInfo.ComputeOp\x1aQ\n\x07\x46uncArg\x12\x11\n\tis_stream\x18\x01 \x01(\x08\x12\x11\n\tstream_id\x18\x02 \x01(\x04\x12 \n\x04type\x18\x03 \x01(\x0e\x32\x12.LLVM.TDG.DataType\"4\n\tComputeOp\x12\x0b\n\x07UNKNOWN\x10\x00\x12\r\n\tFLOAT_ADD\x10\x01\x12\x0b\n\x07INT_ADD\x10\x02\"\xd5\x02\n\x17StaticStreamComputeInfo\x12)\n\rupdate_stream\x18\x01 \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x0fstore_func_info\x18\x02 \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x1a\n\x12\x65nabled_store_func\x18\x03 \x01(\x08\x12.\n\x0eload_func_info\x18\x04 \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x19\n\x11\x65nabled_load_func\x18\x05 \x01(\x08\x12.\n\x12value_base_streams\x18\x06 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12-\n\x11value_dep_streams\x18\x07 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x18\n\x10reduce_from_zero\x18\x10 \x01(\x08\"\xd7\x0f\n\x10StaticStreamInfo\x12\x14\n\x0cis_candidate\x18\x01 \x01(\x08\x12\x14\n\x0cis_qualified\x18\x02 \x01(\x08\x12\x11\n\tis_chosen\x18\x03 \x01(\x08\x12\x30\n\x0bstp_pattern\x18\x04 \x01(\x0e\x32\x1b.LLVM.TDG.StreamStepPattern\x12\x31\n\x0bval_pattern\x18\x05 \x01(\x0e\x32\x1c.LLVM.TDG.StreamValuePattern\x12K\n\x11not_stream_reason\x18\x06 \x01(\x0e\x32\x30.LLVM.TDG.StaticStreamInfo.StaticNotStreamReason\x12\x1a\n\x12loop_possible_path\x18\x07 \x01(\r\x12!\n\x19\x63onfig_loop_possible_path\x18\x08 \x01(\r\x12\'\n\niv_pattern\x18\t \x01(\x0b\x32\x13.LLVM.TDG.IVPattern\x12@\n\x0c\x66loat_manual\x18\n \x01(\x0e\x32*.LLVM.TDG.StaticStreamInfo.ManualFloatType\x12\x31\n\x12\x63onst_update_param\x18\x0e \x01(\x0b\x32\x15.LLVM.TDG.StreamParam\x12\x16\n\x0eis_cond_access\x18\x0f \x01(\x08\x12\x1b\n\x13is_trip_count_fixed\x18\x10 \x01(\x08\x12\x1a\n\x12has_max_trip_count\x18\x11 \x01(\x08\x12\x38\n\x12predicated_streams\x18\x12 \x03(\x0b\x32\x1c.LLVM.TDG.PredicatedStreamId\x12?\n\x19merged_predicated_streams\x18\x13 \x03(\x0b\x32\x1c.LLVM.TDG.PredicatedStreamId\x12#\n\x1bis_merged_predicated_stream\x18\x14 \x01(\x08\x12.\n\x0epred_func_info\x18\x15 \x03(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x14\n\x0cno_core_user\x18\x16 \x01(\x08\x12\x12\n\nloop_level\x18\x17 \x01(\r\x12\x19\n\x11\x63onfig_loop_level\x18\x18 \x01(\r\x12\x1a\n\x12is_inner_most_loop\x18\x19 \x01(\x08\x12-\n\x11\x61lias_base_stream\x18  \x01(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x14\n\x0c\x61lias_offset\x18! \x01(\r\x12+\n\x0f\x61liased_streams\x18\" \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x37\n\x0c\x63ompute_info\x18# \x01(\x0b\x32!.LLVM.TDG.StaticStreamComputeInfo\x12\x17\n\x0floop_eliminated\x18$ \x01(\x08\x12\x1d\n\x15\x63ore_need_final_value\x18% \x01(\x08\x12$\n\x1c\x63ore_need_second_final_value\x18& \x01(\x08\x12\x19\n\x11\x63ore_element_size\x18< \x01(\x05\x12\x18\n\x10mem_element_size\x18= \x01(\x05\x12-\n\x11\x63ore_element_type\x18> \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12,\n\x10mem_element_type\x18? \x01(\x0e\x32\x12.LLVM.TDG.DataType\x12\x12\n\nuser_param\x18@ \x03(\t\x12$\n\x1cuser_strand_split_loop_level\x18\x41 \x03(\x05\x12\x18\n\x10user_spatial_pin\x18\x42 \x01(\x08\x12\x19\n\x11user_bypass_level\x18\x43 \x03(\t\x12\x12\n\nuser_reuse\x18\x44 \x03(\t\"\x9a\x04\n\x15StaticNotStreamReason\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x30\n,BASE_STREAM_INNER_MOST_LOOP_NOT_CONTAIN_MINE\x10\x01\x12#\n\x1fMULTI_PHIMNODE_FOR_COMPUTEMNODE\x10\x02\x12 \n\x1cMULTI_NON_EMPTY_COMPUTE_PATH\x10\x03\x12\x1d\n\x19NO_NON_EMPTY_COMPUTE_PATH\x10\x04\x12\x1d\n\x19NOT_SCEVABLE_COMPUTEMNODE\x10\x05\x12\x12\n\x0eRANDOM_PATTERN\x10\x06\x12\x13\n\x0fMULTI_STEP_ROOT\x10\x07\x12\x10\n\x0cNO_STEP_ROOT\x10\x08\x12\x1a\n\x16VARIANT_BACKEDGE_TAKEN\x10\t\x12\x13\n\x0fIS_UPDATE_STORE\x10\n\x12!\n\x1dIN_LOOP_REMAINDER_OR_EPILOGUE\x10\x0b\x12\x17\n\x13IV_NO_MEM_DEPENDENT\x10\x0c\x12\x15\n\x11USER_NOT_OUT_MOST\x10\r\x12\x1a\n\x16IN_LOOP_REDUCTION_USER\x10\x0e\x12\x18\n\x14USER_NEST_LOOP_LEVEL\x10\x0f\x12\x12\n\x0eUSER_NO_STREAM\x10\x10\x12\x1d\n\x19\x42\x41SE_STREAM_NOT_QUALIFIED\x10\x14\x12\x15\n\x11NO_STATIC_MAPPING\x10\x15\"8\n\x0fManualFloatType\x12\x0b\n\x07RUNTIME\x10\x00\x12\t\n\x05\x46LOAT\x10\x01\x12\r\n\tNOT_FLOAT\x10\x02\"\xad\x01\n\x11\x44ynamicStreamInfo\x12\x14\n\x0cis_candidate\x18\x01 \x01(\x08\x12\x14\n\x0cis_qualified\x18\x02 \x01(\x08\x12\x11\n\tis_chosen\x18\x03 \x01(\x08\x12\x12\n\nis_aliased\x18\x04 \x01(\x08\x12\x13\n\x0btotal_iters\x18\x05 \x01(\x04\x12\x16\n\x0etotal_accesses\x18\x06 \x01(\x04\x12\x18\n\x10total_configures\x18\x07 \x01(\x04\"\xc6\x04\n\nStreamInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\n\n\x02id\x18\x02 \x01(\x04\x12\'\n\x04type\x18\x03 \x01(\x0e\x32\x19.LLVM.TDG.StreamInfo.Type\x12\x14\n\x0cpattern_path\x18\x07 \x01(\t\x12\x14\n\x0chistory_path\x18\x08 \x01(\t\x12\x33\n\rcoalesce_info\x18\t \x01(\x0b\x32\x1c.LLVM.TDG.StaticCoalesceInfo\x12\x31\n\x0c\x64ynamic_info\x18\n \x01(\x0b\x32\x1b.LLVM.TDG.DynamicStreamInfo\x12\x18\n\x10region_stream_id\x18\x0b \x01(\x05\x12.\n\x0e\x61\x64\x64r_func_info\x18\x0c \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12(\n\x0c\x62\x61se_streams\x18\x10 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12-\n\x11\x62\x61\x63k_base_streams\x18\x11 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x13\x63hosen_base_streams\x18\x12 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12\x34\n\x18\x63hosen_back_base_streams\x18\x13 \x03(\x0b\x32\x12.LLVM.TDG.StreamId\x12/\n\x0bstatic_info\x18\x18 \x01(\x0b\x32\x1a.LLVM.TDG.StaticStreamInfo\"&\n\x04Type\x12\x06\n\x02IV\x10\x00\x12\x06\n\x02LD\x10\x01\x12\x06\n\x02ST\x10\x02\x12\x06\n\x02\x41T\x10\x03\"\xe5\x03\n\x0cStreamRegion\x12\x0e\n\x06region\x18\x01 \x01(\t\x12\x15\n\rrelative_path\x18\x02 \x01(\t\x12\x1b\n\x13total_alive_streams\x18\x03 \x01(\x05\x12%\n\x1dtotal_alive_coalesced_streams\x18\x04 \x01(\x05\x12%\n\x07streams\x18\x08 \x03(\x0b\x32\x14.LLVM.TDG.StreamInfo\x12\x1c\n\x14\x63oalesced_stream_ids\x18\t \x03(\x04\x12\"\n\x1anest_region_relative_paths\x18\n \x03(\t\x12\x30\n\x10nest_config_func\x18\x0b \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12.\n\x0enest_pred_func\x18\x0c \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x15\n\rnest_pred_ret\x18\r \x01(\x08\x12\x0f\n\x07is_nest\x18\x0e \x01(\x08\x12/\n\x0floop_bound_func\x18\x0f \x01(\x0b\x32\x16.LLVM.TDG.ExecFuncInfo\x12\x16\n\x0eloop_bound_ret\x18\x10 \x01(\x08\x12\x15\n\ris_loop_bound\x18\x11 \x01(\x08\x12\x17\n\x0floop_eliminated\x18\x12 \x01(\x08\":\n\x10\x41llStreamRegions\x12\x0e\n\x06\x62inary\x18\x01 \x01(\t\x12\x16\n\x0erelative_paths\x18\x02 \x03(\t\"\x8e\x02\n\rStreamPattern\x12\x13\n\x0bval_pattern\x18\x01 \x01(\t\x12\x13\n\x0b\x61\x63\x63_pattern\x18\x02 \x01(\t\x12\r\n\x05iters\x18\x03 \x01(\x04\x12\x10\n\x08\x61\x63\x63\x65sses\x18\x04 \x01(\x04\x12\x0f\n\x07updates\x18\x05 \x01(\x04\x12\x0c\n\x04\x62\x61se\x18\x06 \x01(\x04\x12\x10\n\x08stride_i\x18\x07 \x01(\x03\x12\n\n\x02ni\x18\x08 \x01(\x04\x12\x10\n\x08stride_j\x18\t \x01(\x03\x12\x35\n\x07history\x18\n \x03(\x0b\x32$.LLVM.TDG.StreamPattern.HistoryEntry\x1a,\n\x0cHistoryEntry\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\r\n\x05value\x18\x02 \x01(\x04\"\xbc\x01\n\rStreamHistory\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x35\n\x07history\x18\x02 \x03(\x0b\x32$.LLVM.TDG.StreamHistory.HistoryEntry\x12\x17\n\x0fnum_cache_lines\x18\x03 \x01(\x04\x12\x14\n\x0cnum_accesses\x18\x04 \x01(\x04\x1a\x39\n\x0cHistoryEntry\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\x04\x12\x0c\n\x04used\x18\x03 \x01(\x08\"\xc5\x05\n\x10StreamFloatEvent\x12\r\n\x05\x63ycle\x18\x01 \x01(\x04\x12\x10\n\x08llc_bank\x18\x02 \x01(\r\x12=\n\x04type\x18\x03 \x01(\x0e\x32/.LLVM.TDG.StreamFloatEvent.StreamFloatEventType\x12\x37\n\x02se\x18\x04 \x01(\x0e\x32+.LLVM.TDG.StreamFloatEvent.StreamEngineType\"7\n\x10StreamEngineType\x12\x08\n\x04\x43ORE\x10\x00\x12\x07\n\x03MLC\x10\x01\x12\x07\n\x03LLC\x10\x02\x12\x07\n\x03MEM\x10\x03\"\xde\x03\n\x14StreamFloatEventType\x12\n\n\x06\x43ONFIG\x10\x00\x12\x07\n\x03\x45ND\x10\x01\x12\x0e\n\nMIGRATE_IN\x10\x02\x12\x0f\n\x0bMIGRATE_OUT\x10\x03\x12\t\n\x05ISSUE\x10\x04\x12\r\n\tCMP_START\x10\x05\x12\x0c\n\x08\x43MP_DONE\x10\x06\x12\x13\n\x0fLOCAL_REQ_START\x10\x07\x12\x12\n\x0eLOCAL_REQ_DONE\x10\x08\x12\x1f\n\x1bROUTER_XBAR_OUT_LOCAL_START\x10\t\x12\x1e\n\x1aROUTER_XBAR_OUT_LOCAL_DONE\x10\n\x12\x1f\n\x1bROUTER_XBAR_OUT_NORTH_START\x10\x0b\x12\x1e\n\x1aROUTER_XBAR_OUT_NORTH_DONE\x10\x0c\x12\x1f\n\x1bROUTER_XBAR_OUT_SOUTH_START\x10\r\x12\x1e\n\x1aROUTER_XBAR_OUT_SOUTH_DONE\x10\x0e\x12\x1e\n\x1aROUTER_XBAR_OUT_EAST_START\x10\x0f\x12\x1d\n\x19ROUTER_XBAR_OUT_EAST_DONE\x10\x10\x12\x1e\n\x1aROUTER_XBAR_OUT_WEST_START\x10\x11\x12\x1d\n\x19ROUTER_XBAR_OUT_WEST_DONE\x10\x12*O\n\x11StreamStepPattern\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x11\n\rUNCONDITIONAL\x10\x01\x12\x0f\n\x0b\x43ONDITIONAL\x10\x02\x12\t\n\x05NEVER\x10\x03*\x87\x01\n\x12StreamValuePattern\x12\n\n\x06RANDOM\x10\x00\x12\x0c\n\x08\x43ONSTANT\x10\x01\x12\n\n\x06LINEAR\x10\x02\x12\x0c\n\x08QUARDRIC\x10\x03\x12\x0c\n\x08INDIRECT\x10\x04\x12\x11\n\rPOINTER_CHASE\x10\x05\x12\r\n\tPREV_LOAD\x10\x06\x12\r\n\tREDUCTION\x10\x07*\xa2\x01\n\x08\x44\x61taType\x12\x10\n\x0cUNKNOWN_TYPE\x10\x00\x12\x0b\n\x07INTEGER\x10\x01\x12\t\n\x05\x46LOAT\x10\x02\x12\n\n\x06\x44OUBLE\x10\x03\x12\x0e\n\nVECTOR_128\x10\x04\x12\x0e\n\nVECTOR_256\x10\x05\x12\x0e\n\nVECTOR_512\x10\x06\x12\x08\n\x04VOID\x10\x07\x12\x08\n\x04INT1\x10\x08\x12\x0e\n\nINT32_INT1\x10\t\x12\x0c\n\x08TILE_1kB\x10\n*\x90\x01\n\x16ReservedStreamRegionId\x12\x13\n\x0fInvalidRegionId\x10\x00\x12\"\n\x1eNestConfigureFuncInputRegionId\x10\x01\x12\x1e\n\x1aLoopBoundFuncInputRegionId\x10\x02\x12\x1d\n\x19NumReservedStreamRegionId\x10\x03\x62\x06proto3'
 )
 
 _STREAMSTEPPATTERN = _descriptor.EnumDescriptor(
@@ -53,8 +53,8 @@ _STREAMSTEPPATTERN = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4954,
-  serialized_end=5033,
+  serialized_start=5516,
+  serialized_end=5595,
 )
 _sym_db.RegisterEnumDescriptor(_STREAMSTEPPATTERN)
 
@@ -109,8 +109,8 @@ _STREAMVALUEPATTERN = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5036,
-  serialized_end=5171,
+  serialized_start=5598,
+  serialized_end=5733,
 )
 _sym_db.RegisterEnumDescriptor(_STREAMVALUEPATTERN)
 
@@ -172,11 +172,16 @@ _DATATYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='TILE_1kB', index=10, number=10,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5174,
-  serialized_end=5322,
+  serialized_start=5736,
+  serialized_end=5898,
 )
 _sym_db.RegisterEnumDescriptor(_DATATYPE)
 
@@ -211,8 +216,8 @@ _RESERVEDSTREAMREGIONID = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5325,
-  serialized_end=5469,
+  serialized_start=5901,
+  serialized_end=6045,
 )
 _sym_db.RegisterEnumDescriptor(_RESERVEDSTREAMREGIONID)
 
@@ -239,6 +244,7 @@ VECTOR_512 = 6
 VOID = 7
 INT1 = 8
 INT32_INT1 = 9
+TILE_1kB = 10
 InvalidRegionId = 0
 NestConfigureFuncInputRegionId = 1
 LoopBoundFuncInputRegionId = 2
@@ -380,10 +386,40 @@ _STATICSTREAMINFO_STATICNOTSTREAMREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2250,
-  serialized_end=2788,
+  serialized_start=2433,
+  serialized_end=2971,
 )
 _sym_db.RegisterEnumDescriptor(_STATICSTREAMINFO_STATICNOTSTREAMREASON)
+
+_STATICSTREAMINFO_MANUALFLOATTYPE = _descriptor.EnumDescriptor(
+  name='ManualFloatType',
+  full_name='LLVM.TDG.StaticStreamInfo.ManualFloatType',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='RUNTIME', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='FLOAT', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='NOT_FLOAT', index=2, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=2973,
+  serialized_end=3029,
+)
+_sym_db.RegisterEnumDescriptor(_STATICSTREAMINFO_MANUALFLOATTYPE)
 
 _STREAMINFO_TYPE = _descriptor.EnumDescriptor(
   name='Type',
@@ -415,8 +451,8 @@ _STREAMINFO_TYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3511,
-  serialized_end=3549,
+  serialized_start=3752,
+  serialized_end=3790,
 )
 _sym_db.RegisterEnumDescriptor(_STREAMINFO_TYPE)
 
@@ -450,8 +486,8 @@ _STREAMFLOATEVENT_STREAMENGINETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4737,
-  serialized_end=4792,
+  serialized_start=4978,
+  serialized_end=5033,
 )
 _sym_db.RegisterEnumDescriptor(_STREAMFLOATEVENT_STREAMENGINETYPE)
 
@@ -507,11 +543,61 @@ _STREAMFLOATEVENT_STREAMFLOATEVENTTYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_LOCAL_START', index=9, number=9,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_LOCAL_DONE', index=10, number=10,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_NORTH_START', index=11, number=11,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_NORTH_DONE', index=12, number=12,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_SOUTH_START', index=13, number=13,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_SOUTH_DONE', index=14, number=14,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_EAST_START', index=15, number=15,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_EAST_DONE', index=16, number=16,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_WEST_START', index=17, number=17,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ROUTER_XBAR_OUT_WEST_DONE', index=18, number=18,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4795,
-  serialized_end=4952,
+  serialized_start=5036,
+  serialized_end=5514,
 )
 _sym_db.RegisterEnumDescriptor(_STREAMFLOATEVENT_STREAMFLOATEVENTTYPE)
 
@@ -971,8 +1057,8 @@ _STATICSTREAMINFO = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='float_manual', full_name='LLVM.TDG.StaticStreamInfo.float_manual', index=9,
-      number=10, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      number=10, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -998,141 +1084,176 @@ _STATICSTREAMINFO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='predicated_streams', full_name='LLVM.TDG.StaticStreamInfo.predicated_streams', index=13,
+      name='has_max_trip_count', full_name='LLVM.TDG.StaticStreamInfo.has_max_trip_count', index=13,
+      number=17, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='predicated_streams', full_name='LLVM.TDG.StaticStreamInfo.predicated_streams', index=14,
       number=18, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='merged_predicated_streams', full_name='LLVM.TDG.StaticStreamInfo.merged_predicated_streams', index=14,
+      name='merged_predicated_streams', full_name='LLVM.TDG.StaticStreamInfo.merged_predicated_streams', index=15,
       number=19, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_merged_predicated_stream', full_name='LLVM.TDG.StaticStreamInfo.is_merged_predicated_stream', index=15,
+      name='is_merged_predicated_stream', full_name='LLVM.TDG.StaticStreamInfo.is_merged_predicated_stream', index=16,
       number=20, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='pred_func_info', full_name='LLVM.TDG.StaticStreamInfo.pred_func_info', index=16,
+      name='pred_func_info', full_name='LLVM.TDG.StaticStreamInfo.pred_func_info', index=17,
       number=21, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='no_core_user', full_name='LLVM.TDG.StaticStreamInfo.no_core_user', index=17,
+      name='no_core_user', full_name='LLVM.TDG.StaticStreamInfo.no_core_user', index=18,
       number=22, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='loop_level', full_name='LLVM.TDG.StaticStreamInfo.loop_level', index=18,
+      name='loop_level', full_name='LLVM.TDG.StaticStreamInfo.loop_level', index=19,
       number=23, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='config_loop_level', full_name='LLVM.TDG.StaticStreamInfo.config_loop_level', index=19,
+      name='config_loop_level', full_name='LLVM.TDG.StaticStreamInfo.config_loop_level', index=20,
       number=24, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_inner_most_loop', full_name='LLVM.TDG.StaticStreamInfo.is_inner_most_loop', index=20,
+      name='is_inner_most_loop', full_name='LLVM.TDG.StaticStreamInfo.is_inner_most_loop', index=21,
       number=25, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='alias_base_stream', full_name='LLVM.TDG.StaticStreamInfo.alias_base_stream', index=21,
+      name='alias_base_stream', full_name='LLVM.TDG.StaticStreamInfo.alias_base_stream', index=22,
       number=32, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='alias_offset', full_name='LLVM.TDG.StaticStreamInfo.alias_offset', index=22,
+      name='alias_offset', full_name='LLVM.TDG.StaticStreamInfo.alias_offset', index=23,
       number=33, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='aliased_streams', full_name='LLVM.TDG.StaticStreamInfo.aliased_streams', index=23,
+      name='aliased_streams', full_name='LLVM.TDG.StaticStreamInfo.aliased_streams', index=24,
       number=34, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='compute_info', full_name='LLVM.TDG.StaticStreamInfo.compute_info', index=24,
+      name='compute_info', full_name='LLVM.TDG.StaticStreamInfo.compute_info', index=25,
       number=35, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='loop_eliminated', full_name='LLVM.TDG.StaticStreamInfo.loop_eliminated', index=25,
+      name='loop_eliminated', full_name='LLVM.TDG.StaticStreamInfo.loop_eliminated', index=26,
       number=36, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='core_need_final_value', full_name='LLVM.TDG.StaticStreamInfo.core_need_final_value', index=26,
+      name='core_need_final_value', full_name='LLVM.TDG.StaticStreamInfo.core_need_final_value', index=27,
       number=37, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='core_need_second_final_value', full_name='LLVM.TDG.StaticStreamInfo.core_need_second_final_value', index=27,
+      name='core_need_second_final_value', full_name='LLVM.TDG.StaticStreamInfo.core_need_second_final_value', index=28,
       number=38, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='core_element_size', full_name='LLVM.TDG.StaticStreamInfo.core_element_size', index=28,
+      name='core_element_size', full_name='LLVM.TDG.StaticStreamInfo.core_element_size', index=29,
       number=60, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mem_element_size', full_name='LLVM.TDG.StaticStreamInfo.mem_element_size', index=29,
+      name='mem_element_size', full_name='LLVM.TDG.StaticStreamInfo.mem_element_size', index=30,
       number=61, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='core_element_type', full_name='LLVM.TDG.StaticStreamInfo.core_element_type', index=30,
+      name='core_element_type', full_name='LLVM.TDG.StaticStreamInfo.core_element_type', index=31,
       number=62, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mem_element_type', full_name='LLVM.TDG.StaticStreamInfo.mem_element_type', index=31,
+      name='mem_element_type', full_name='LLVM.TDG.StaticStreamInfo.mem_element_type', index=32,
       number=63, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='user_param', full_name='LLVM.TDG.StaticStreamInfo.user_param', index=32,
+      name='user_param', full_name='LLVM.TDG.StaticStreamInfo.user_param', index=33,
       number=64, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user_strand_split_loop_level', full_name='LLVM.TDG.StaticStreamInfo.user_strand_split_loop_level', index=34,
+      number=65, type=5, cpp_type=1, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user_spatial_pin', full_name='LLVM.TDG.StaticStreamInfo.user_spatial_pin', index=35,
+      number=66, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user_bypass_level', full_name='LLVM.TDG.StaticStreamInfo.user_bypass_level', index=36,
+      number=67, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user_reuse', full_name='LLVM.TDG.StaticStreamInfo.user_reuse', index=37,
+      number=68, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1143,6 +1264,7 @@ _STATICSTREAMINFO = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
     _STATICSTREAMINFO_STATICNOTSTREAMREASON,
+    _STATICSTREAMINFO_MANUALFLOATTYPE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -1151,7 +1273,7 @@ _STATICSTREAMINFO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1022,
-  serialized_end=2788,
+  serialized_end=3029,
 )
 
 
@@ -1224,8 +1346,8 @@ _DYNAMICSTREAMINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2791,
-  serialized_end=2964,
+  serialized_start=3032,
+  serialized_end=3205,
 )
 
 
@@ -1348,8 +1470,8 @@ _STREAMINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2967,
-  serialized_end=3549,
+  serialized_start=3208,
+  serialized_end=3790,
 )
 
 
@@ -1478,8 +1600,8 @@ _STREAMREGION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3552,
-  serialized_end=4037,
+  serialized_start=3793,
+  serialized_end=4278,
 )
 
 
@@ -1517,8 +1639,8 @@ _ALLSTREAMREGIONS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4039,
-  serialized_end=4097,
+  serialized_start=4280,
+  serialized_end=4338,
 )
 
 
@@ -1556,8 +1678,8 @@ _STREAMPATTERN_HISTORYENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4326,
-  serialized_end=4370,
+  serialized_start=4567,
+  serialized_end=4611,
 )
 
 _STREAMPATTERN = _descriptor.Descriptor(
@@ -1650,8 +1772,8 @@ _STREAMPATTERN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4100,
-  serialized_end=4370,
+  serialized_start=4341,
+  serialized_end=4611,
 )
 
 
@@ -1696,8 +1818,8 @@ _STREAMHISTORY_HISTORYENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4504,
-  serialized_end=4561,
+  serialized_start=4745,
+  serialized_end=4802,
 )
 
 _STREAMHISTORY = _descriptor.Descriptor(
@@ -1748,8 +1870,8 @@ _STREAMHISTORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4373,
-  serialized_end=4561,
+  serialized_start=4614,
+  serialized_end=4802,
 )
 
 
@@ -1803,8 +1925,8 @@ _STREAMFLOATEVENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4564,
-  serialized_end=4952,
+  serialized_start=4805,
+  serialized_end=5514,
 )
 
 _IVPATTERN.fields_by_name['val_pattern'].enum_type = _STREAMVALUEPATTERN
@@ -1825,6 +1947,7 @@ _STATICSTREAMINFO.fields_by_name['stp_pattern'].enum_type = _STREAMSTEPPATTERN
 _STATICSTREAMINFO.fields_by_name['val_pattern'].enum_type = _STREAMVALUEPATTERN
 _STATICSTREAMINFO.fields_by_name['not_stream_reason'].enum_type = _STATICSTREAMINFO_STATICNOTSTREAMREASON
 _STATICSTREAMINFO.fields_by_name['iv_pattern'].message_type = _IVPATTERN
+_STATICSTREAMINFO.fields_by_name['float_manual'].enum_type = _STATICSTREAMINFO_MANUALFLOATTYPE
 _STATICSTREAMINFO.fields_by_name['const_update_param'].message_type = _STREAMPARAM
 _STATICSTREAMINFO.fields_by_name['predicated_streams'].message_type = _PREDICATEDSTREAMID
 _STATICSTREAMINFO.fields_by_name['merged_predicated_streams'].message_type = _PREDICATEDSTREAMID
@@ -1835,6 +1958,7 @@ _STATICSTREAMINFO.fields_by_name['compute_info'].message_type = _STATICSTREAMCOM
 _STATICSTREAMINFO.fields_by_name['core_element_type'].enum_type = _DATATYPE
 _STATICSTREAMINFO.fields_by_name['mem_element_type'].enum_type = _DATATYPE
 _STATICSTREAMINFO_STATICNOTSTREAMREASON.containing_type = _STATICSTREAMINFO
+_STATICSTREAMINFO_MANUALFLOATTYPE.containing_type = _STATICSTREAMINFO
 _STREAMINFO.fields_by_name['type'].enum_type = _STREAMINFO_TYPE
 _STREAMINFO.fields_by_name['coalesce_info'].message_type = _STATICCOALESCEINFO
 _STREAMINFO.fields_by_name['dynamic_info'].message_type = _DYNAMICSTREAMINFO

@@ -1,5 +1,5 @@
 {
-    "id": "o8-sapphire-rapids.cache-48kBm{l1_mshr}-2MBm{l2_mshr}-4MB-d{max_infly_data_req}.8x8c-l{link}-c{ctrl_buf}-s{llc_intrlv}-ch{ch_intrlv}.f{s_fifo}x{s_elem}-c-gb-o3end-nest{nest}.fltsc-cmp-mf{mlc_fifo}x{mlc_ind_fifo}-snuca{nuca}-strand{strand}-ind{nuca_ind}-b{nuca_ind_rebalance}-csr{csr_reorder}-iacerf{idea_ack}x{partial_config}x{idea_end}x{idea_flow}x{idea_ind_req}x{idea_fwd}",
+    "id": "o8-sapphire-rapids.cache-48kBm{l1_mshr}-2MBm{l2_mshr}-4MB-d{max_infly_data_req}.8x8ew-l{link}-c{ctrl_buf}-s{llc_intrlv}-ch{ch_intrlv}.f{s_fifo}x{s_elem}-c-gb-o3end-nest{nest}.fltsc-cmp-mf{mlc_fifo}x{mlc_ind_fifo}-snuca{nuca}-strand{strand}-ind{nuca_ind}-b{nuca_ind_rebalance}-csr{csr_reorder}-iacerf{idea_ack}x{partial_config}x{idea_end}x{idea_flow}x{idea_ind_req}x{idea_fwd}-fanout",
     "options": [
         "--gem-forge-num-active-cpus=1",
         "--gem-forge-cache-load-ports=6",
@@ -52,11 +52,12 @@
         "--gem-forge-enable-stream-strand={strand}",
         "--gem-forge-stream-reuse-tile-elems=32",
         "--gem-forge-enable-stream-float-multi-level-indirect-store-compute",
-        "--garnet-ctrl-flit-buffer-size={ctrl_buf}"
+        "--garnet-ctrl-flit-buffer-size={ctrl_buf}",
+        "--garnet-multicast-mode=fanout"
     ],
     "snippts": [
         "o8.tlb",
-        "8x8.dir_middle4x4.l1_48kB.l2_2MB.l3_4MB_s0.ruby",
+        "8x8.dir_east_west_edge.l1_48kB.l2_2MB.l3_4MB_s0.ruby",
         "ddr4-no-xor"
     ],
     "design_space": {
